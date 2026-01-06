@@ -1,12 +1,3 @@
-#            ____                       
-#  _ __ ___ | __ )  ___  ___  __ _ _ __ 
-# | '_ ` _ \|  _ \ / _ \/ __|/ _` | '__|
-# | | | | | | |_) |  __/\__ \ (_| | |   
-# |_| |_| |_|____/ \___||___/\__,_|_|   
-# ——————————————————————————————————————————————
-# ——————————————————————————————————————————————
-#
-
 # Default config for sway
 #
 # Copy this to ~/.config/sway/config and edit it to your liking.
@@ -55,7 +46,7 @@ set $chrome_x11 google-chrome-stable \
 
 # Set wallpaper
 # set $wallpaper /home/mbesar/.config/sway/wallpaper/sound.png
-set $wallpaper $HOME/.config/sway/wallpaper/sound.png
+set $wallpaper $HOME/.config/sway/wallpaper/Wallpaper.jpg
 
 
 include /etc/sway/config-vars.d/*
@@ -94,7 +85,7 @@ include /etc/sway/config-vars.d/*
 # Basics:
 #
     # Start a terminal
-    bindsym $mod+t exec $term
+    bindsym $mod+enter exec $term
 
     # Start a file manager
     bindsym $mod+f exec $fileManager
@@ -109,7 +100,7 @@ include /etc/sway/config-vars.d/*
     bindsym $mod+Shift+w exec 'pkill -x waybar; waybar'
 
     # Start App Launcher
-    #bindsym $mod+r exec $dmenu
+    #bindsym $mod+m exec $dmenu
 
     # Start Command launcher
     #bindsym $mod+Shift+r exec $menu
@@ -186,7 +177,7 @@ include /etc/sway/config-vars.d/*
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
-    bindsym $mod+Shift+b splith
+    bindsym $mod+Shift+h splith
     bindsym $mod+Shift+v splitv
 
 # Switch the current container between different layout styles
