@@ -6,7 +6,7 @@ family = "JetBrainsMono Nerd Font Mono"
 style = "Regular"
 
 [general]
-import = ["./catppuccin-macchiato.toml"]
+import = ["./darksunset.toml"]
 
 [window]
 dynamic_padding = true
