@@ -48,7 +48,6 @@ tooltip {
 #workspaces button:hover {
     background: rgba(255, 120, 80, 0.25);
     color: #ffd4a3;
-    transform: translateY(-1px);
 }
 
 #workspaces button.focused {
