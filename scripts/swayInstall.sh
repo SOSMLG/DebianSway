@@ -7,17 +7,19 @@
 #==================#
 #   Colors Setup   #
 #==================#
-RED="\033[1;31m"
-GREEN="\033[1;32m"
-YELLOW="\033[1;33m"
-BLUE="\033[1;34m"
-CYAN="\033[1;36m"
-RESET="\033[0m"
+RED="\033[1;31m"       
+GREEN="\033[0m"       
+YELLOW="\033[1;33m"  
+BLUE="\033[1;34m"     
+CYAN="\033[0m"        
+GRAY="\033[1;30m"     
 
-info()    { echo -e "${BLUE}[INFO]${RESET} $1"; }
-success() { echo -e "${GREEN}[OK]${RESET} $1"; }
+
+
+info()    { echo -e "${CYAN}[INFO]${RESET} $1"; }
+success() { echo -e "${RED}[OK]${RESET} $1"; }
 warn()    { echo -e "${YELLOW}[WARN]${RESET} $1"; }
-error()   { echo -e "${RED}[ERROR]${RESET} $1"; }
+error()   { echo -e "${BLUE}[ERROR]${RESET} $1"; }
 
 #==================#
 #   Require Root   #
@@ -66,7 +68,10 @@ success "Waybar and UI utilities installed!"
 info "Installing Thunar and archive tools..."
 apt install -y thunar thunar-volman thunar-archive-plugin xarchiver \
 tumbler ffmpegthumbnailer zenity rar unar zip 7zip 7zip-rar zip unzip \
-gvfs-backends gvfs-fuse smbclient mate-polkit geany
+gvfs-backends gvfs-fuse smbclient mate-polkit geany geany-plugin-addons \
+geany-plugin-git-changebar geany-plugin-overview geany-plugin-spellcheck \
+geany-plugin-treebrowser geany-plugin-vimode geany-plugin-markdown
+
 success "File managers installed!"
 
 #==================#
@@ -140,6 +145,12 @@ warn "Please review /etc/greetd/config if you want to tweak other options."
 info "Installing essential tools..."
 apt install -y nwg-look qt5-style-kvantum qt6-style-kvantum papirus-icon-theme
 success "Theme packages installed!"
+
+#==================================================================================================#
+#Oh my Bash 
+bash -c "$(wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh -O -)"
+#==================================================================================================#
+
 
 #==================#
 # Done
