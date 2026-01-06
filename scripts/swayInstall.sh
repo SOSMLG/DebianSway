@@ -80,7 +80,7 @@ success "Media packages installed!"
 # Terminal Tools
 #==================#
 info "Installing terminal tools..."
-apt install -y alacritty bat duf htop eza rsync
+apt install -y alacritty bat duf htop eza rsync fzf zoxide
 success "Terminal tools installed!"
 
 #==================#
