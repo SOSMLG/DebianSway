@@ -7,17 +7,17 @@
 #==================#
 #   Colors Setup   #
 #==================#
-RED="\033[1;31m"
-GREEN="\033[1;32m"
-YELLOW="\033[1;33m"
-BLUE="\033[1;34m"
-CYAN="\033[1;36m"
-RESET="\033[0m"
+RED="\033[1;31m"       
+GREEN="\033[0m"       
+YELLOW="\033[1;33m"  
+BLUE="\033[1;34m"     
+CYAN="\033[0m"        
 
-info()    { echo -e "${BLUE}[INFO]${RESET} $1"; }
-success() { echo -e "${GREEN}[OK]${RESET} $1"; }
+
+info()    { echo -e "${CYAN}[INFO]${RESET} $1"; }
+success() { echo -e "${RED}[OK]${RESET} $1"; }
 warn()    { echo -e "${YELLOW}[WARN]${RESET} $1"; }
-error()   { echo -e "${RED}[ERROR]${RESET} $1"; }
+error()   { echo -e "${BLUE}[ERROR]${RESET} $1"; }
 
 #==================#
 # Nerd Fonts
