@@ -1,9 +1,10 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 36,
-    "spacing": 4,
-    "margin": "6 10 0 10",
+    "height": 38,
+    "spacing": 5,
+    "margin": "8 12 0 12",
+    "exclusive": true,
 
     "modules-right": [
         "tray",
@@ -18,6 +19,7 @@
         "sway/language",
         "idle_inhibitor",
         "custom/notification",
+        "clock#time",
         "custom/power"
     ],
 
@@ -29,37 +31,39 @@
     ],
 
     "modules-center": [
-        "clock"
+        "clock#date"
     ],
 
 
-    // Right Modules - Laptop essentials
+    // === Right Modules - Optimized for laptop workflow ===
 
     "custom/power": {
-        "format": "󰐥",
-        "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 3 -theme-str 'window {width: 18%; height: 32%; x-offset: -10px; y-offset: 10px; border-radius: 12px;}'",
+        "format": "⏻",
+        "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 3 -theme-str 'window {width: 16%; height: 28%; x-offset: -12px; y-offset: 12px; border-radius: 14px;}'",
         "on-click-middle": "pkill rofi",
-        "tooltip-format": "Power Menu"
+        "on-click-right": "systemctl suspend",
+        "tooltip-format": "Power Menu\nRight-click: Suspend"
     },
 
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {
-            "activated": "󰈉",
-            "deactivated": "󰛑"
+            "activated": "󰈈",
+            "deactivated": "󰾪"
         },
-        "tooltip-format-activated": "Idle inhibitor: ON (screen won't sleep)",
-        "tooltip-format-deactivated": "Idle inhibitor: OFF"
+        "tooltip-format-activated": "Screen Lock: DISABLED\nScreen will stay awake",
+        "tooltip-format-deactivated": "Screen Lock: ENABLED\nScreen will sleep when idle",
+        "on-click-right": "swaylock -f"
     },
 
     "custom/notification": {
         "escape": true,
         "exec": "swaync-client -swb",
         "exec-if": "which swaync-client",
-        "format": "{icon} {}",
+        "format": "{icon}",
         "format-icons": {
             "dnd-inhibited-none": "󰂚",
-            "dnd-inhibited-notification": "󱅫",
+            "dnd-inhibited-notification": "󰂛",
             "dnd-none": "󰂛",
             "dnd-notification": "󱅫",
             "inhibited-none": "󰂚",
@@ -69,14 +73,23 @@
         },
         "on-click": "swaync-client -t -sw",
         "on-click-right": "swaync-client -d -sw",
+        "on-click-middle": "swaync-client -C",
         "return-type": "json",
-        "tooltip": false
+        "tooltip-format": "{} notifications\nClick: Toggle panel\nRight-click: Toggle DND\nMiddle-click: Clear all"
+    },
+
+    "clock#time": {
+        "interval": 1,
+        "format": "{:%I:%M %p}",
+        "format-alt": "{:%H:%M:%S}",
+        "tooltip-format": "<big>{:%A, %B %d, %Y}</big>\n<tt>{calendar}</tt>",
+        "on-click-right": "mode"
     },
 
     "sway/language": {
-        "format": "{} 󰌌",
+        "format": "{}",
         "on-click": "swaymsg input type:keyboard xkb_switch_layout next",
-        "tooltip-format": "{long}"
+        "tooltip-format": "Keyboard: {long}\nClick to switch layout"
     },
     
     "keyboard-state": {
@@ -90,13 +103,17 @@
         "format-icons": {
             "locked": "󰬈",
             "unlocked": ""
-        }
+        },
+        "tooltip-format": "{icon} CapsLock\n{icon} NumLock"
     },
 
     "battery": {
         "bat": "BAT1",
-        "interval": 30,
+        "adapter": "AC",
+        "interval": 20,
         "states": {
+            "full": 100,
+            "good": 95,
             "warning": 30,
             "critical": 15
         },
@@ -105,46 +122,48 @@
         "format-plugged": "{capacity}% 󰚥",
         "format-full": "{capacity}% 󱟢",
         "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-        "tooltip-format": "{timeTo}\nPower: {power}W",
+        "tooltip-format": "{timeTo}\nCapacity: {capacity}%\nPower: {power}W\nHealth: {health}%\nCycles: {cycles}",
+        "on-click": "gnome-power-statistics",
         "max-length": 25
     },
 
     "backlight": {
         "device": "intel_backlight",
         "interval": 1,
-        "align": 0,
-        "rotate": 0,
         "format": "{percent}% {icon}",
         "format-icons": ["󰃞", "󰃟", "󰃠"],
-        "icon-size": 10,
         "on-scroll-up": "brightnessctl set +5%",
         "on-scroll-down": "brightnessctl set 5%-",
+        "on-click": "brightnessctl set 50%",
+        "on-click-right": "brightnessctl set 100%",
         "smooth-scrolling-threshold": 1,
-        "tooltip-format": "Brightness: {percent}%"
+        "tooltip-format": "Brightness: {percent}%\nClick: 50% | Right-click: 100%\nScroll: Adjust"
     },
 
     "network": {
-        "interval": 5,
-        "format-wifi": "{essid} 󰖨",
+        "interval": 3,
+        "format-wifi": "{icon}",
         "format-ethernet": "󰈀",
-        "format-linked": "󰈀 (No IP)",
+        "format-linked": "󰈁",
         "format-disconnected": "󰖪",
-        "tooltip-format-wifi": "{essid}\nSignal: {signalStrength}%\nIP: {ipaddr}\n󰕒 {bandwidthDownBytes}  󰕑 {bandwidthUpBytes}",
-        "tooltip-format-ethernet": "Ethernet\nIP: {ipaddr}\n󰕒 {bandwidthDownBytes}  󰕑 {bandwidthUpBytes}",
-        "tooltip-format-disconnected": "Disconnected",
-        "on-click-right": "nm-connection-editor",
+        "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+        "tooltip-format-wifi": "󰖨 {essid}\nSignal: {signalStrength}% ({signaldBm} dBm)\nFrequency: {frequency} MHz\nIP: {ipaddr}/{cidr}\n\n󰕒 Down: {bandwidthDownBytes}\n󰕑 Up: {bandwidthUpBytes}",
+        "tooltip-format-ethernet": "󰈀 Wired Connection\nIP: {ipaddr}/{cidr}\nGateway: {gwaddr}\n\n󰕒 Down: {bandwidthDownBytes}\n󰕑 Up: {bandwidthUpBytes}",
+        "tooltip-format-disconnected": "󰖪 Disconnected\nClick to open network settings",
+        "on-click": "nm-connection-editor",
+        "on-click-right": "nmtui",
         "max-length": 30
     },
 
     "pulseaudio": {
-        "format": "{volume}% {icon}",
-        "format-bluetooth": "{volume}% 󰂯",
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "󰂯 {volume}%",
         "format-bluetooth-muted": "󰂲",
         "format-muted": "󰖁",
         "format-icons": {
             "headphone": "󰋋",
-            "hands-free": "󰋋",
-            "headset": "󰋋",
+            "hands-free": "󰋎",
+            "headset": "󰋎",
             "phone": "",
             "portable": "",
             "car": "",
@@ -153,61 +172,68 @@
         "scroll-step": 5,
         "on-click": "pavucontrol",
         "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-click-right": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 50%",
         "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-        "tooltip-format": "{desc}\nVolume: {volume}%",
-        "max-volume": 100,
+        "tooltip-format": "{icon} {desc}\nVolume: {volume}%\n\nClick: Audio settings\nMiddle: Mute toggle\nRight: Set 50%\nScroll: Adjust",
+        "max-volume": 150,
         "ignored-sinks": ["Easy Effects Sink"]
     },
 
     "cpu": {
-        "interval": 3,
-        "format": "{usage}% 󰻠",
+        "interval": 2,
+        "format": "󰻠 {usage}%",
+        "format-alt": "󰻠 {load}",
         "states": {
             "warning": 70,
             "critical": 90
         },
-        "tooltip-format": "CPU Usage: {usage}%\nLoad: {load}",
-        "on-click": "alacritty -e htop"
+        "tooltip-format": "CPU Usage: {usage}%\nLoad Average: {load}\n\nClick to open htop",
+        "on-click": "alacritty -e htop",
+        "on-click-right": "alacritty -e btop"
     },
     
     "memory": {
-        "interval": 5,
-        "format": "{percentage}% 󰍛",
+        "interval": 3,
+        "format": "󰍛 {percentage}%",
+        "format-alt": "󰍛 {used:0.1f}G",
         "states": {
             "warning": 70,
             "critical": 90
         },
-        "tooltip-format": "RAM: {used:0.1f}G / {total:0.1f}G ({percentage}%)\nSwap: {swapUsed:0.1f}G / {swapTotal:0.1f}G",
-        "on-click": "alacritty -e htop"
+        "tooltip-format": "RAM Usage: {percentage}%\nUsed: {used:0.1f}G / {total:0.1f}G\nAvailable: {avail:0.1f}G\n\nSwap: {swapPercentage}%\nUsed: {swapUsed:0.1f}G / {swapTotal:0.1f}G\n\nClick to open htop",
+        "on-click": "alacritty -e htop",
+        "on-click-right": "alacritty -e btop"
     },
     
     "temperature": {
         "thermal-zone": 2,
         "hwmon-path": "/sys/class/hwmon/hwmon1/temp1_input",
-        "interval": 4,
+        "interval": 3,
         "critical-threshold": 75,
-        "format": "{temperatureC}°C {icon}",
-        "format-critical": "{temperatureC}°C {icon}",
+        "format": "{icon} {temperatureC}°C",
+        "format-critical": "{icon} {temperatureC}°C",
         "format-icons": ["󱃃", "󰔏", "󱃂"],
-        "tooltip-format": "CPU Temperature: {temperatureC}°C"
+        "tooltip-format": "CPU Temperature: {temperatureC}°C\n{temperatureF}°F",
+        "on-click": "alacritty -e watch -n 1 sensors"
     },
     
     "tray": {
         "icon-theme": "Papirus-Dark",
-        "icon-size": 15,
-        "spacing": 6,
-        "show-passive-items": true
+        "icon-size": 16,
+        "spacing": 8,
+        "show-passive-items": true,
+        "reverse-direction": false
     },
 
 
-    // Center Module - Prominent for studying
+    // === Center Module - Date display ===
 
-    "clock": {
-        "interval": 1,
+    "clock#date": {
+        "interval": 10,
         "timezone": "Africa/Cairo",
-        "format": "  {:%b %d, %a  %I:%M %p}",
-        "format-alt": "  {:%Y-%m-%d  %H:%M:%S}",
+        "format": "󰸗  {:%a, %b %d}",
+        "format-alt": "󰸗  {:%Y-%m-%d}",
         "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode": "month",
@@ -229,7 +255,8 @@
         }
     },
     
-    // Left Modules
+    
+    // === Left Modules ===
 
     "sway/mode": {
         "format": "󰲎 {}",
@@ -239,50 +266,73 @@
     
     "sway/window": {
         "format": "{}",
+        "separate-outputs": true,
         "on-click-middle": "swaymsg kill",
-        "max-length": 55,
+        "max-length": 60,
+        "icon": true,
+        "icon-size": 16,
+        "all-outputs": false,
         "tooltip": true,
         "rewrite": {
             "(.*) — Mozilla Firefox": "󰈹  $1",
             "(.*) - Firefox": "󰈹  $1",
+            "(.*) — Firefox Developer Edition": "󰈹  $1",
             "(.*) - Chromium": "  $1",
+            "(.*) - Google Chrome": "  $1",
             "(.*) - VSCodium": "  $1",
             "(.*) - Visual Studio Code": "  $1",
+            "(.*) - Code": "  $1",
             "(.*) - Obsidian (.*)": "󱓧  $1",
             "(.*) - Notion": "󰈺  $1",
+            "(.*) - Logseq": "󰛔  $1",
             "(.*) - mpv": "  $1",
             "(.*) - VLC media player": "󰕼  $1",
             "Spotify": "  Spotify",
+            "Spotify Premium": "  Spotify",
             "Alacritty": "  Terminal",
             "foot": "  Terminal",
             "kitty": "  Terminal",
+            "wezterm": "  Terminal",
             "(.*) — COSMIC Terminal": "  $1",
             "(.*) — Konsole": "  $1",
             "(.*) - zsh": "  [$1]",
+            "(.*) - bash": "  [$1]",
+            "(.*) - fish": "  [$1]",
             "Thunar": "  Files",
             "Nautilus": "  Files",
+            "Dolphin": "  Files",
+            "nemo": "  Files",
             "Discord": "󰙯  Discord",
             "Slack": "󰒱  Slack",
+            "Telegram": "  Telegram",
+            "Signal": "  Signal",
+            "Thunderbird": "󰇮  Thunderbird",
+            "LibreOffice Writer": "󰈙  Writer",
+            "LibreOffice Calc": "󱎏  Calc",
+            "GIMP": "  GIMP",
+            "Inkscape": "  Inkscape",
+            "Blender": "󰂫  Blender",
+            "Steam": "  Steam",
             "": "  Desktop"
         }
     },
 
     "sway/workspaces": {
         "disable-scroll": false,
-        "all-outputs": true,
+        "all-outputs": false,
         "format": "{icon}",
         "format-icons": {
-            "1": "󰲠",
-            "2": "󰲢",
-            "3": "󰲤",
-            "4": "󰲦",
-            "5": "󰲨",
-            "6": "󰲪",
-            "7": "󰲬",
-            "8": "󰲮",
-            "9": "󰲰",
-            "10": "󰿬",
-            "urgent": "󱈸",
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10",
+            "urgent": "",
             "focused": "",
             "default": ""
         },
@@ -291,14 +341,18 @@
             "2": [],
             "3": [],
             "4": []
-        }
+        },
+        "on-scroll-up": "swaymsg workspace prev_on_output",
+        "on-scroll-down": "swaymsg workspace next_on_output",
+        "on-click": "activate",
+        "sort-by-number": true
     },
 
     "custom/apps": {
         "format": "󰀻",
-        "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 40%; height: 45%; x-offset: 10px; y-offset: 10px; border-radius: 12px;}'",
+        "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 38%; height: 50%; x-offset: 12px; y-offset: 12px; border-radius: 14px;}'",
         "on-click-middle": "pkill rofi",
-        "on-click-right": "rofi -show run -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 30%; height: 40%; x-offset: 10px; y-offset: 10px; border-radius: 12px;}'",
-        "tooltip-format": "Applications"
+        "on-click-right": "rofi -show run -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 28%; height: 35%; x-offset: 12px; y-offset: 12px; border-radius: 14px;}'",
+        "tooltip-format": "Applications\nClick: App launcher\nRight-click: Run command\nMiddle-click: Close rofi"
     }
 }
