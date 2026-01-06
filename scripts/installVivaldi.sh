@@ -13,9 +13,9 @@ YELLOW="\033[1;33m"
 BLUE="\033[1;34m"     
 CYAN="\033[0m"  
 
-warn()  { echo -e "${YELLOW}$*${RESET}"; }
-info()  { echo -e "${BLUE}$*${RESET}"; }
-ok()    { echo -e "${GREEN}$*${RESET}"; }
+warn()  { echo -e "${YELLOW}$*${CYAN}"; }
+info()  { echo -e "${BLUE}$*${CYAN}"; }
+ok()    { echo -e "${GREEN}$*${CYAN}"; }
 
 #==================#
 #   Require Root   #
