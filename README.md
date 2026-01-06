@@ -1,4 +1,2 @@
 # Install Sway on Debian 13
-
-Personal repo, use it on your own risk!
-Please, test in a vritual machine first!
+This is a  Fork Of Mohamed Bessar Sway Tiling Manager For Debian  [ am only tweaking it To make it Suits My prefence ] 
