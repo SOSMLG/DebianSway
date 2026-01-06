@@ -8,11 +8,11 @@
 set -e  # stop on error
 
 # --- Colors ---
-GREEN="\e[32m"
-YELLOW="\e[33m"
-BLUE="\e[34m"
-RED="\e[31m"
-RESET="\e[0m"
+RED="\033[1;31m"       
+GREEN="\033[0m"       
+YELLOW="\033[1;33m"  
+RED="\033[1;34m"     
+CYAN="\033[0m"  
 
 # --- Directory setup ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -34,9 +34,9 @@ SCRIPTS=(
 
 
 # --- Header ---
-echo -e "${BLUE}=========================================="
+echo -e "${RED}=========================================="
 echo -e "      🔧 Install and configure Sway for Debian 13"
-echo -e "==========================================${RESET}\n"
+echo -e "==========================================${CYAN}\n"
 
 # --- Main loop ---
 for ENTRY in "${SCRIPTS[@]}"; do
@@ -46,11 +46,11 @@ for ENTRY in "${SCRIPTS[@]}"; do
     DEFAULT="${REST##*|}"             # last part
     SCRIPT_PATH="$SCRIPTS_DIR/$SCRIPT"
 
-    echo -e "${YELLOW}▶ ${SCRIPT}${RESET}"
-    echo -e "   ${BLUE}${DESC}${RESET}"
+    echo -e "${YELLOW}▶ ${SCRIPT}${CYAN}"
+    echo -e "   ${RED}${DESC}${CYAN}"
 
     if [ ! -f "$SCRIPT_PATH" ]; then
-        echo -e "${RED}   ❌ Script not found: $SCRIPT_PATH${RESET}\n"
+        echo -e "${RED}   ❌ Script not found: $SCRIPT_PATH${CYAN}\n"
         continue
     fi
 
@@ -65,16 +65,16 @@ for ENTRY in "${SCRIPTS[@]}"; do
 
     case "${ANSWER^^}" in
         Y)
-            echo -e "${GREEN}   ✅ Running $SCRIPT...${RESET}"
+            echo -e "${GREEN}   ✅ Running $SCRIPT...${CYAN}"
             bash "$SCRIPT_PATH"
-            echo -e "${GREEN}   ✅ Done: $SCRIPT${RESET}\n"
+            echo -e "${GREEN}   ✅ Done: $SCRIPT${CYAN}\n"
             ;;
         *)
-            echo -e "${YELLOW}   ⚠ Skipped: $SCRIPT${RESET}\n"
+            echo -e "${YELLOW}   ⚠ Skipped: $SCRIPT${CYAN}\n"
             ;;
     esac
 done
 
-echo -e "${BLUE}=========================================="
+echo -e "${RED}=========================================="
 echo -e "     🏁 All tasks processed."
-echo -e "==========================================${RESET}"
+echo -e "==========================================${CYAN}"
