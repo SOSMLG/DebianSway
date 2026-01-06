@@ -1,11 +1,4 @@
-#            ____                       
-#  _ __ ___ | __ )  ___  ___  __ _ _ __ 
-# | '_ ` _ \|  _ \ / _ \/ __|/ _` | '__|
-# | | | | | | |_) |  __/\__ \ (_| | |   
-# |_| |_| |_|____/ \___||___/\__,_|_|   
-# ——————————————————————————————————————————————
-# ——————————————————————————————————————————————
-#
+# Note This Is Fork Fork Of Moahmed Bassar 
 
 # Default config for sway
 #
@@ -94,7 +87,7 @@ include /etc/sway/config-vars.d/*
 # Basics:
 #
     # Start a terminal
-    bindsym $mod+t exec $term
+    bindsym $mod+enter exec $term
 
     # Start a file manager
     bindsym $mod+f exec $fileManager
@@ -109,10 +102,10 @@ include /etc/sway/config-vars.d/*
     bindsym $mod+Shift+w exec 'pkill -x waybar; waybar'
 
     # Start App Launcher
-    #bindsym $mod+r exec $dmenu
+    #bindsym $mod+m exec $dmenu
 
     # Start Command launcher
-    #bindsym $mod+Shift+r exec $menu
+    #bindsym $mod+Shift+c exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -122,7 +115,7 @@ include /etc/sway/config-vars.d/*
     floating_modifier $mod normal
 
     # Reload the configuration file
-    bindsym $mod+Shift+c reload
+    bindsym $mod+Shift+r reload
 
     # Exit sway (logs you out of your Wayland session)
     bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
@@ -186,7 +179,7 @@ include /etc/sway/config-vars.d/*
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
-    bindsym $mod+Shift+b splith
+    bindsym $mod+Shift+h splith
     bindsym $mod+Shift+v splitv
 
 # Switch the current container between different layout styles
