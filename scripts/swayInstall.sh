@@ -50,7 +50,8 @@ success "Basic tools installed!"
 #==================#
 info "Installing Sway and related packages..."
 apt install -y sway swaylock swayidle swaybg sway-notification-center \
-foot xdg-desktop-portal-wlr xwayland xdg-desktop-portal
+ xdg-desktop-portal-wlr xwayland xdg-desktop-portal
+ apt purge -y foot
 success "Sway installed!"
 
 #==================#
