@@ -1,4 +1,4 @@
-@theme "~/.config/rofi/themes/catppuccin-default.rasi"
+@theme "~/.config/rofi/darksunset.rasi"
 configuration {
     font: "JetBrainsMono Nerd Font Propo 16";
     show-icons: true;
