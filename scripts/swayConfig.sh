@@ -14,10 +14,10 @@ BLUE="\033[1;34m"
 CYAN="\033[0m"        
 
 
-info()    { echo -e "${CYAN}[INFO]${RESET} $1"; }
-success() { echo -e "${RED}[OK]${RESET} $1"; }
-warn()    { echo -e "${YELLOW}[WARN]${RESET} $1"; }
-error()   { echo -e "${BLUE}[ERROR]${RESET} $1"; }
+info()    { echo -e "${CYAN}[INFO]${CYAN} $1"; }
+success() { echo -e "${RED}[OK]${CYAN} $1"; }
+warn()    { echo -e "${YELLOW}[WARN]${CYAN} $1"; }
+error()   { echo -e "${BLUE}[ERROR]${CYAN} $1"; }
 
 #==================#
 # Nerd Fonts
