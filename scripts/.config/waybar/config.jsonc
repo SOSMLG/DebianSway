@@ -1,31 +1,31 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 34,
-    "spacing": 2,
-    "margin": "8 8 0 8",
+    "height": 36,
+    "spacing": 4,
+    "margin": "6 10 0 10",
 
     "modules-right": [
         "tray",
         "temperature",
         "memory",
         "cpu",
-        // "pulseaudio#microphone",
+        "network",
         "pulseaudio",
-        "custom/notification",
         "backlight",
         "battery",
         "keyboard-state",
         "sway/language",
         "idle_inhibitor",
+        "custom/notification",
         "custom/power"
     ],
 
     "modules-left": [
         "custom/apps",
         "sway/workspaces",
-        "sway/window",
-        "sway/mode"
+        "sway/mode",
+        "sway/window"
     ],
 
     "modules-center": [
@@ -33,240 +33,272 @@
     ],
 
 
-    // Right Modules
+    // Right Modules - Laptop essentials
 
     "custom/power": {
-      "format": "󰐥",
-      "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 3 -theme-str 'window {width: 17%; height: 30%; x-offset: -10px; y-offset: 10px; border-radius: 15px;}'",
-      "on-click-middle": "pkill rofi",
-      "tooltip": false
+        "format": "󰐥",
+        "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 3 -theme-str 'window {width: 18%; height: 32%; x-offset: -10px; y-offset: 10px; border-radius: 12px;}'",
+        "on-click-middle": "pkill rofi",
+        "tooltip-format": "Power Menu"
     },
 
     "idle_inhibitor": {
-      "format": "{icon}",
-      "format-icons": {
-        "activated": "󰐯",
-        "deactivated": "󱜤"
-      }
-    },
-
-    "sway/language": {
-        "format": "{shortDescription}",
-        "on-click": "swaymsg input type:keyboard xkb_switch_layout next"
-    },
-    
-    "keyboard-state": {
-      "capslock": true,
-      "numlock": true,
-      // "device-path": "/dev/input/event0",
-      "format": {
-        "capslock": "󰬈",
-        "numlock": "󰎤"
-      }
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "󰈉",
+            "deactivated": "󰛑"
+        },
+        "tooltip-format-activated": "Idle inhibitor: ON (screen won't sleep)",
+        "tooltip-format-deactivated": "Idle inhibitor: OFF"
     },
 
     "custom/notification": {
-      "escape": true,
-      "exec": "swaync-client -swb",
-      "exec-if": "which swaync-client",
-      "format": "{}{icon}",
-      "format-icons": {
-        "dnd-inhibited-none": "",
-        "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
-        "dnd-none": "",
-        "dnd-notification": "<span foreground='red'><sup></sup></span>",
-        "inhibited-none": "",
-        "inhibited-notification": "<span foreground='red'><sup></sup></span>",
-        "none": "",
-        "notification": "<span foreground='red'><sup></sup></span>"
-      },
-      "on-click": "swaync-client -t -sw",
-      "on-click-right": "swaync-client -d -sw",
-      "return-type": "json",
-      "tooltip": false
+        "escape": true,
+        "exec": "swaync-client -swb",
+        "exec-if": "which swaync-client",
+        "format": "{icon} {}",
+        "format-icons": {
+            "dnd-inhibited-none": "󰂚",
+            "dnd-inhibited-notification": "󱅫",
+            "dnd-none": "󰂛",
+            "dnd-notification": "󱅫",
+            "inhibited-none": "󰂚",
+            "inhibited-notification": "󱅫",
+            "none": "󰂚",
+            "notification": "󱅫"
+        },
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "return-type": "json",
+        "tooltip": false
+    },
+
+    "sway/language": {
+        "format": "{} 󰌌",
+        "on-click": "swaymsg input type:keyboard xkb_switch_layout next",
+        "tooltip-format": "{long}"
+    },
+    
+    "keyboard-state": {
+        "capslock": true,
+        "numlock": true,
+        "scrolllock": false,
+        "format": {
+            "capslock": "{icon}",
+            "numlock": "{icon}"
+        },
+        "format-icons": {
+            "locked": "󰬈",
+            "unlocked": ""
+        }
     },
 
     "battery": {
-      "bat": "BAT1",
-        "interval": 60,
+        "bat": "BAT1",
+        "interval": 30,
         "states": {
-          "warning": 30,
-          "critical": 15
+            "warning": 30,
+            "critical": 15
         },
-      "format": "{capacity}% {icon}",
-      "format-icons": ["", "", "", "", ""],
-      "max-length": 25
+        "format": "{capacity}% {icon}",
+        "format-charging": "{capacity}% 󰂄",
+        "format-plugged": "{capacity}% 󰚥",
+        "format-full": "{capacity}% 󱟢",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "{timeTo}\nPower: {power}W",
+        "max-length": 25
     },
 
     "backlight": {
-      "interval": 2,
-      "align": 0,
-      "rotate": 0,
-      "format": "{percent}%{icon}",
-      "format-icons": ["󰃞", "󰃟", "󰃝", "󰃠"],
-      "icon-size": 10,
-      "on-click": "",
-      "on-click-middle": "",
-      "on-click-right": "",
-      "on-update": "",
-      "on-scroll-up": "brightnessctl set +5%",
-      "on-scroll-down": "brightnessctl set 5%-",
-      "smooth-scrolling-threshold": 1
+        "device": "intel_backlight",
+        "interval": 1,
+        "align": 0,
+        "rotate": 0,
+        "format": "{percent}% {icon}",
+        "format-icons": ["󰃞", "󰃟", "󰃠"],
+        "icon-size": 10,
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-",
+        "smooth-scrolling-threshold": 1,
+        "tooltip-format": "Brightness: {percent}%"
     },
 
     "network": {
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ipaddr}/{cidr} ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}",
-        "on-click-right": "nm-connection-editor"
+        "interval": 5,
+        "format-wifi": "{essid} 󰖨",
+        "format-ethernet": "󰈀",
+        "format-linked": "󰈀 (No IP)",
+        "format-disconnected": "󰖪",
+        "tooltip-format-wifi": "{essid}\nSignal: {signalStrength}%\nIP: {ipaddr}\n󰕒 {bandwidthDownBytes}  󰕑 {bandwidthUpBytes}",
+        "tooltip-format-ethernet": "Ethernet\nIP: {ipaddr}\n󰕒 {bandwidthDownBytes}  󰕑 {bandwidthUpBytes}",
+        "tooltip-format-disconnected": "Disconnected",
+        "on-click-right": "nm-connection-editor",
+        "max-length": 30
     },
 
     "pulseaudio": {
-      "format": "{volume} %{icon}",
-      "format-bluetooth": "{volume} %{icon}",
-      "format-bluetooth-muted": "{icon}",
-      "format-icons": {
-        "car": "",
-        "default": [
-          "",
-          "",
-          ""
-        ],
-        "hands-free": "󰋋",
-        "headphone": "󰋋",
-        "headset": "󰋋",
-        "phone": "",
-        "portable": ""
-      },
-      "format-muted": "",
-      "ignored-sinks": [
-        "Easy Effects Sink"
-      ],
-      "max-volume": 150,
-      "on-click": "pavucontrol",
-      "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-      "on-click-right": "~/.config/waybar/scripts/rofi-pipewire-sinks.sh",
-      "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-      "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
-      "scroll-step": 1
-    },
-
-    "pulseaudio#microphone": {
-      "format": "{format_source}",
-      "format-source": "{volume} %",
-      "format-source-muted": "",
-      "on-click": "pavucontrol",
-      "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle",
-      "on-click-right": "~/.config/waybar/scripts/rofi-pipewire-sources.sh",
-      "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%-",
-      "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%+"
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% 󰂯",
+        "format-bluetooth-muted": "󰂲",
+        "format-muted": "󰖁",
+        "format-icons": {
+            "headphone": "󰋋",
+            "hands-free": "󰋋",
+            "headset": "󰋋",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "scroll-step": 5,
+        "on-click": "pavucontrol",
+        "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+        "tooltip-format": "{desc}\nVolume: {volume}%",
+        "max-volume": 100,
+        "ignored-sinks": ["Easy Effects Sink"]
     },
 
     "cpu": {
-        "format": "{usage}% ",
-        "tooltip": true,
-        "interval": 2
+        "interval": 3,
+        "format": "{usage}% 󰻠",
+        "states": {
+            "warning": 70,
+            "critical": 90
+        },
+        "tooltip-format": "CPU Usage: {usage}%\nLoad: {load}",
+        "on-click": "alacritty -e htop"
     },
     
     "memory": {
-        "format": "{}% ",
-        "tooltip-format": "Memory: {used:0.1f}G/{total:0.1f}G"
+        "interval": 5,
+        "format": "{percentage}% 󰍛",
+        "states": {
+            "warning": 70,
+            "critical": 90
+        },
+        "tooltip-format": "RAM: {used:0.1f}G / {total:0.1f}G ({percentage}%)\nSwap: {swapUsed:0.1f}G / {swapTotal:0.1f}G",
+        "on-click": "alacritty -e htop"
     },
     
     "temperature": {
         "thermal-zone": 2,
         "hwmon-path": "/sys/class/hwmon/hwmon1/temp1_input",
-        "critical-threshold": 80,
-        "format-critical": "{temperatureC}°C {icon}",
+        "interval": 4,
+        "critical-threshold": 75,
         "format": "{temperatureC}°C {icon}",
-        "format-icons": ["", "", ""]
+        "format-critical": "{temperatureC}°C {icon}",
+        "format-icons": ["󱃃", "󰔏", "󱃂"],
+        "tooltip-format": "CPU Temperature: {temperatureC}°C"
     },
     
     "tray": {
         "icon-theme": "Papirus-Dark",
-        "icon-size": 16,
-        "spacing": 8
+        "icon-size": 15,
+        "spacing": 6,
+        "show-passive-items": true
     },
 
 
-    // Center Modules
+    // Center Module - Prominent for studying
 
     "clock": {
+        "interval": 1,
         "timezone": "Africa/Cairo",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format": "{:%b %d %a - %I:%M %p}",
-        // "format": "{:%a %b %d  %H:%M}",
-        "format-alt": "{:%Y-%m-%d %H:%M:%S}"
+        "format": "  {:%b %d, %a  %I:%M %p}",
+        "format-alt": "  {:%Y-%m-%d  %H:%M:%S}",
+        "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "format": {
+                "months": "<span color='#ffd4a3'><b>{}</b></span>",
+                "days": "<span color='#e8d4b8'>{}</span>",
+                "weeks": "<span color='#a8c5d5'><b>W{}</b></span>",
+                "weekdays": "<span color='#ffb347'><b>{}</b></span>",
+                "today": "<span color='#ff6b6b'><b><u>{}</u></b></span>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
     },
     
     // Left Modules
 
     "sway/mode": {
         "format": "󰲎 {}",
-        "max-length": 50
+        "max-length": 50,
+        "tooltip": false
     },
     
     "sway/window": {
         "format": "{}",
-        // "on-click-middle": "swaymsg '[con_id=__focused__] kill'",
         "on-click-middle": "swaymsg kill",
-        "max-length": 50,
+        "max-length": 55,
         "tooltip": true,
         "rewrite": {
-          "(.*) — Mozilla Firefox": "󰈹 $1",
-          "(.*) - VSCodium": " $1",
-          "(.*) - Obsidian (.*)": "󱓧 $1",
-          "(.*) - mpv": " $1",
-          "(.*) - VLC media player": "󰕼 $1",
-          "Alacritty": " Alacritty",
-          "foot": " Foot",
-          "kitty": " Kitty",
-          "(.*) — COSMIC Terminal": " $1",
-          "(.*) — Konsole": " $1",
-          "(.*) - zsh": "> [$1]",
-          "": " ..No Windows?! "
+            "(.*) — Mozilla Firefox": "󰈹  $1",
+            "(.*) - Firefox": "󰈹  $1",
+            "(.*) - Chromium": "  $1",
+            "(.*) - VSCodium": "  $1",
+            "(.*) - Visual Studio Code": "  $1",
+            "(.*) - Obsidian (.*)": "󱓧  $1",
+            "(.*) - Notion": "󰈺  $1",
+            "(.*) - mpv": "  $1",
+            "(.*) - VLC media player": "󰕼  $1",
+            "Spotify": "  Spotify",
+            "Alacritty": "  Terminal",
+            "foot": "  Terminal",
+            "kitty": "  Terminal",
+            "(.*) — COSMIC Terminal": "  $1",
+            "(.*) — Konsole": "  $1",
+            "(.*) - zsh": "  [$1]",
+            "Thunar": "  Files",
+            "Nautilus": "  Files",
+            "Discord": "󰙯  Discord",
+            "Slack": "󰒱  Slack",
+            "": "  Desktop"
         }
-    },    
+    },
 
     "sway/workspaces": {
-        "disable-scroll": true,
+        "disable-scroll": false,
         "all-outputs": true,
         "format": "{icon}",
-        // "format": "{name}:{icon}",
         "format-icons": {
-            "1": "1",
-            "2": "2",
-            "3": "3",
-            "4": "4",
-            "5": "5",
-            "6": "6",
-            "7": "7",
-            "8": "8",
-            "9": "9",
-            "10": "10",
-            "urgent": "󱈸"
-            // "urgent": "",
-            // "focused": "",
-            // "default": ""
+            "1": "󰲠",
+            "2": "󰲢",
+            "3": "󰲤",
+            "4": "󰲦",
+            "5": "󰲨",
+            "6": "󰲪",
+            "7": "󰲬",
+            "8": "󰲮",
+            "9": "󰲰",
+            "10": "󰿬",
+            "urgent": "󱈸",
+            "focused": "",
+            "default": ""
         },
         "persistent-workspaces": {
             "1": [],
             "2": [],
-            "3": []
-            // "4": [],
-            // "5": []
+            "3": [],
+            "4": []
         }
     },
 
     "custom/apps": {
-      "format": "",
-      "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 45%; height: 40%; x-offset: 10px; y-offset: 10px; border-radius: 15px;}'",
-      "on-click-middle": "pkill rofi",
-      "on-click-right": "rofi -show run -hover-select -me-select-entry '' -me-select-entry MousePrimary -location 1 -theme-str 'window {width: 30%; height: 40%; x-offset: 10px; y-offset: 10px; border-radius: 15px;}'",
-      "tooltip": false
+        "format": "󰀻",
+        "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 40%; height: 45%; x-offset: 10px; y-offset: 10px; border-radius: 12px;}'",
+        "on-click-middle": "pkill rofi",
+        "on-click-right": "rofi -show run -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 30%; height: 40%; x-offset: 10px; y-offset: 10px; border-radius: 12px;}'",
+        "tooltip-format": "Applications"
     }
-
 }
