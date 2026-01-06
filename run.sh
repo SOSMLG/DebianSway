@@ -23,6 +23,7 @@ SCRIPTS=(
     "swayInstall.sh|Install base system packages and tools|Y"
     "swayConfig.sh|Configure Sway window manager and related settings|Y"
     "installFonts.sh|Install system fonts|Y"
+    "installVivaldi.sh|Install Vivaldi Browser|Y"
     "updateConfig.sh|Copy and update .config|Y"
     "bashrc.sh|Update bashrc|Y"
     "SweetMars.sh|Install SweetMars|Y"
