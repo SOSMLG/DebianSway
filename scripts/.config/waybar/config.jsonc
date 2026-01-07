@@ -188,7 +188,7 @@
             "critical": 90
         },
         "tooltip-format": "CPU Usage: {usage}%\nLoad Average: {load}\n\nClick: System monitor",
-        "on-click": "alacritty -e btop",
+        "on-click": "alacritty -e htop",
         "on-click-right": "gnome-system-monitor"
     },
     
@@ -201,8 +201,6 @@
             "critical": 90
         },
         "tooltip-format": "RAM: {percentage}%\nUsed: {used:0.1f}G / {total:0.1f}G\nAvailable: {avail:0.1f}G\n\nSwap: {swapPercentage}%\n\nClick: Disk usage",
-        "on-click": "alacritty -e ncdu /",
-        "on-click-right": "baobab"
     },
     
     "temperature": {
