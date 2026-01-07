@@ -114,17 +114,7 @@ EOF
     log_ok "Environment variables added"
 fi
 
-# Aliases
-BASHRC_FILE="$USER_HOME/.bashrc"
-if ! grep -q "steam-run" "$BASHRC_FILE" 2>/dev/null; then
-    cat >> "$BASHRC_FILE" << 'EOF'
 
-alias steam-run='gamemoderun'
-alias steam-fps='mangohud'
-alias check-gpu='glxinfo | grep -i renderer'
-EOF
-    log_ok "Aliases added"
-fi
 
 # Desktop launchers
 mkdir -p "$USER_HOME/.local/share/applications"
