@@ -29,7 +29,7 @@ SCRIPTS=(
     "SweetMars.sh|Install SweetMars|Y"
     "bibataCursor.sh|Install Bibata Cursors|Y"
     "addUserToGroups.sh|Add your user to the needed groups|Y"
-    "chromeWaylandFix.sh|Apply a fix for Chrome on Wayland for older systems|N"
+    "matlabandgamingfix.sh|Peak Gaming And Matlab Fix|Y"
 )
 
 
