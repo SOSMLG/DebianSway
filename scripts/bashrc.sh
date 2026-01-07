@@ -167,7 +167,10 @@ alias ..='z ..'
 alias ...='z ../..'
 alias ....='z ../../..'
 alias -- -='z -'
-
+alias python='python3'
+alias pip='pip3'
+alias python2='python3'
+alias pip2='pip3'
 
 # --- Live shared bash history across sessions ---
 HISTCONTROL=ignoreboth:erasedups
