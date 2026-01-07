@@ -9,7 +9,7 @@ mkdir -p "$KVANTUMDIR"
 
 # Sweet-Mars (red) theme
 GIT_REPO="https://github.com/EliverLara/Sweet.git"
-THEME_NAME="Sweet-Mars"
+THEME_NAME="Sweet-Ambar-v40"
 
 # Clone GTK theme
 echo "Installing Sweet-Mars (red) GTK theme to $THEMEDIR..."
