@@ -25,9 +25,9 @@
     "modules-left": [
         "custom/apps",
         "sway/workspaces",
+        "battery",
         "sway/mode",
         "sway/window"
-        "battery"
     ],
 
     "modules-center": [
@@ -107,7 +107,7 @@
     },
 
     "battery": {
-        "bat": "BAT1",
+        "bat": "BAT0",
         "adapter": "AC",
         "interval": 10,
         "states": {
