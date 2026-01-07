@@ -51,7 +51,7 @@
         },
         "tooltip-format-activated": "Screen Lock: DISABLED\nScreen will stay awake",
         "tooltip-format-deactivated": "Screen Lock: ENABLED\nScreen will sleep when idle",
-        "on-click-right": "swaylock"
+        "on-click-right": "~/.config/sway/scripts/"
     },
 
     "custom/notification": {
