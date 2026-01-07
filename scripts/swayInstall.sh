@@ -78,7 +78,7 @@ success "File managers installed!"
 # Media Packages
 #==================#
 info "Installing multimedia packages..."
-apt install -y ffmpeg mpv imv audacious mediainfo-gui
+apt install -y ffmpeg mpv imv audacious mediainfo-gui flameshot blueman
 success "Media packages installed!"
 
 #==================#
