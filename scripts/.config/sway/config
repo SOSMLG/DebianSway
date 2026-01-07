@@ -338,7 +338,8 @@ output * bg $wallpaper fill
 # ——————————————————————————————————————————————
 # Start Autotiling
 # ——————————————————————————————————————————————
-exec autotiling -1 3
+exec_always sh -c autotiling
+
 
 # ——————————————————————————————————————————————
 # Start Sway Notification Center
