@@ -336,6 +336,11 @@ output * bg $wallpaper fill
 
 
 # ——————————————————————————————————————————————
+# Start Autotiling
+# ——————————————————————————————————————————————
+exec autotiling -1 3
+
+# ——————————————————————————————————————————————
 # Start Sway Notification Center
 # ——————————————————————————————————————————————
 exec_always sh -c 'pkill -x swaync; swaync &'
