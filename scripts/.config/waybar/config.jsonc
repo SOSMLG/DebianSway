@@ -187,7 +187,7 @@
             "warning": 70,
             "critical": 90
         },
-        "tooltip-format": "CPU Usage: {usage}%\nLoad Average: {load}\n\nClick: System monitor",
+        "tooltip-format": "CPU Usage: {usage}%\nLoad Average: {load}",
         "on-click": "alacritty -e htop",
         "on-click-right": "gnome-system-monitor"
     },
@@ -211,7 +211,7 @@
         "format": "{icon} {temperatureC}°C",
         "format-critical": "{icon} {temperatureC}°C",
         "format-icons": ["󱃃", "󰔏", "󱃂"],
-        "tooltip-format": "CPU Temperature: {temperatureC}°C ({temperatureF}°F)\n\nClick: View sensors",
+        "tooltip-format": "CPU Temperature: {temperatureC}°C ({temperatureF}°F)",
     },
     
     "tray": {
