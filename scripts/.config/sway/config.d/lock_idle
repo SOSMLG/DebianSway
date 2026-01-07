@@ -1,59 +1,113 @@
-#            ____                       
-#  _ __ ___ | __ )  ___  ___  __ _ _ __ 
-# | '_ ` _ \|  _ \ / _ \/ __|/ _` | '__|
-# | | | | | | |_) |  __/\__ \ (_| | |   
-# |_| |_| |_|____/ \___||___/\__,_|_|   
-# ——————————————————————————————————————————————
-# ——————————————————————————————————————————————
+### Lock and Idle Settings - Improved & Optimized
 #
-
-### Lock and Idle Settings
-#
-# Example configuration:
-#
-# exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
-#          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-#          before-sleep 'swaylock -f -c 000000'
-#
-# This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 300 seconds, and turn your screens back on when
-# resumed. It will also lock your screen before your computer goes to sleep.
-
+# Features:
+# - Sunset-themed swaylock with fancy styling
+# - Smart idle timeouts for laptops
+# - Proper keyboard layout reset
+# - Screen dimming before lock
+# - DPMS power management
 
 # Set wallpaper
-#set $wallpaper /home/mbesar/.config/sway/wallpaper/sound.png
 set $wallpaper $HOME/.config/sway/wallpaper/sound.png
 
-# Your lock screen
-#set $lock_cmd "$HOME/.config/sway/scripts/lock"
-set $lock_cmd "swaymsg input '*' xkb_switch_layout 0; \
-  swaylock -f -i $wallpaper \
-  --indicator-radius 80 \
-  --indicator-thickness 10 \
-  --ring-color ffd75fff"
+# Enhanced lock command with sunset colors
+set $lock_cmd "swaymsg input '*' xkb_switch_layout 0 && \
+  swaylock -f \
+  -i $wallpaper \
+  --indicator-radius 100 \
+  --indicator-thickness 8 \
+  --ring-color ff6b6baa \
+  --ring-ver-color ffa94daa \
+  --ring-wrong-color ed8796aa \
+  --ring-clear-color ffcc5caa \
+  --key-hl-color ffd93dff \
+  --bs-hl-color ff6b6bff \
+  --inside-color 1a2a3acc \
+  --inside-ver-color 0f1e2dcc \
+  --inside-wrong-color 1a2a3acc \
+  --inside-clear-color 1a2a3acc \
+  --line-color 00000000 \
+  --separator-color 00000000 \
+  --text-color ffd4a3ee \
+  --text-ver-color ffd4a3ee \
+  --text-wrong-color ed8796ee \
+  --text-clear-color ffd4a3ee \
+  --grace 2 \
+  --fade-in 0.3 \
+  --effect-blur 7x5 \
+  --effect-vignette 0.5:0.5 \
+  --clock \
+  --timestr '%I:%M %p' \
+  --datestr '%A, %B %d'"
+
+# Screen dimming command (for laptops with backlight)
+set $dim_screen "light -U 50"
+set $restore_screen "light -I"
 
 # ——————————————————————————————————————————————
-# Lock screen
+# Smart Idle Management
 # ——————————————————————————————————————————————
-# exec_always swayidle -w timeout 180 $lock_cmd
-
 exec swayidle -w \
-  timeout 180 $lock_cmd \
-  timeout 300 'swaymsg "output * dpms off"' \
+  timeout 240 $dim_screen \
+  resume $restore_screen \
+  timeout 300 $lock_cmd \
+  timeout 420 'swaymsg "output * dpms off"' \
   resume 'swaymsg "output * dpms on"' \
   before-sleep $lock_cmd
 
-# Lock the screen with Super+Alt+l
-# bindsym $mod+Alt+l exec $lock_cmd
-#bindsym --to-code Mod4+Mod1+l exec $lock_cmd
+# Timeline:
+# - 4 minutes (240s): Dim screen to 50%
+# - 5 minutes (300s): Lock screen
+# - 7 minutes (420s): Turn off display
+# - On resume: Restore brightness and turn on display
+# - Before sleep: Lock immediately
 
-# Lock the screen with Super+l
+# ——————————————————————————————————————————————
+# Lock Screen Keybindings
+# ——————————————————————————————————————————————
+# Lock with Super+L
 bindsym --to-code Mod4+l exec $lock_cmd
 
+# Lock and suspend with Super+Shift+L
+bindsym --to-code Mod4+Shift+l exec "$lock_cmd && sleep 1 && systemctl suspend"
+
 # ——————————————————————————————————————————————
-# Prevent Idle if there is full screen window
+# Prevent Idle in Certain Situations
 # ——————————————————————————————————————————————
-	# Inhibit Idle if a window is fullscreen
-	for_window [class="^.*"] inhibit_idle fullscreen
-	for_window [app_id="^.*"] inhibit_idle fullscreen
+# Inhibit idle when window is fullscreen
+for_window [class="^.*"] inhibit_idle fullscreen
+for_window [app_id="^.*"] inhibit_idle fullscreen
+
+# Inhibit idle for specific apps (video players, presentations, etc.)
+for_window [app_id="mpv"] inhibit_idle visible
+for_window [app_id="vlc"] inhibit_idle visible
+for_window [class="vlc"] inhibit_idle visible
+for_window [app_id="firefox"] inhibit_idle fullscreen
+for_window [class="firefox"] inhibit_idle fullscreen
+for_window [title=".*YouTube.*"] inhibit_idle visible
+for_window [title=".*Netflix.*"] inhibit_idle visible
+
+# Inhibit idle during screen sharing
+for_window [title=".*Sharing Indicator.*"] inhibit_idle visible
+for_window [title=".*is sharing.*"] inhibit_idle visible
+
+# ——————————————————————————————————————————————
+# Optional: Manual Screen Control
+# ——————————————————————————————————————————————
+# Turn off screen manually with Super+Shift+O
+bindsym --to-code Mod4+Shift+o exec 'swaymsg "output * dpms off"'
+
+# Turn on screen manually with Super+Shift+I  
+bindsym --to-code Mod4+Shift+i exec 'swaymsg "output * dpms on"'
+
+# ——————————————————————————————————————————————
+# Alternative: Without Screen Dimming
+# ——————————————————————————————————————————————
+# If you don't have 'light' installed or don't want dimming,
+# uncomment this and comment out the section above:
+#
+# exec swayidle -w \
+#   timeout 300 $lock_cmd \
+#   timeout 420 'swaymsg "output * dpms off"' \
+#   resume 'swaymsg "output * dpms on"' \
+#   before-sleep $lock_cmd
