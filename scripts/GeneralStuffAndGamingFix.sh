@@ -5,10 +5,15 @@
 # Installs Steam, Heroic, and configures Wayland scaling
 # =======================================================
 
-# Auto-elevate to sudo if not already root
-if [[ $EUID -ne 0 ]]; then
-    exec sudo "$0" "$@"
+if [ "$EUID" -ne 0 ]; then
+    warn "This script will make system-wide changes and requires administrator (root) privileges."
+    echo
+    read -p "Press Enter to continue and enter your sudo password... " _
+    sudo -k  # force password prompt
+    exec sudo bash "$0" "$@"   # re-run script as root, preserving args
 fi
+
+set -euo pipefail
 
 # Colors
 RED="\033[31m"
