@@ -91,7 +91,7 @@ success "Sway installed!"
 #==================#
 info "Installing Waybar, brightness, audio, clipboard, notifications..."
 apt install -y waybar upower brightnessctl pavucontrol cliphist \
-wl-clipboard libnotify-bin network-manager-applet autotiling
+wl-clipboard libnotify-bin network-manager-applet autotiling 
 success "Waybar and UI utilities installed!"
 
 #==================#
@@ -110,7 +110,8 @@ success "File managers installed!"
 # Media Packages
 #==================#
 info "Installing multimedia packages..."
-apt install -y ffmpeg mpv imv audacious mediainfo-gui flameshot blueman shotcut
+apt install -y ffmpeg mpv imv audacious mediainfo-gui flameshot blueman \
+shotcut audacity
 success "Media packages installed!"
 
 #==================#
