@@ -1,16 +1,16 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 38,
-    "spacing": 5,
-    "margin": "8 12 0 12",
+    "height": 36,
+    "spacing": 6,
+    "margin": "6 10 0 10",
     "exclusive": true,
 
     "modules-right": [
         "tray",
-        "temperature",
-        "memory",
         "cpu",
+        "memory",
+        "temperature",
         "network",
         "pulseaudio",
         "backlight",
@@ -34,15 +34,14 @@
         "clock#date"
     ],
 
-
     // === Right Modules - Optimized for laptop workflow ===
 
     "custom/power": {
         "format": "⏻",
-        "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 3 -theme-str 'window {width: 16%; height: 28%; x-offset: -12px; y-offset: 12px; border-radius: 14px;}'",
+        "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 3 -theme-str 'window {width: 16%; height: 28%; x-offset: -10px; y-offset: 10px; border-radius: 14px;}'",
         "on-click-middle": "pkill rofi",
         "on-click-right": "systemctl suspend",
-        "tooltip-format": "Power Menu\nRight-click: Suspend"
+        "tooltip-format": "Power Menu\nRight-click: Suspend\nMiddle-click: Close rofi"
     },
 
     "idle_inhibitor": {
@@ -53,7 +52,7 @@
         },
         "tooltip-format-activated": "Screen Lock: DISABLED\nScreen will stay awake",
         "tooltip-format-deactivated": "Screen Lock: ENABLED\nScreen will sleep when idle",
-        "on-click-right": "swaylock -f"
+        "on-click-right": "swaylock"
     },
 
     "custom/notification": {
@@ -104,33 +103,33 @@
             "locked": "󰬈",
             "unlocked": ""
         },
-        "tooltip-format": "{icon} CapsLock\n{icon} NumLock"
+        "tooltip-format": "CapsLock: {icon}\nNumLock: {icon}"
     },
 
     "battery": {
         "bat": "BAT1",
         "adapter": "AC",
-        "interval": 20,
+        "interval": 10,
         "states": {
             "full": 100,
             "good": 95,
             "warning": 30,
             "critical": 15
         },
-        "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% 󰂄",
-        "format-plugged": "{capacity}% 󰚥",
-        "format-full": "{capacity}% 󱟢",
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-full": "󱟢 {capacity}%",
         "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-        "tooltip-format": "{timeTo}\nCapacity: {capacity}%\nPower: {power}W\nHealth: {health}%\nCycles: {cycles}",
+        "tooltip-format": "{timeTo}\nCapacity: {capacity}%\nPower: {power}W\nHealth: {health}%",
         "on-click": "gnome-power-statistics",
         "max-length": 25
     },
 
     "backlight": {
-        "device": "intel_backlight",
+        "device": "amdgpu_bl0",
         "interval": 1,
-        "format": "{percent}% {icon}",
+        "format": "{icon} {percent}%",
         "format-icons": ["󰃞", "󰃟", "󰃠"],
         "on-scroll-up": "brightnessctl set +5%",
         "on-scroll-down": "brightnessctl set 5%-",
@@ -141,15 +140,15 @@
     },
 
     "network": {
-        "interval": 3,
+        "interval": 5,
         "format-wifi": "{icon}",
         "format-ethernet": "󰈀",
         "format-linked": "󰈁",
         "format-disconnected": "󰖪",
         "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-        "tooltip-format-wifi": "󰖨 {essid}\nSignal: {signalStrength}% ({signaldBm} dBm)\nFrequency: {frequency} MHz\nIP: {ipaddr}/{cidr}\n\n󰕒 Down: {bandwidthDownBytes}\n󰕑 Up: {bandwidthUpBytes}",
-        "tooltip-format-ethernet": "󰈀 Wired Connection\nIP: {ipaddr}/{cidr}\nGateway: {gwaddr}\n\n󰕒 Down: {bandwidthDownBytes}\n󰕑 Up: {bandwidthUpBytes}",
-        "tooltip-format-disconnected": "󰖪 Disconnected\nClick to open network settings",
+        "tooltip-format-wifi": "󰖨 {essid}\nSignal: {signalStrength}%\nIP: {ipaddr}\n\n󰕒 {bandwidthDownBytes} 󰕑 {bandwidthUpBytes}",
+        "tooltip-format-ethernet": "󰈀 Wired\nIP: {ipaddr}\n\n󰕒 {bandwidthDownBytes} 󰕑 {bandwidthUpBytes}",
+        "tooltip-format-disconnected": "󰖪 Disconnected\nClick to connect",
         "on-click": "nm-connection-editor",
         "on-click-right": "nmtui",
         "max-length": 30
@@ -173,66 +172,64 @@
         "on-click": "pavucontrol",
         "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-click-right": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 50%",
-        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-        "tooltip-format": "{icon} {desc}\nVolume: {volume}%\n\nClick: Audio settings\nMiddle: Mute toggle\nRight: Set 50%\nScroll: Adjust",
+        "tooltip-format": "{icon} {desc}\nVolume: {volume}%\n\nClick: Audio settings\nMiddle: Mute\nRight: 50%\nScroll: Adjust",
         "max-volume": 150,
         "ignored-sinks": ["Easy Effects Sink"]
     },
 
     "cpu": {
-        "interval": 2,
+        "interval": 3,
         "format": "󰻠 {usage}%",
         "format-alt": "󰻠 {load}",
         "states": {
             "warning": 70,
             "critical": 90
         },
-        "tooltip-format": "CPU Usage: {usage}%\nLoad Average: {load}\n\nClick to open htop",
-        "on-click": "alacritty -e htop",
-        "on-click-right": "alacritty -e btop"
+        "tooltip-format": "CPU Usage: {usage}%\nLoad Average: {load}\n\nClick: System monitor",
+        "on-click": "alacritty -e btop",
+        "on-click-right": "gnome-system-monitor"
     },
     
     "memory": {
-        "interval": 3,
+        "interval": 5,
         "format": "󰍛 {percentage}%",
         "format-alt": "󰍛 {used:0.1f}G",
         "states": {
             "warning": 70,
             "critical": 90
         },
-        "tooltip-format": "RAM Usage: {percentage}%\nUsed: {used:0.1f}G / {total:0.1f}G\nAvailable: {avail:0.1f}G\n\nSwap: {swapPercentage}%\nUsed: {swapUsed:0.1f}G / {swapTotal:0.1f}G\n\nClick to open htop",
-        "on-click": "alacritty -e htop",
-        "on-click-right": "alacritty -e btop"
+        "tooltip-format": "RAM: {percentage}%\nUsed: {used:0.1f}G / {total:0.1f}G\nAvailable: {avail:0.1f}G\n\nSwap: {swapPercentage}%\n\nClick: Disk usage",
+        "on-click": "alacritty -e ncdu /",
+        "on-click-right": "baobab"
     },
     
     "temperature": {
         "thermal-zone": 2,
-        "hwmon-path": "/sys/class/hwmon/hwmon1/temp1_input",
-        "interval": 3,
-        "critical-threshold": 75,
+        "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "interval": 5,
+        "critical-threshold": 80,
         "format": "{icon} {temperatureC}°C",
         "format-critical": "{icon} {temperatureC}°C",
         "format-icons": ["󱃃", "󰔏", "󱃂"],
-        "tooltip-format": "CPU Temperature: {temperatureC}°C\n{temperatureF}°F",
+        "tooltip-format": "CPU Temperature: {temperatureC}°C ({temperatureF}°F)\n\nClick: View sensors",
         "on-click": "alacritty -e watch -n 1 sensors"
     },
     
     "tray": {
         "icon-theme": "Papirus-Dark",
-        "icon-size": 16,
-        "spacing": 8,
+        "icon-size": 18,
+        "spacing": 6,
         "show-passive-items": true,
         "reverse-direction": false
     },
 
-
     // === Center Module - Date display ===
 
     "clock#date": {
-        "interval": 10,
-        "timezone": "Africa/Cairo",
-        "format": "󰸗  {:%a, %b %d}",
+        "interval": 60,
+        "format": "󰸗  {:%a %d %b}",
         "format-alt": "󰸗  {:%Y-%m-%d}",
         "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
         "calendar": {
@@ -242,10 +239,10 @@
             "on-scroll": 1,
             "format": {
                 "months": "<span color='#ffd4a3'><b>{}</b></span>",
-                "days": "<span color='#e8d4b8'>{}</span>",
-                "weeks": "<span color='#a8c5d5'><b>W{}</b></span>",
-                "weekdays": "<span color='#ffb347'><b>{}</b></span>",
-                "today": "<span color='#ff6b6b'><b><u>{}</u></b></span>"
+                "days": "<span color='#8a9fb5'>{}</span>",
+                "weeks": "<span color='#ff6b85'><b>W{}</b></span>",
+                "weekdays": "<span color='#ffd4a3'><b>{}</b></span>",
+                "today": "<span color='#ff6b85'><b><u>{}</u></b></span>"
             }
         },
         "actions": {
@@ -254,7 +251,6 @@
             "on-scroll-down": "shift_down"
         }
     },
-    
     
     // === Left Modules ===
 
@@ -268,52 +264,29 @@
         "format": "{}",
         "separate-outputs": true,
         "on-click-middle": "swaymsg kill",
-        "max-length": 60,
+        "max-length": 50,
         "icon": true,
-        "icon-size": 16,
+        "icon-size": 18,
         "all-outputs": false,
         "tooltip": true,
         "rewrite": {
-            "(.*) — Mozilla Firefox": "󰈹  $1",
-            "(.*) - Firefox": "󰈹  $1",
-            "(.*) — Firefox Developer Edition": "󰈹  $1",
-            "(.*) - Chromium": "  $1",
-            "(.*) - Google Chrome": "  $1",
-            "(.*) - VSCodium": "  $1",
-            "(.*) - Visual Studio Code": "  $1",
-            "(.*) - Code": "  $1",
-            "(.*) - Obsidian (.*)": "󱓧  $1",
-            "(.*) - Notion": "󰈺  $1",
-            "(.*) - Logseq": "󰛔  $1",
-            "(.*) - mpv": "  $1",
-            "(.*) - VLC media player": "󰕼  $1",
-            "Spotify": "  Spotify",
-            "Spotify Premium": "  Spotify",
-            "Alacritty": "  Terminal",
-            "foot": "  Terminal",
-            "kitty": "  Terminal",
-            "wezterm": "  Terminal",
-            "(.*) — COSMIC Terminal": "  $1",
-            "(.*) — Konsole": "  $1",
-            "(.*) - zsh": "  [$1]",
-            "(.*) - bash": "  [$1]",
-            "(.*) - fish": "  [$1]",
-            "Thunar": "  Files",
-            "Nautilus": "  Files",
-            "Dolphin": "  Files",
-            "nemo": "  Files",
-            "Discord": "󰙯  Discord",
-            "Slack": "󰒱  Slack",
-            "Telegram": "  Telegram",
-            "Signal": "  Signal",
-            "Thunderbird": "󰇮  Thunderbird",
-            "LibreOffice Writer": "󰈙  Writer",
-            "LibreOffice Calc": "󱎏  Calc",
-            "GIMP": "  GIMP",
-            "Inkscape": "  Inkscape",
-            "Blender": "󰂫  Blender",
-            "Steam": "  Steam",
-            "": "  Desktop"
+            "(.*) — Mozilla Firefox": "$1",
+            "(.*) - Vivaldi": "$1",
+            "(.*) - Chromium": " $1",
+            "(.*) - VSCodium": " $1",
+            "(.*) - Code": " $1",
+            "(.*) - mpv": " $1",
+            "(.*) - VLC": "$1",
+            "Spotify": " Spotify",
+            "Alacritty": " Terminal",
+            "foot": " Terminal",
+            "(.*) - zsh": " $1",
+            "Thunar": " Files",
+            "Discord": "Discord",
+            "Telegram": " Telegram",
+            "Thunderbird": "Mail",
+            "GIMP": " GIMP",
+            "": " Desktop"
         }
     },
 
@@ -350,9 +323,9 @@
 
     "custom/apps": {
         "format": "󰀻",
-        "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 38%; height: 50%; x-offset: 12px; y-offset: 12px; border-radius: 14px;}'",
+        "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 35%; height: 50%; x-offset: 10px; y-offset: 10px; border-radius: 14px;}'",
         "on-click-middle": "pkill rofi",
-        "on-click-right": "rofi -show run -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 28%; height: 35%; x-offset: 12px; y-offset: 12px; border-radius: 14px;}'",
+        "on-click-right": "rofi -show run -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 28%; height: 35%; x-offset: 10px; y-offset: 10px; border-radius: 14px;}'",
         "tooltip-format": "Applications\nClick: App launcher\nRight-click: Run command\nMiddle-click: Close rofi"
     }
 }
