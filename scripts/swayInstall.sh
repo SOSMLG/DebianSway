@@ -70,15 +70,10 @@ apt install -y \
 pip3 install --upgrade pip setuptools wheel -q
 
 # Common data science & ML libraries
-pip3 install -q \
+pip3 install --break-system-packages -q \
     numpy \
     scipy \
-    matplotlib \
-    pandas \
-    scikit-learn \
-    requests \
-    pillow \
-    jupyter-core
+    matplotlib 
 
 success "Python and scientific libraries installed!"
 
