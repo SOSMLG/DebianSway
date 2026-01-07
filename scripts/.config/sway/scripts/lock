@@ -6,7 +6,7 @@
 swaymsg input '*' xkb_switch_layout 0
 
 # lock (use exec so the script doesn't fork unnecessarily)
-exec swaylock -f -i "$HOME/.config/sway/wallpaper/sound.png" \
+exec swaylock -f -i "$HOME/.config/sway/wallpaper/wallpaper.jpg" \
   --indicator-radius 80 \
   --indicator-thickness 10 \
   --ring-color ffd75fff
