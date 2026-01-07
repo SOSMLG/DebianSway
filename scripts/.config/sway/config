@@ -85,7 +85,7 @@ include /etc/sway/config-vars.d/*
 # Basics:
 #
     # Start a terminal
-    bindsym $mod+enter exec $term
+    bindsym $mod+Return exec $term
 
     # Start a file manager
     bindsym $mod+f exec $fileManager
@@ -102,8 +102,6 @@ include /etc/sway/config-vars.d/*
     # Start App Launcher
     #bindsym $mod+m exec $dmenu
 
-    # Start Command launcher
-    #bindsym $mod+Shift+r exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -313,7 +311,7 @@ bindsym $mod+Shift+s mode "resize"
 # You can adjust --config and --style paths if you
 # keep them somewhere other than ~/.config/waybar/.
 #
-exec_always sh -c 'pkill -x waybar; waybar'
+exec_always sh -c 'pkill -x waybar; waybar &'
 
 #    --config ~/.config/waybar/config \
 #    --style  ~/.config/waybar/style.css
