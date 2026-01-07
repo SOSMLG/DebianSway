@@ -1,41 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
-<action>
-  <icon>custom-folder-move</icon>
-  <name>Move into new folder</name>
-  <submenu></submenu>
-  <unique-id>1733631639349063-1</unique-id>
-  <command>NEW_FOLDER=$(/usr/bin/zenity --entry --title &apos;Move into new folder&apos; --text &apos;Please enter a name for the new folder&apos;) &amp;&amp; mkdir &quot;$NEW_FOLDER&quot; &amp;&amp; mv %F &quot;$NEW_FOLDER&quot;</command>
-  <description>Select any number of file/folders. A dialog will popup in which you can write the name of a new folder to create. Selected Files will be moved there.</description>
-  <range>*</range>
-  <patterns>*</patterns>
-  <directories/>
-  <audio-files/>
-  <image-files/>
-  <other-files/>
-  <text-files/>
-  <video-files/>
-</action>
-<action>
-  <icon>alacritty</icon>
-  <name>Open Alacritty Here</name>
-  <submenu></submenu>
-  <unique-id>1733636590577911-3</unique-id>
-  <command>alacritty --working-directory=%f</command>
-  <description>Open Directory in Alacritty</description>
-  <range>*</range>
-  <patterns>*</patterns>
-  <directories/>
-</action>
-<action>
-  <icon>foot</icon>
-  <name>Open Foot Here</name>
-  <submenu></submenu>
-  <unique-id>1733636656467379-4</unique-id>
-  <command>foot --working-directory %f</command>
-  <description>Open Directory in Foot</description>
-  <range>*</range>
-  <patterns>*</patterns>
-  <directories/>
-</action>
+  <!-- Move files/folders into a new folder -->
+  <action>
+    <icon>custom-folder-move</icon>
+    <name>Move into new folder</name>
+    <submenu></submenu>
+    <unique-id>1733631639349063-1</unique-id>
+    <command>NEW_FOLDER=$(/usr/bin/zenity --entry --title 'Move into new folder' --text 'Enter folder name' --width 400) &amp;&amp; [ -n "$NEW_FOLDER" ] &amp;&amp; mkdir -p "$NEW_FOLDER" &amp;&amp; mv %F "$NEW_FOLDER" &amp;&amp; notify-send -u low "Files moved to $NEW_FOLDER"</command>
+    <description>Select files/folders and move them into a new folder</description>
+    <range>*</range>
+    <patterns>*</patterns>
+    <directories/>
+    <audio-files/>
+    <image-files/>
+    <other-files/>
+    <text-files/>
+    <video-files/>
+  </action>
+
+  <!-- Open Alacritty in current directory -->
+  <action>
+    <icon>alacritty</icon>
+    <name>Open Alacritty Here</name>
+    <submenu></submenu>
+    <unique-id>1733636590577911-3</unique-id>
+    <command>alacritty --working-directory=%f &amp;</command>
+    <description>Open terminal in current directory</description>
+    <range>*</range>
+    <patterns>*</patterns>
+    <directories/>
+  </action>
+
+  <!-- Open Alacritty as Root -->
+  <action>
+    <icon>alacritty</icon>
+    <name>Open Alacritty as Root</name>
+    <submenu></submenu>
+    <unique-id>1733636590577911-4</unique-id>
+    <command>sudo alacritty --working-directory=%f &amp;</command>
+    <description>Open terminal as root in current directory</description>
+    <range>*</range>
+    <patterns>*</patterns>
+    <directories/>
+  </action>
+
+  <!-- Copy path to clipboard -->
+  <action>
+    <icon>edit-copy</icon>
+    <name>Copy Path to Clipboard</name>
+    <submenu></submenu>
+    <unique-id>1733636590577911-5</unique-id>
+    <command>echo -n %f | xclip -selection clipboard &amp;&amp; notify-send "Path copied" "%f"</command>
+    <description>Copy full path of selected file/folder</description>
+    <range>s</range>
+    <patterns>*</patterns>
+    <directories/>
+    <audio-files/>
+    <image-files/>
+    <other-files/>
+    <text-files/>
+    <video-files/>
+  </action>
+
+  <!-- Create symlink -->
+  <action>
+    <icon>insert-link</icon>
+    <name>Create Symlink Here</name>
+    <submenu></submenu>
+    <unique-id>1733636590577911-6</unique-id>
+    <command>ln -s %f "$(basename %f)_link" &amp;&amp; notify-send "Symlink created" "$(basename %f)_link"</command>
+    <description>Create symbolic link of selected file/folder</description>
+    <range>s</range>
+    <patterns>*</patterns>
+    <directories/>
+    <audio-files/>
+    <image-files/>
+    <other-files/>
+    <text-files/>
+    <video-files/>
+  </action>
+
+  <!-- Compress files -->
+  <action>
+    <icon>file-roller</icon>
+    <name>Compress Files</name>
+    <submenu></submenu>
+    <unique-id>1733636590577911-7</unique-id>
+    <command>ARCHIVE=$(/usr/bin/zenity --entry --title 'Archive name' --text 'Enter archive name (without extension)' --width 400) &amp;&amp; [ -n "$ARCHIVE" ] &amp;&amp; tar -czf "${ARCHIVE}.tar.gz" %F &amp;&amp; notify-send "Archive created" "${ARCHIVE}.tar.gz"</command>
+    <description>Compress selected files into tar.gz archive</description>
+    <range>m</range>
+    <patterns>*</patterns>
+    <directories/>
+    <audio-files/>
+    <image-files/>
+    <other-files/>
+    <text-files/>
+    <video-files/>
+  </action>
+
+  <!-- Set file permissions -->
+  <action>
+    <icon>document-properties</icon>
+    <name>Set Permissions (755)</name>
+    <submenu></submenu>
+    <unique-id>1733636590577911-8</unique-id>
+    <command>chmod 755 %F &amp;&amp; notify-send "Permissions changed" "Chmod 755 applied"</command>
+    <description>Make selected files executable (chmod 755)</description>
+    <range>m</range>
+    <patterns>*</patterns>
+    <directories/>
+    <audio-files/>
+    <image-files/>
+    <other-files/>
+    <text-files/>
+    <video-files/>
+  </action>
+
+  <!-- Search with ripgrep in directory -->
+  <action>
+    <icon>edit-find</icon>
+    <name>Search Files (ripgrep)</name>
+    <submenu></submenu>
+    <unique-id>1733636590577911-9</unique-id>
+    <command>SEARCH=$(/usr/bin/zenity --entry --title 'Search in directory' --text 'Enter search pattern' --width 400) &amp;&amp; [ -n "$SEARCH" ] &amp;&amp; alacritty --working-directory=%f -e sh -c "rg '$SEARCH' &amp;&amp; read -p 'Press Enter to exit...'"</command>
+    <description>Search files recursively using ripgrep</description>
+    <range>*</range>
+    <patterns>*</patterns>
+    <directories/>
+  </action>
+
 </actions>
