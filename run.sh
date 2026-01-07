@@ -29,7 +29,7 @@ SCRIPTS=(
     "SweetMars.sh|Install SweetMars|Y"
     "bibataCursor.sh|Install Bibata Cursors|Y"
     "addUserToGroups.sh|Add your user to the needed groups|Y"
-    "generalndgaming.sh|Peak Gaming And Coding Fix|Y"
+    "GeneralStuffAndGamingFix.sh|Peak Gaming And Coding Fix|Y"
 )
 
 
