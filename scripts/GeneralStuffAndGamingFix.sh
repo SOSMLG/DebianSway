@@ -148,6 +148,33 @@ sysctl -w fs.inotify.max_user_watches=524288 > /dev/null 2>&1 || true
 echo "vm.swappiness=10" >> /etc/sysctl.conf 2>/dev/null || true
 log_ok "Optimizations applied"
 
+
+# Header
+echo -e "${BLUE}===== Python Symlink Fix =====${CYAN}\n"
+
+# Check if already exists
+if [[ -L /usr/bin/python ]]; then
+    warn "Symlink /usr/bin/python already exists"
+    readlink /usr/bin/python
+else
+    info "Creating /usr/bin/python symlink..."
+    sudo ln -s /usr/bin/python3 /usr/bin/python
+    ok "Symlink created: /usr/bin/python → /usr/bin/python3"
+fi
+
+# Verify
+info "Verifying python command..."
+python --version
+ok "Python symlink working!"
+
+echo ""
+echo -e "${YELLOW}Fixed:${CYAN}"
+echo "  • Geany scripts using 'python' will now work"
+echo "  • Any script calling 'python' will use python3"
+echo "  • No more 'python: not found' errors"
+echo ""
+
+
 #!/usr/bin/env bash
 # =======================================================
 # Python Symlink Fix for Geany & Script Runners
