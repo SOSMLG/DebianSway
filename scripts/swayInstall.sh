@@ -46,6 +46,43 @@ apt install -y zram-tools curl git wget
 success "Basic tools installed!"
 
 #==================#
+# Python & Dev Tools
+#==================#
+info "Installing Python and development essentials..."
+
+# Core Python packages
+apt install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    build-essential \
+    git
+
+# Python scientific stack
+apt install -y \
+    python3-numpy \
+    python3-scipy \
+    python3-matplotlib \
+    python3-pandas
+
+# Additional essential Python packages via pip
+pip3 install --upgrade pip setuptools wheel -q
+
+# Common data science & ML libraries
+pip3 install -q \
+    numpy \
+    scipy \
+    matplotlib \
+    pandas \
+    scikit-learn \
+    requests \
+    pillow \
+    jupyter-core
+
+success "Python and scientific libraries installed!"
+
+#==================#
 # Sway & WLR
 #==================#
 info "Installing Sway and related packages..."
@@ -78,7 +115,7 @@ success "File managers installed!"
 # Media Packages
 #==================#
 info "Installing multimedia packages..."
-apt install -y ffmpeg mpv imv audacious mediainfo-gui flameshot blueman
+apt install -y ffmpeg mpv imv audacious mediainfo-gui flameshot blueman shotcut
 success "Media packages installed!"
 
 #==================#
