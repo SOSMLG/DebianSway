@@ -7,20 +7,20 @@ KVANTUMDIR="$HOME/.config/Kvantum"
 mkdir -p "$THEMEDIR"
 mkdir -p "$KVANTUMDIR"
 
-# Sweet-Mars (red) theme
-GIT_REPO="https://github.com/EliverLara/Sweet.git"
-THEME_NAME="Sweet-Ambar-v40"
+# Download Sweet-Ambar-v40 theme
+echo "Downloading Sweet-Ambar-v40 theme..."
+wget https://github.com/EliverLara/Sweet/releases/download/v6.0/Sweet-Ambar-v40.tar.xz -P /tmp/
 
-# Clone GTK theme
-echo "Installing Sweet-Mars (red) GTK theme to $THEMEDIR..."
-git clone "$GIT_REPO" "$THEMEDIR/$THEME_NAME"
+# Extract GTK theme
+echo "Installing Sweet-Ambar-v40 GTK theme to $THEMEDIR..."
+tar -xf /tmp/Sweet-Ambar-v40.tar.xz -C "$THEMEDIR"
 
-# Clone Kvantum theme for Qt apps
-echo "Installing Sweet-Mars (red) Kvantum theme to $KVANTUMDIR..."
-git clone "$GIT_REPO" "$KVANTUMDIR/$THEME_NAME"
+# Extract Kvantum theme
+echo "Installing Sweet-Ambar-v40 Kvantum theme to $KVANTUMDIR..."
+tar -xf /tmp/Sweet-Ambar-v40.tar.xz -C "$KVANTUMDIR"
 
 echo "Done!"
-echo "GTK theme installed to: $THEMEDIR/$THEME_NAME"
-echo "Kvantum theme installed to: $KVANTUMDIR/$THEME_NAME"
+echo "GTK theme installed to: $THEMEDIR/Sweet-Ambar-v40"
+echo "Kvantum theme installed to: $KVANTUMDIR/Sweet-Ambar-v40"
 echo "Apply GTK theme via GNOME Tweaks or lxappearance."
 echo "Apply Kvantum theme via Kvantum Manager."
