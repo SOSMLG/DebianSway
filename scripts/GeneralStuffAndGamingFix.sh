@@ -190,7 +190,7 @@ fi
 
 # Summary
 echo ""
-echo -e "${BLUE}===== Setup Complete =====${CYAN}"
+echo -e "${BLUE}===== General Fix Complete Complete =====${CYAN}"
 echo -e "${YELLOW}✓ Installed:${CYAN} Steam, Heroic, Vulkan, GameMode"
 echo -e "${YELLOW}✓ Configured:${CYAN} Wayland scaling, X11 compat, Launchers, Python symlink"
 echo -e "${YELLOW}✓ Optimized:${CYAN} Swappiness, File watchers, SSD TRIM (weekly)"
