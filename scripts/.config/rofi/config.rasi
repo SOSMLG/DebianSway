@@ -1,5 +1,213 @@
-@theme "~/.config/rofi/darksunset.rasi"
 configuration {
-    font: "JetBrainsMono Nerd Font Propo 16";
+    modi: "drun,run,window,ssh";
+    font: "JetBrainsMono Nerd Font Propo 13";
     show-icons: true;
+    icon-theme: "Papirus-Dark";
+    display-drun: "󰀻  Applications";
+    display-run: "  Command";
+    display-window: "  Windows";
+    display-ssh: "  SSH";
+    drun-display-format: "{name}";
+    window-format: "{w} · {c} · {t}";
+    terminal: "alacritty";
+    disable-history: false;
+    sidebar-mode: true;
+    hover-select: true;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+    scroll-method: 0;
+    case-sensitive: false;
+    cycle: true;
+    matching: "fuzzy";
+}
+
+* {
+    bg0: #0d1117;
+    bg1: #1a1820;
+    bg2: #2a2530;
+    bg3: #3a3540;
+    fg0: #e0d5d0;
+    fg1: #c8b8b0;
+    fg2: #988880;
+    red: #ff6f3c;
+    green: #4db6ac;
+    yellow: #ffb74d;
+    blue: #4fc3f7;
+    magenta: #d946a6;
+    cyan: #26a69a;
+    
+    background-color: @bg0;
+    border-color: @red;
+    text-color: @fg0;
+    
+    spacing: 0;
+    width: 650px;
+}
+
+window {
+    background-color: @bg0;
+    border: 2px solid;
+    border-color: @red;
+    border-radius: 0px;
+    padding: 0;
+    transparency: "real";
+}
+
+mainbox {
+    background-color: transparent;
+    children: [ inputbar, listview, mode-switcher ];
+    spacing: 0px;
+    padding: 0;
+}
+
+inputbar {
+    background-color: @bg1;
+    text-color: @fg0;
+    padding: 14px 18px;
+    spacing: 10px;
+    children: [ prompt, entry ];
+    border: 0px 0px 2px 0px solid;
+    border-color: @red;
+}
+
+prompt {
+    background-color: transparent;
+    text-color: @red;
+    font: "JetBrainsMono Nerd Font Bold 13";
+}
+
+entry {
+    background-color: transparent;
+    text-color: @fg0;
+    placeholder: "Type to search...";
+    placeholder-color: @fg2;
+    cursor: text;
+}
+
+message {
+    background-color: @bg1;
+    border: 2px 0px 0px 0px solid;
+    border-color: @red;
+    padding: 10px;
+}
+
+textbox {
+    background-color: transparent;
+    text-color: @fg1;
+    padding: 6px 10px;
+}
+
+listview {
+    background-color: transparent;
+    columns: 1;
+    lines: 10;
+    spacing: 2px;
+    padding: 10px;
+    scrollbar: true;
+    border: 0;
+    fixed-height: false;
+    dynamic: true;
+}
+
+scrollbar {
+    background-color: @bg1;
+    handle-color: @fg2;
+    handle-width: 6px;
+    border: 0;
+    padding: 2px;
+    margin: 0px 0px 0px 6px;
+    border-radius: 0px;
+}
+
+element {
+    background-color: transparent;
+    text-color: @fg1;
+    padding: 10px 14px;
+    spacing: 10px;
+    border-radius: 0px;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: @fg1;
+}
+
+element alternate.normal {
+    background-color: @bg1;
+    text-color: @fg1;
+}
+
+element selected.normal {
+    background-color: @bg2;
+    text-color: @red;
+    border: 0px 0px 0px 4px solid;
+    border-color: @red;
+}
+
+element normal.active {
+    background-color: transparent;
+    text-color: @cyan;
+}
+
+element alternate.active {
+    background-color: @bg1;
+    text-color: @cyan;
+}
+
+element selected.active {
+    background-color: @bg2;
+    text-color: @green;
+    border: 0px 0px 0px 4px solid;
+    border-color: @green;
+}
+
+element normal.urgent {
+    background-color: transparent;
+    text-color: @yellow;
+}
+
+element alternate.urgent {
+    background-color: @bg1;
+    text-color: @yellow;
+}
+
+element selected.urgent {
+    background-color: @bg2;
+    text-color: @yellow;
+    border: 0px 0px 0px 4px solid;
+    border-color: @yellow;
+}
+
+element-icon {
+    background-color: transparent;
+    size: 32px;
+    padding: 0px 10px 0px 0px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+mode-switcher {
+    background-color: @bg1;
+    border: 2px 0px 0px 0px solid;
+    border-color: @red;
+    padding: 10px;
+    spacing: 10px;
+}
+
+button {
+    background-color: @bg2;
+    text-color: @fg1;
+    padding: 10px 14px;
+    border-radius: 0px;
+}
+
+button selected {
+    background-color: @bg3;
+    text-color: @red;
+    border: 0px 0px 3px 0px solid;
+    border-color: @red;
 }
