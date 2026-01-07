@@ -3,9 +3,12 @@
 # Debian 13 Gaming & Wayland Setup (Minimal)
 # -------------------------------------------------------
 # Installs Steam, Heroic, and configures Wayland scaling
-# Also creates Python symlink for Geany compatibility
 # =======================================================
-set -e
+
+# Auto-elevate to sudo if not already root
+if [[ $EUID -ne 0 ]]; then
+    exec sudo "$0" "$@"
+fi
 
 # Colors
 RED="\033[31m"
@@ -20,79 +23,82 @@ log_ok() { echo -e "${GREEN}[✔]${CYAN} $1"; }
 log_warn() { echo -e "${YELLOW}[!]${CYAN} $1"; }
 log_err() { echo -e "${RED}[✗]${CYAN} $1"; }
 
-check_root() {
-    [[ $EUID -ne 0 ]] && { log_err "Run with sudo"; exit 1; }
-}
-
-safe_install() {
-    apt install -y "$1" 2>/dev/null || log_warn "Skipped: $1"
-}
-
 # Header
 echo -e "${BLUE}===== Debian 13 Gaming & General Setup =====${CYAN}\n"
-check_root
+
+log_info "Starting setup..."
 
 # Update
 log_info "Updating system..."
-apt update && apt upgrade -y
+apt update > /dev/null 2>&1
+apt upgrade -y > /dev/null 2>&1
 log_ok "System updated"
 
 # 32-bit support
 log_info "Enabling 32-bit support..."
-dpkg --add-architecture i386 2>/dev/null || true
-apt update
+dpkg --add-architecture i386 > /dev/null 2>&1
+apt update > /dev/null 2>&1
 log_ok "32-bit enabled"
 
-# Core packages
-log_info "Installing dependencies..."
-PKGS=(
+# Core packages - install individually for better error handling
+log_info "Installing gaming dependencies..."
+
+PACKAGES=(
     "libvulkan1" "libvulkan1:i386"
     "mesa-vulkan-drivers" "mesa-vulkan-drivers:i386"
     "libgl1-mesa-dri" "libgl1-mesa-dri:i386"
     "xwayland" "wayland-protocols"
     "vulkan-tools" "mesa-utils"
     "gamemode" "mangohud"
-    "winetricks" "protontricks"
+    "winetricks"
 )
 
-for pkg in "${PKGS[@]}"; do
-    safe_install "$pkg"
+for pkg in "${PACKAGES[@]}"; do
+    apt install -y "$pkg" > /dev/null 2>&1 || log_warn "Skipped: $pkg"
 done
-log_ok "Dependencies installed"
+log_ok "Gaming dependencies installed"
 
-# Steam (direct .deb from Valve)
+# Steam
 log_info "Installing Steam..."
-if ! command -v steam &>/dev/null; then
+if command -v steam &>/dev/null; then
+    log_warn "Steam already installed"
+else
     cd /tmp
     curl -L -o steam.deb https://repo.steampowered.com/steam/archive/precise/steam_latest.deb 2>/dev/null
-    apt install -y ./steam.deb 2>/dev/null || log_warn "Steam install failed, check dependencies"
-    rm -f steam.deb
-    log_ok "Steam installed"
-else
-    log_warn "Steam already installed"
+    if [[ -f steam.deb ]]; then
+        apt install -y ./steam.deb > /dev/null 2>&1 || log_warn "Steam install had issues"
+        rm -f steam.deb
+        log_ok "Steam installed"
+    else
+        log_warn "Could not download Steam"
+    fi
 fi
 
-# Heroic Launcher
-log_info "Installing Heroic..."
+# Heroic
+log_info "Installing Heroic Launcher..."
 HEROIC_URL=$(curl -s https://api.github.com/repos/Heroic-Games-Launcher/HeroicGamesLauncher/releases/latest 2>/dev/null | grep "\.deb" | grep "browser_download_url" | cut -d'"' -f4 | head -1)
-
 if [[ -n "$HEROIC_URL" ]]; then
     cd /tmp
-    curl -L -o heroic.deb "$HEROIC_URL" 2>/dev/null && apt install -y ./heroic.deb && rm -f heroic.deb
-    log_ok "Heroic installed"
+    curl -L -o heroic.deb "$HEROIC_URL" 2>/dev/null
+    if [[ -f heroic.deb ]]; then
+        apt install -y ./heroic.deb > /dev/null 2>&1
+        rm -f heroic.deb
+        log_ok "Heroic installed"
+    else
+        log_warn "Could not download Heroic"
+    fi
 else
-    log_warn "Could not fetch Heroic, install manually: https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher"
+    log_warn "Could not fetch Heroic URL"
 fi
 
 # User setup
 SUDO_USER="${SUDO_USER:-$(whoami)}"
 USER_HOME=$(eval echo ~$SUDO_USER)
-
 log_info "Configuring for user: $SUDO_USER"
 
 # Environment variables
 ENV_FILE="$USER_HOME/.profile"
-if ! grep -q "Wayland Gaming" "$ENV_FILE"; then
+if ! grep -q "Wayland Gaming" "$ENV_FILE" 2>/dev/null; then
     cat >> "$ENV_FILE" << 'EOF'
 
 # Wayland Gaming Optimization
@@ -106,7 +112,7 @@ fi
 
 # Aliases
 BASHRC_FILE="$USER_HOME/.bashrc"
-if ! grep -q "steam-run" "$BASHRC_FILE"; then
+if ! grep -q "steam-run" "$BASHRC_FILE" 2>/dev/null; then
     cat >> "$BASHRC_FILE" << 'EOF'
 
 alias steam-run='gamemoderun'
@@ -137,66 +143,4 @@ Type=Application
 Categories=Game;
 EOF
 
-chown -R "$SUDO_USER:$SUDO_USER" "$USER_HOME/.local/share/applications"
-chown "$SUDO_USER:$SUDO_USER" "$USER_HOME/.profile" "$USER_HOME/.bashrc"
-
-log_ok "Launchers created"
-
-# System optimizations
-log_info "Optimizing system..."
-sysctl -w vm.swappiness=10 > /dev/null 2>&1 || true
-sysctl -w fs.inotify.max_user_watches=524288 > /dev/null 2>&1 || true
-echo "vm.swappiness=10" >> /etc/sysctl.conf 2>/dev/null || true
-log_ok "Optimizations applied"
-
-# ============== SSD TRIM OPTIMIZATION ==============
-log_info "Setting up SSD TRIM optimization..."
-
-# Enable fstrim.timer for weekly SSD trim
-if systemctl is-enabled fstrim.timer &>/dev/null; then
-    log_warn "fstrim.timer already enabled"
-else
-    systemctl enable fstrim.timer
-    systemctl start fstrim.timer
-    log_ok "fstrim.timer enabled (weekly SSD trim)"
-fi
-
-# Check if disk supports TRIM
-if lsblk -d -o name,disc-gran | grep -q "0B"; then
-    log_warn "SSD TRIM may not be supported on this drive"
-else
-    log_ok "SSD TRIM support detected"
-fi
-
-# ============== PYTHON SYMLINK FIX ==============
-log_info "Setting up Python symlink for Geany..."
-
-# Check if symlink already exists
-if [[ -L /usr/bin/python ]]; then
-    log_warn "Python symlink already exists"
-elif [[ ! -e /usr/bin/python ]]; then
-    ln -s /usr/bin/python3 /usr/bin/python
-    log_ok "Python symlink created: /usr/bin/python → /usr/bin/python3"
-else
-    log_warn "Python file exists but is not a symlink, skipping"
-fi
-
-# Verify
-if command -v python &>/dev/null; then
-    log_ok "Python symlink verified: $(python --version)"
-else
-    log_warn "Python symlink verification failed"
-fi
-
-# Summary
-echo ""
-echo -e "${BLUE}===== General Fix And Gaming Complete Complete =====${CYAN}"
-echo -e "${YELLOW}✓ Installed:${CYAN} Steam, Heroic, Vulkan, GameMode"
-echo -e "${YELLOW}✓ Configured:${CYAN} Wayland scaling, X11 compat, Launchers, Python symlink"
-echo -e "${YELLOW}✓ Optimized:${CYAN} Swappiness, File watchers, SSD TRIM (weekly)"
-echo ""
-echo -e "${YELLOW}Next:${CYAN} Log out & back in, then run Steam/Heroic"
-echo -e "${YELLOW}Aliases:${CYAN} steam-run, steam-fps, check-gpu"
-echo -e "${YELLOW}Python:${CYAN} Geany can now use 'python' directly"
-echo -e "${YELLOW}SSD:${CYAN} Automatic weekly TRIM enabled via fstrim.timer"
-echo ""
+chown -R "$SUDO_USER:$SUDO_
