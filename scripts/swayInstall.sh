@@ -91,7 +91,7 @@ success "Sway installed!"
 #==================#
 info "Installing Waybar, brightness, audio, clipboard, notifications..."
 apt install -y waybar upower brightnessctl pavucontrol cliphist \
-wl-clipboard libnotify-bin network-manager-applet
+wl-clipboard libnotify-bin network-manager-applet autotiling
 success "Waybar and UI utilities installed!"
 
 #==================#
