@@ -11,8 +11,6 @@ fastfetch
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
-OSH_THEME="ht"
-
 # If you set OSH_THEME to "random", you can ignore themes you don't like.
 # OMB_THEME_RANDOM_IGNORED=("powerbash10k" "wanelo")
 # You can also specify the list from which a theme is randomly selected:
@@ -113,7 +111,6 @@ plugins=(
   git
   sudo
   colored-man-pages
-  zoxide
   fzf 
 )
 
@@ -156,18 +153,23 @@ source "$OSH"/oh-my-bash.sh
 # plugins, and themes. Aliases can be placed here, though oh-my-bash
 # users are encouraged to define aliases within the OSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-# Basic Aliases For Zoxide And Exa
+
+# Basic Aliases For Exa
 alias reload='source ~/.bashrc'
 alias ls='eza --icons'
 alias ll='eza -alh --icons --group-directories-first'
 alias la='eza -a --icons'
 alias lt='eza -alh --sort=modified --icons'
 alias tree='eza --tree --icons'
-alisa cd='z'
+
+# Zoxide aliases
+alias cd='z'
 alias ..='z ..'
 alias ...='z ../..'
 alias ....='z ../../..'
 alias -- -='z -'
+
+# Python aliases
 alias python='python3'
 alias pip='pip3'
 alias python2='python3'
@@ -184,6 +186,5 @@ PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 alias update='sudo apt update && sudo apt upgrade -y'
 alias clean='sudo apt autoremove -y && sudo apt autoclean'
 
-
-
-
+# --- Initialize zoxide at the END of bashrc ---
+eval "$(zoxide init bash)"
