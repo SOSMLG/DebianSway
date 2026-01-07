@@ -11,9 +11,9 @@
 set -e
 
 # ---------------- CONFIG ----------------
-SRC_DESKTOP="/usr/share/applications/google-chrome.desktop"
+SRC_DESKTOP="/usr/share/applications/vivaldi.desktop"
 DEST_DIR="$HOME/.local/share/applications"
-DEST_DESKTOP="$DEST_DIR/google-chrome.desktop"
+DEST_DESKTOP="$DEST_DIR/vivaldi.desktop"
 BACKUP_DESKTOP="$DEST_DESKTOP.bak"
 
 # ---------------- COLORS ----------------
