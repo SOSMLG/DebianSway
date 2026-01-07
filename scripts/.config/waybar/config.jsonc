@@ -14,7 +14,6 @@
         "network",
         "pulseaudio",
         "backlight",
-        "keyboard-state",
         "sway/language",
         "idle_inhibitor",
         "custom/notification",
@@ -91,20 +90,6 @@
         "tooltip-format": "Keyboard: {long}\nClick to switch layout"
     },
     
-    "keyboard-state": {
-        "capslock": true,
-        "numlock": true,
-        "scrolllock": false,
-        "format": {
-            "capslock": "{icon}",
-            "numlock": "{icon}"
-        },
-        "format-icons": {
-            "locked": "󰬈",
-            "unlocked": ""
-        },
-        "tooltip-format": "CapsLock: {icon}\nNumLock: {icon}"
-    },
 
     "battery": {
         "bat": "BAT0",
