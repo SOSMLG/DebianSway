@@ -6,7 +6,6 @@
 # =======================================================
 
 if [ "$EUID" -ne 0 ]; then
-    warn "This script will make system-wide changes and requires administrator (root) privileges."
     echo
     read -p "Press Enter to continue and enter your sudo password... " _
     sudo -k  # force password prompt
