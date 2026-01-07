@@ -212,7 +212,6 @@
         "format-critical": "{icon} {temperatureC}°C",
         "format-icons": ["󱃃", "󰔏", "󱃂"],
         "tooltip-format": "CPU Temperature: {temperatureC}°C ({temperatureF}°F)\n\nClick: View sensors",
-        "on-click": "alacritty -e watch -n 1 sensors"
     },
     
     "tray": {
