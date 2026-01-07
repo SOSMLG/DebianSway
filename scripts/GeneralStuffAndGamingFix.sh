@@ -149,6 +149,25 @@ sysctl -w fs.inotify.max_user_watches=524288 > /dev/null 2>&1 || true
 echo "vm.swappiness=10" >> /etc/sysctl.conf 2>/dev/null || true
 log_ok "Optimizations applied"
 
+# ============== SSD TRIM OPTIMIZATION ==============
+log_info "Setting up SSD TRIM optimization..."
+
+# Enable fstrim.timer for weekly SSD trim
+if systemctl is-enabled fstrim.timer &>/dev/null; then
+    log_warn "fstrim.timer already enabled"
+else
+    systemctl enable fstrim.timer
+    systemctl start fstrim.timer
+    log_ok "fstrim.timer enabled (weekly SSD trim)"
+fi
+
+# Check if disk supports TRIM
+if lsblk -d -o name,disc-gran | grep -q "0B"; then
+    log_warn "SSD TRIM may not be supported on this drive"
+else
+    log_ok "SSD TRIM support detected"
+fi
+
 # ============== PYTHON SYMLINK FIX ==============
 log_info "Setting up Python symlink for Geany..."
 
@@ -174,8 +193,10 @@ echo ""
 echo -e "${BLUE}===== Setup Complete =====${CYAN}"
 echo -e "${YELLOW}✓ Installed:${CYAN} Steam, Heroic, Vulkan, GameMode"
 echo -e "${YELLOW}✓ Configured:${CYAN} Wayland scaling, X11 compat, Launchers, Python symlink"
+echo -e "${YELLOW}✓ Optimized:${CYAN} Swappiness, File watchers, SSD TRIM (weekly)"
 echo ""
 echo -e "${YELLOW}Next:${CYAN} Log out & back in, then run Steam/Heroic"
 echo -e "${YELLOW}Aliases:${CYAN} steam-run, steam-fps, check-gpu"
 echo -e "${YELLOW}Python:${CYAN} Geany can now use 'python' directly"
+echo -e "${YELLOW}SSD:${CYAN} Automatic weekly TRIM enabled via fstrim.timer"
 echo ""
