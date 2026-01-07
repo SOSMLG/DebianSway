@@ -66,9 +66,6 @@ apt install -y \
     python3-matplotlib \
     python3-pandas
 
-# Additional essential Python packages via pip
-pip3 install --upgrade pip setuptools wheel -q
-
 # Common data science & ML libraries
 pip3 install --break-system-packages -q \
     numpy \
