@@ -30,7 +30,7 @@ SCRIPTS=(
     "bibataCursor.sh|Install Bibata Cursors|Y"
     "addUserToGroups.sh|Add your user to the needed groups|Y"
     "GeneralStuffAndGamingFix.sh|Peak Gaming And Coding Fix|Y"
-    "DiscordAndTelegram.sh|Discord And Telegram Installer For Debian|Y
+    "DiscordAndTelegram.sh|Discord And Telegram Installer For Debian|Y"
 )
 
 
