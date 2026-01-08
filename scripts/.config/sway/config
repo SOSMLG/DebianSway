@@ -102,6 +102,9 @@ include /etc/sway/config-vars.d/*
     # Start App Launcher
     #bindsym $mod+m exec $dmenu
 
+    #Screenshot
+    bindsym Print exec flameshot gui
+
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -258,7 +261,7 @@ bindsym $mod+Shift+s mode "resize"
         #bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5%
         #bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
         #bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
-    
+
     # Special keys to adjust volume via PipeWire
         bindsym --locked XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
         bindsym --locked XF86AudioLowerVolume exec wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%-
@@ -274,7 +277,7 @@ bindsym $mod+Shift+s mode "resize"
     # Special keys to adjust brightness via brightnessctl
         bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
         bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
-    
+
     # Special keys for power
         set $powerMenu rofi \
         -show power-menu \
@@ -283,8 +286,6 @@ bindsym $mod+Shift+s mode "resize"
 
         bindsym --locked XF86PowerOff exec $powerMenu
 
-    # Special key to take a screenshot with grim
-        bindsym Print exec grim
 
 #
 # Status Bar:
