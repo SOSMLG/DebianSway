@@ -14,11 +14,7 @@ fi
 # Match selected option
 case "$1" in
   "  Lock")
-    exec bash -c "swaymsg input '*' xkb_switch_layout 0 >/dev/null 2>&1; \
-      swaylock -f -i \"$wallpaper\" \
-      --indicator-radius 80 \
-      --indicator-thickness 10 \
-      --ring-color ffd75fff"
+    exec swaylock 
     ;;
   "󰍃  Logout")
     swaynag \
