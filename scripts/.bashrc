@@ -185,6 +185,8 @@ PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 # --- update and clean aliases ---
 alias update='sudo apt update && sudo apt upgrade -y'
 alias clean='sudo apt autoremove -y && sudo apt autoclean'
+#--- StarShip---
+eval "$(starship init bash)"
 
 # --- Initialize zoxide at the END of bashrc ---
 eval "$(zoxide init bash)"
