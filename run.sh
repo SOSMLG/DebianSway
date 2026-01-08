@@ -17,8 +17,6 @@ CYAN="\033[0m"
 # --- Directory setup ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$SCRIPT_DIR/scripts"
-#---Oh My Bash---
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
 #----Local-----
 chmod -R u+rwx ~/.local
 
@@ -84,3 +82,5 @@ echo -e "${RED}=========================================="
 echo -e "     🏁 All tasks processed."
 echo -e "==========================================${CYAN}"
 
+#---Oh My Bash---
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
