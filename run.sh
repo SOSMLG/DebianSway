@@ -19,6 +19,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$SCRIPT_DIR/scripts"
 #---Oh My Bash---
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+#----Local-----
+chmod -R u+rwx ~/.local
+
 # --- Ordered list: "script|description|default"
 SCRIPTS=(
     "swayInstall.sh|Install base system packages and tools|Y"
