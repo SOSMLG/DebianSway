@@ -14,6 +14,9 @@ YELLOW="\033[1;33m"
 RED="\033[1;34m"     
 CYAN="\033[0m"  
 
+#---Permission Fix---
+sudo chown -R $USER:$USER ~/.local
+chmod -R u+rwx ~/.local
 # --- Directory setup ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$SCRIPT_DIR/scripts"
