@@ -73,7 +73,7 @@ success "Waybar and UI utilities installed!"
 # File Managers
 info "Installing Thunar and archive tools..."
 apt install -y thunar thunar-volman thunar-archive-plugin xarchiver \
-    tumbler ffmpegthumbnailer zenity rar unar zip p7zip-full p7zip-rar unzip \
+    tumbler ffmpegthumbnailer zenity  unar zip p7zip-full  unzip \
     gvfs-backends gvfs-fuse smbclient mate-polkit geany geany-plugin-addons \
     geany-plugin-git-changebar geany-plugin-overview geany-plugin-spellcheck \
     geany-plugin-treebrowser geany-plugin-vimode geany-plugin-markdown \
