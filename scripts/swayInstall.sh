@@ -99,7 +99,8 @@ apt install -y thunar thunar-volman thunar-archive-plugin xarchiver \
 tumbler ffmpegthumbnailer zenity rar unar zip 7zip 7zip-rar zip unzip \
 gvfs-backends gvfs-fuse smbclient mate-polkit geany geany-plugin-addons \
 geany-plugin-git-changebar geany-plugin-overview geany-plugin-spellcheck \
-geany-plugin-treebrowser geany-plugin-vimode geany-plugin-markdown
+geany-plugin-treebrowser geany-plugin-vimode geany-plugin-markdown \
+timeshift
 
 success "File managers installed!"
 
