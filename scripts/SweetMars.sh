@@ -19,8 +19,23 @@ KVANTUMDIR="$HOME/.config/Kvantum"
 TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT
 
-mkdir -p "$THEMEDIR"
-mkdir -p "$KVANTUMDIR"
+# Ensure ~/.local/share exists and is writable
+if [ ! -d "$HOME/.local/share" ]; then
+    info "Creating ~/.local/share directory..."
+    mkdir -p "$HOME/.local/share"
+fi
+
+# Ensure ~/.local/share/themes exists and is writable
+if [ ! -d "$THEMEDIR" ]; then
+    info "Creating $THEMEDIR directory..."
+    mkdir -p "$THEMEDIR"
+fi
+
+# Ensure ~/.config/Kvantum exists and is writable
+if [ ! -d "$KVANTUMDIR" ]; then
+    info "Creating $KVANTUMDIR directory..."
+    mkdir -p "$KVANTUMDIR"
+fi
 
 # Download Sweet-Ambar-v40 theme
 info "Downloading Sweet-Ambar-v40 theme..."

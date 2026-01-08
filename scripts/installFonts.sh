@@ -74,54 +74,10 @@ cat > "$FONTCONF" <<'EOF'
 </fontconfig>
 EOF
 success "fonts.conf written to $FONTCONF"
-# Step 4: Install JetBrainsMono Nerd Font
-info "Installing JetBrainsMono Nerd Font..."
-mkdir -p ~/.local/share/fonts
-pushd ~/.local/share/fonts > /dev/null
 
-# Try GitHub first
-GITHUB_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
-SOURCEFORGE_URL="https://sourceforge.net/projects/nerd-fonts.mirror/files/v3.4.0/JetBrainsMono.zip/download"
 
-if curl -sLO "$GITHUB_URL"; then
-    # Extract .tar.xz file
-    if ! tar -xf JetBrainsMono.tar.xz; then
-        error "Failed to extract JetBrainsMono Nerd Font"
-        popd > /dev/null
-        exit 1
-    fi
-    rm -f JetBrainsMono.tar.xz
-else
-    warn "GitHub download failed, trying SourceForge..."
-    if curl -sLO "$SOURCEFORGE_URL"; then
-        # Extract .zip file
-        if ! unzip JetBrainsMono.zip; then
-            error "Failed to extract JetBrainsMono Nerd Font"
-            popd > /dev/null
-            exit 1
-        fi
-        rm -f JetBrainsMono.zip
-    else
-        error "Failed to download JetBrainsMono Nerd Font from both sources"
-        error "Please download manually from:"
-        error "  $GITHUB_URL"
-        error "  $SOURCEFORGE_URL"
-        error "Place the file in ~/.local/share/fonts and extract it"
-        popd > /dev/null
-        exit 1
-    fi
-fi
-
-popd > /dev/null
-success "JetBrainsMono Nerd Font installed."
-
-# Step 5: Refresh font cache
 info "Refreshing font cache..."
-if ! fc-cache -fv > /dev/null; then
-    error "Failed to update font cache"
-    error "Try running 'fc-cache -fv' manually"
-    exit 1
-fi
+fc-cache -fv > /dev/null
 success "Font cache updated."
 
 echo -e "\n${GREEN}${BOLD}✅ Setup complete!${RESET}"

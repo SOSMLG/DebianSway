@@ -53,7 +53,6 @@ PACKAGES=(
     "xwayland" "wayland-protocols"
     "vulkan-tools" "mesa-utils"
     "gamemode" "mangohud"
-    "winetricks"
 )
 
 failed_packages=()

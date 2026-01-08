@@ -34,6 +34,6 @@ else
 fi
 
 echo "✓ Done. Original configs are backed up at $BACKUP_DIR"
-EOF
+
 
 echo "All scripts have been fixed and written to individual files!"

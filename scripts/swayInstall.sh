@@ -73,7 +73,7 @@ success "Waybar and UI utilities installed!"
 # File Managers
 info "Installing Thunar and archive tools..."
 apt install -y thunar thunar-volman thunar-archive-plugin xarchiver \
-    tumbler ffmpegthumbnailer zenity  unar zip p7zip-full  unzip \
+    tumbler ffmpegthumbnailer zenity  unar zip p7zip-full p7zip unzip \
     gvfs-backends gvfs-fuse smbclient mate-polkit geany geany-plugin-addons \
     geany-plugin-git-changebar geany-plugin-overview geany-plugin-spellcheck \
     geany-plugin-treebrowser geany-plugin-vimode geany-plugin-markdown \
@@ -91,26 +91,28 @@ info "Installing terminal tools..."
 apt install -y alacritty bat duf htop eza rsync fzf zoxide
 success "Terminal tools installed!"
 
-# Rofi-Wayland
-info "Downloading and installing latest Rofi-Wayland..."
-TMP_DIR=$(mktemp -d)
-trap "rm -rf $TMP_DIR" EXIT
 
+info "Downloading and installing latest Rofi-Wayland..."
+
+# Temporary folder for download
+TMP_DIR=$(mktemp -d)
 pushd "$TMP_DIR" > /dev/null
 
-ROFI_URL=$(curl -s https://api.github.com/repos/lbonn/rofi/releases/latest \
-    | grep "browser_download_url.*\.deb" | grep -v "dbgsym" | cut -d '"' -f 4 | head -1)
+# Get latest .deb
+ROFI_URL=$(curl -s https://api.github.com/repos/mmBesar/rofi-wayland-debian/releases/latest \
+    | grep "browser_download_url.*trixie.*\.deb" | grep -v "dbgsym" | cut -d '"' -f 4)
 
-if [[ -n "$ROFI_URL" ]]; then
-    wget "$ROFI_URL"
-    apt install -y ./*.deb
-    success "Rofi-Wayland installed!"
-else
-    warn "Could not fetch Rofi-Wayland, installing from repos..."
-    apt install -y rofi
-fi
+wget "$ROFI_URL"
+
+# Install
+apt install -y ./*.deb
 
 popd > /dev/null
+
+# Clean up
+rm -rf "$TMP_DIR"
+
+success "Rofi-Wayland installed!"
 
 # Greetd
 info "Installing greetd..."
@@ -136,16 +138,3 @@ info "Installing theme packages..."
 apt install -y nwg-look qt5-style-kvantum qt6-style-kvantum papirus-icon-theme
 success "Theme packages installed!"
 
-# Oh my Bash (as user, not root)
-info "Installing Oh My Bash for $ACTUAL_USER..."
-if [[ ! -d "$USER_HOME/.oh-my-bash" ]]; then
-    su - "$ACTUAL_USER" -c 'bash -c "$(wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh -O -)" || true'
-    success "Oh My Bash installed!"
-else
-    warn "Oh My Bash already installed, skipping"
-fi
-
-# Done
-echo
-success "All installation steps completed!"
-info "Please reboot your system to complete the setup"
