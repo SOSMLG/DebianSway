@@ -14,9 +14,6 @@ YELLOW="\033[1;33m"
 RED="\033[1;34m"     
 CYAN="\033[0m"  
 
-#---Permission Fix---
-sudo chown -R $USER:$USER ~/.local
-chmod -R u+rwx ~/.local
 # --- Directory setup ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$SCRIPT_DIR/scripts"
@@ -82,3 +79,5 @@ done
 echo -e "${RED}=========================================="
 echo -e "     🏁 All tasks processed."
 echo -e "==========================================${CYAN}"
+
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
