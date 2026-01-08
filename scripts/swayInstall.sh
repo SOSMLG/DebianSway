@@ -114,11 +114,6 @@ rm -rf "$TMP_DIR"
 
 success "Rofi-Wayland installed!"
 
-[initial_session]
-command = "sway"
-user = "$ACTUAL_USER"
-GREETD_EOF
-success "Appended initial_session with user $ACTUAL_USER"
 
 # Theme packages
 info "Installing theme packages..."
