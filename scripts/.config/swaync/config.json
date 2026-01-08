@@ -11,9 +11,9 @@
   "hide-on-clear": false,
   "image-visibility": "when-available",
   "keyboard-shortcuts": true,
-  "notification-body-image-height": 100,
+  "notification-body-image-height": 150,
   "notification-body-image-width": 200,
-  "notification-icon-size": 56,
+  "notification-icon-size": 30,
   "notification-visibility": {
     "spotify": {
       "app-name": "Spotify",
@@ -67,7 +67,7 @@
           "label": "󰕾"
         },
         {
-          "command": "firefox",
+          "command": "vivaldi",
           "label": "󰈹"
         },
         {
@@ -106,32 +106,6 @@
         ],
         "label": "󰹑",
         "position": "left"
-      },
-      "menu#power": {
-        "actions": [
-          {
-            "command": "systemctl suspend",
-            "label": "󰤄  Suspend"
-          },
-          {
-            "command": "swaylock.sh",
-            "label": "  Lock"
-          },
-          {
-            "command": "loginctl terminate-session ${XDG_SESSION_ID-}",
-            "label": "  Logout"
-          },
-          {
-            "command": "systemctl reboot",
-            "label": "  Reboot"
-          },
-          {
-            "command": "systemctl poweroff",
-            "label": "  Shutdown"
-          }
-        ],
-        "label": "󰐥",
-        "position": "right"
       },
       "menu#profiles": {
         "actions": [
