@@ -17,7 +17,8 @@ CYAN="\033[0m"
 # --- Directory setup ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$SCRIPT_DIR/scripts"
-
+#---oh my bas---
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
 # --- Ordered list: "script|description|default"
 SCRIPTS=(
     "swayInstall.sh|Install base system packages and tools|Y"
@@ -80,4 +81,3 @@ echo -e "${RED}=========================================="
 echo -e "     🏁 All tasks processed."
 echo -e "==========================================${CYAN}"
 
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
