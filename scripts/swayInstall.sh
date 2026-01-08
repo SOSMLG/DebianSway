@@ -34,6 +34,7 @@ USER_HOME=$(eval echo ~$ACTUAL_USER)
 
 info "Installing for user: $ACTUAL_USER"
 
+
 # Update System
 info "Updating system..."
 apt update && apt upgrade -y
@@ -41,7 +42,8 @@ success "System updated!"
 
 # Basic Tools
 info "Installing essential tools..."
-apt install -y zram-tools curl git wget
+apt install -y zram-tools curl git wget pipewire-audio-client-libraries \
+libspa-0.2-bluetooth
 success "Basic tools installed!"
 
 # Python & Dev Tools
