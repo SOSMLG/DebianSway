@@ -77,7 +77,7 @@ apt install -y thunar thunar-volman thunar-archive-plugin xarchiver \
     gvfs-backends gvfs-fuse smbclient mate-polkit geany geany-plugin-addons \
     geany-plugin-git-changebar geany-plugin-overview geany-plugin-spellcheck \
     geany-plugin-treebrowser geany-plugin-vimode geany-plugin-markdown \
-    timeshift
+    slick-greeter
 success "File managers installed!"
 
 # Media Packages
@@ -113,19 +113,6 @@ popd > /dev/null
 rm -rf "$TMP_DIR"
 
 success "Rofi-Wayland installed!"
-
-# Greetd
-info "Installing greetd..."
-apt install -y greetd
-
-GREETD_CONFIG="/etc/greetd/config.toml"
-cp "$GREETD_CONFIG" "${GREETD_CONFIG}.bak"
-success "Backup created at ${GREETD_CONFIG}.bak"
-
-sed -i "s|\${SHELL:-/bin/sh}|\${SHELL:-/bin/bash}|g" "$GREETD_CONFIG"
-success "Updated default shell to bash in greetd config"
-
-cat <<GREETD_EOF >> "$GREETD_CONFIG"
 
 [initial_session]
 command = "sway"
