@@ -11,12 +11,7 @@ fastfetch
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
-OSH_THEME="ht"
-
-# If you set OSH_THEME to "random", you can ignore themes you don't like.
-# OMB_THEME_RANDOM_IGNORED=("powerbash10k" "wanelo")
-# You can also specify the list from which a theme is randomly selected:
-# OMB_THEME_RANDOM_CANDIDATES=("font" "powerline-light" "minimal")
+OSH_THEME="font"
 
 # Uncomment the following line to use case-sensitive completion.
 # OMB_CASE_SENSITIVE="true"
@@ -57,17 +52,8 @@ OSH_THEME="ht"
 # SCM_GIT_IGNORE_UNTRACKED="true"
 
 # Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.  One of the following values can
-# be used to specify the timestamp format.
-# * 'mm/dd/yyyy'     # mm/dd/yyyy + time
-# * 'dd.mm.yyyy'     # dd.mm.yyyy + time
-# * 'yyyy-mm-dd'     # yyyy-mm-dd + time
-# * '[mm/dd/yyyy]'   # [mm/dd/yyyy] + [time] with colors
-# * '[dd.mm.yyyy]'   # [dd.mm.yyyy] + [time] with colors
-# * '[yyyy-mm-dd]'   # [yyyy-mm-dd] + [time] with colors
-# If not set, the default value is 'yyyy-mm-dd'.
+# stamp shown in the history command output.
 # HIST_STAMPS='yyyy-mm-dd'
-
 
 # OMB_DEFAULT_ALIASES="check"
 
@@ -86,10 +72,7 @@ OMB_USE_SUDO=true
 # OMB_PROMPT_SHOW_SPACK_ENV=true  # enable
 # OMB_PROMPT_SHOW_SPACK_ENV=false # disable
 
-# Which completions would you like to load? (completions can be found in ~/.oh-my-bash/completions/*)
-# Custom completions may be added to ~/.oh-my-bash/custom/completions/
-# Example format: completions=(ssh git bundler gem pip pip3)
-# Add wisely, as too many completions slow down shell startup.
+# Which completions would you like to load?
 completions=(
   git
   ssh
@@ -97,39 +80,21 @@ completions=(
   npm
 )
 
-# Which aliases would you like to load? (aliases can be found in ~/.oh-my-bash/aliases/*)
-# Custom aliases may be added to ~/.oh-my-bash/custom/aliases/
-# Example format: aliases=(vagrant composer git-avh)
-# Add wisely, as too many aliases slow down shell startup.
+# Which aliases would you like to load?
 aliases=(
   general
 )
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-bash/plugins/*)
-# Custom plugins may be added to ~/.oh-my-bash/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
+# Which plugins would you like to load?
 plugins=(
   git
   sudo
   colored-man-pages
-  zoxide
-  fzf
+  fzf 
 )
 
-# Which plugins would you like to conditionally load? (plugins can be found in ~/.oh-my-bash/plugins/*)
-# Custom plugins may be added to ~/.oh-my-bash/custom/plugins/
-# Example format:
-#  if [ "$DISPLAY" ] || [ "$SSH" ]; then
-#      plugins+=(tmux-autoattach)
-#  fi
-
-# If you want to reduce the initialization cost of the "tput" command to
-# initialize color escape sequences, you can uncomment the following setting.
-# This disables the use of the "tput" command, and the escape sequences are
-# initialized to be the ANSI version:
-#
-#OMB_TERM_USE_TPUT=no
+# If you want to reduce the initialization cost of the "tput" command
+# OMB_TERM_USE_TPUT=no
 
 source "$OSH"/oh-my-bash.sh
 
@@ -146,21 +111,26 @@ source "$OSH"/oh-my-bash.sh
 #   export EDITOR='mvim'
 # fi
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
+# Basic Aliases For Exa
+alias reload='source ~/.bashrc'
+alias ls='eza --icons'
+alias ll='eza -alh --icons --group-directories-first'
+alias la='eza -a --icons'
+alias lt='eza -alh --sort=modified --icons'
+alias tree='eza --tree --icons'
 
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
+# Zoxide aliases
+alias cd='z'
+alias ..='z ..'
+alias ...='z ../..'
+alias ....='z ../../..'
+alias -- -='z -'
 
-# Set personal aliases, overriding those provided by oh-my-bash libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-bash
-# users are encouraged to define aliases within the OSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-# Basic Aliases For Zoxide And Exa
+# Python aliases - python3 is standard
+alias python='python3'
+alias pip='pip3'
 
-
-
-# === Live Shared Bash History Across Sessions ===
+# --- Live shared bash history across sessions ---
 HISTCONTROL=ignoreboth:erasedups
 HISTSIZE=100000
 HISTFILESIZE=200000
@@ -170,27 +140,6 @@ PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 # --- update and clean aliases ---
 alias update='sudo apt update && sudo apt upgrade -y'
 alias clean='sudo apt autoremove -y && sudo apt autoclean'
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-
-# ============== Gaming Aliases ==============
-alias steam-run='gamemoderun'
-alias steam-fps='mangohud'
-alias steam-debug='PROTON_LOG=1'
-alias check-gpu='glxinfo | grep -i "OpenGL renderer"'
-alias check-vulkan='vulkaninfo | head -20'
-alias reload='source ~/.bashrc'
-alias ls='eza --icons'
-alias ll='eza -alh --icons --group-directories-first'
-alias la='eza -a --icons'
-alias lt='eza -alh --sort=modified --icons'
-alias tree='eza --tree --icons'
-alias python='python3'
-alias pip='pip3'
-alias python2='python3'
-alias pip2='pip3'
-alias cd='z'
-alias ..='z ..'
-alias ...='z ../..'
-alias ....='z ../../..'
-alias -- -='z -'
+# --- Initialize zoxide at the END of bashrc ---
+eval "$(zoxide init bash)"
