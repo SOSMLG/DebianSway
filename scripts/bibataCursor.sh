@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Colors
+RED="\033[31m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+BLUE="\033[34m"
+CYAN="\033[36m"
+RESET="\033[0m"
+
 # Check dependencies
 for cmd in curl tar; do
   if ! command -v "$cmd" &> /dev/null; then
-    echo "❌ Missing dependency: $cmd"
+    echo -e "${RED}✗ Missing dependency: $cmd${RESET}"
     echo "Install with: sudo apt install curl tar"
     exit 1
   fi
@@ -17,7 +25,7 @@ mkdir -p "$CURSOR_DIR"
 STYLES=("Modern" "Original")
 COLORS=("Amber" "Classic" "Ice")
 
-echo "🖱️  Bibata Cursor Theme Installer"
+echo -e "${BLUE}🖱️  Bibata Cursor Theme Installer${RESET}"
 echo "================================="
 echo
 
@@ -32,7 +40,7 @@ ALL_OPTION=$((${#STYLES[@]}+1))
 read -rp "Style number: " SN
 
 if [[ "$SN" == "$ALL_OPTION" ]]; then
-  echo "🎯 Installing ALL Bibata cursor themes..."
+  echo -e "${GREEN}🎯 Installing ALL Bibata cursor themes...${RESET}"
   echo
   
   # Download all combinations
@@ -47,7 +55,7 @@ if [[ "$SN" == "$ALL_OPTION" ]]; then
   
   success_count=0
   for theme in "${ALL_THEMES[@]}"; do
-    echo "📥 Downloading $theme..."
+    echo -e "${CYAN}📥 Downloading $theme...${RESET}"
     
     TEMP_DIR="/tmp/bibata-${theme}-$$"
     mkdir -p "$TEMP_DIR"
@@ -56,7 +64,7 @@ if [[ "$SN" == "$ALL_OPTION" ]]; then
     URL="https://github.com/ful1e5/Bibata_Cursor/releases/latest/download/${theme}.tar.xz"
     
     if curl -L -o "$TEMP_DIR/${theme}.tar.xz" "$URL" --progress-bar --fail; then
-      echo "📦 Extracting $theme..."
+      echo -e "${CYAN}📦 Extracting $theme...${RESET}"
       cd "$TEMP_DIR"
       
       if tar -xf "${theme}.tar.xz"; then
@@ -71,29 +79,29 @@ if [[ "$SN" == "$ALL_OPTION" ]]; then
           fi
           
           mv "$EXTRACTED_DIR" "$DEST_DIR"
-          echo "✅ Installed: $theme"
+          echo -e "${GREEN}✅ Installed: $theme${RESET}"
           ((success_count++))
         else
-          echo "❌ Could not find extracted directory for $theme"
+          echo -e "${RED}✗ Could not find extracted directory for $theme${RESET}"
         fi
       else
-        echo "❌ Failed to extract $theme"
+        echo -e "${RED}✗ Failed to extract $theme${RESET}"
       fi
     else
-      echo "❌ Failed to download $theme"
+      echo -e "${RED}✗ Failed to download $theme${RESET}"
     fi
     
     rm -rf "$TEMP_DIR"
     echo
   done
   
-  echo "🎉 Installation complete!"
+  echo -e "${GREEN}🎉 Installation complete!${RESET}"
   echo "   Successfully installed: $success_count/${#ALL_THEMES[@]} themes"
   
 else
   # Single theme selection
   if [[ "$SN" -lt 1 ]] || [[ "$SN" -gt ${#STYLES[@]} ]]; then
-    echo "❌ Invalid style selection"
+    echo -e "${RED}✗ Invalid style selection${RESET}"
     exit 1
   fi
   
@@ -108,7 +116,7 @@ else
   read -rp "Color number: " CN
   
   if [[ "$CN" -lt 1 ]] || [[ "$CN" -gt ${#COLORS[@]} ]]; then
-    echo "❌ Invalid color selection"
+    echo -e "${RED}✗ Invalid color selection${RESET}"
     exit 1
   fi
   
@@ -117,7 +125,7 @@ else
   
   # Step 3: Download and install
   THEME_NAME="Bibata-${STYLE}-${COLOR}"
-  echo "📥 Downloading $THEME_NAME..."
+  echo -e "${CYAN}📥 Downloading $THEME_NAME...${RESET}"
   
   TEMP_DIR="/tmp/bibata-${THEME_NAME}-$$"
   mkdir -p "$TEMP_DIR"
@@ -126,17 +134,17 @@ else
   URL="https://github.com/ful1e5/Bibata_Cursor/releases/latest/download/${THEME_NAME}.tar.xz"
   
   if ! curl -L -o "$TEMP_DIR/${THEME_NAME}.tar.xz" "$URL" --progress-bar --fail; then
-    echo "❌ Failed to download $THEME_NAME"
+    echo -e "${RED}✗ Failed to download $THEME_NAME${RESET}"
     echo "   URL: $URL"
     rm -rf "$TEMP_DIR"
     exit 1
   fi
   
-  echo "📦 Extracting $THEME_NAME..."
+  echo -e "${CYAN}📦 Extracting $THEME_NAME...${RESET}"
   cd "$TEMP_DIR"
   
   if ! tar -xf "${THEME_NAME}.tar.xz"; then
-    echo "❌ Failed to extract $THEME_NAME"
+    echo -e "${RED}✗ Failed to extract $THEME_NAME${RESET}"
     rm -rf "$TEMP_DIR"
     exit 1
   fi
@@ -145,7 +153,7 @@ else
   EXTRACTED_DIR=$(find . -maxdepth 1 -type d -name "*Bibata*" | head -1)
   
   if [[ -z "$EXTRACTED_DIR" ]]; then
-    echo "❌ Could not find extracted theme directory"
+    echo -e "${RED}✗ Could not find extracted theme directory${RESET}"
     rm -rf "$TEMP_DIR"
     exit 1
   fi
@@ -154,13 +162,13 @@ else
   DEST_DIR="$CURSOR_DIR/$THEME_NAME"
   
   if [[ -d "$DEST_DIR" ]]; then
-    echo "⚠️  Overwriting existing theme: $THEME_NAME"
+    echo -e "${YELLOW}⚠️  Overwriting existing theme: $THEME_NAME${RESET}"
     rm -rf "$DEST_DIR"
   fi
   
   mv "$EXTRACTED_DIR" "$DEST_DIR"
   
-  echo "✅ Done! Theme '$THEME_NAME' installed to:"
+  echo -e "${GREEN}✅ Done! Theme '$THEME_NAME' installed to:${RESET}"
   echo "   $DEST_DIR"
   
   # Cleanup
@@ -168,11 +176,11 @@ else
 fi
 
 echo
-echo "📝 Next steps:"
+echo -e "${CYAN}🔧 Next steps:${RESET}"
 echo "1. Open your system settings"
 echo "2. Go to Mouse & Touchpad (or Appearance) settings" 
 echo "3. Select your new Bibata cursor theme"
 echo "4. Log out and back in if the cursors don't change immediately"
 echo
-echo "🎨 Cursor themes are installed in:"
+echo -e "${CYAN}🎨 Cursor themes are installed in:${RESET}"
 echo "   $CURSOR_DIR"
