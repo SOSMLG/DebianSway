@@ -1,8 +1,8 @@
 {
-    "layer": "top",
-    "position": "top",
-    "height": 36,
-    "spacing": 6,
+    "layer": "bottom",
+    "position": "bottom",
+    "height": 10,
+    "spacing": 5,
     "margin": "6 10 0 10",
     "exclusive": true,
 
@@ -32,8 +32,6 @@
     "modules-center": [
         "clock#date"
     ],
-
-    // === Right Modules - Optimized for laptop workflow ===
 
     "custom/power": {
         "format": "⏻",
@@ -94,7 +92,7 @@
     "battery": {
         "bat": "BAT0",
         "adapter": "AC",
-        "interval": 10,
+        "interval": 30,
         "states": {
             "full": 100,
             "good": 95,
@@ -113,26 +111,26 @@
 
     "backlight": {
         "device": "amdgpu_bl0",
-        "interval": 1,
+        "interval": 2,
         "format": "{icon} {percent}%",
         "format-icons": ["󰃞", "󰃟", "󰃠"],
         "on-scroll-up": "brightnessctl set +5%",
         "on-scroll-down": "brightnessctl set 5%-",
         "on-click": "brightnessctl set 50%",
         "on-click-right": "brightnessctl set 100%",
-        "smooth-scrolling-threshold": 1,
+        "smooth-scrolling-threshold": 2,
         "tooltip-format": "Brightness: {percent}%\nClick: 50% | Right-click: 100%\nScroll: Adjust"
     },
 
     "network": {
-        "interval": 5,
+        "interval": 10,
         "format-wifi": "{icon}",
         "format-ethernet": "󰈀",
-        "format-linked": "󰈁",
+        "format-linked": "󰈂",
         "format-disconnected": "󰖪",
         "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-        "tooltip-format-wifi": "󰖨 {essid}\nSignal: {signalStrength}%\nIP: {ipaddr}\n\n󰕒 {bandwidthDownBytes} 󰕑 {bandwidthUpBytes}",
-        "tooltip-format-ethernet": "󰈀 Wired\nIP: {ipaddr}\n\n󰕒 {bandwidthDownBytes} 󰕑 {bandwidthUpBytes}",
+        "tooltip-format-wifi": "󰖨 {essid}\nSignal: {signalStrength}%\nIP: {ipaddr}\n\n󰕒 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}",
+        "tooltip-format-ethernet": "󰈀 Wired\nIP: {ipaddr}\n\n󰕒 {bandwidthDownBytes} 󰕒 {bandwidthUpBytes}",
         "tooltip-format-disconnected": "󰖪 Disconnected\nClick to connect",
         "on-click": "nm-connection-editor",
         "on-click-right": "nmtui",
@@ -165,7 +163,7 @@
     },
 
     "cpu": {
-        "interval": 3,
+        "interval": 5,
         "format": "󰻠 {usage}%",
         "format-alt": "󰻠 {load}",
         "states": {
@@ -178,25 +176,25 @@
     },
     
     "memory": {
-        "interval": 5,
-        "format": "󰍛 {percentage}%",
-        "format-alt": "󰍛 {used:0.1f}G",
+        "interval": 10,
+        "format": "󰛨 {percentage}%",
+        "format-alt": "󰛨 {used:0.1f}G",
         "states": {
             "warning": 70,
             "critical": 90
         },
-        "tooltip-format": "RAM: {percentage}%\nUsed: {used:0.1f}G / {total:0.1f}G\nAvailable: {avail:0.1f}G\n\nSwap: {swapPercentage}%\n\nClick: Disk usage",
+        "tooltip-format": "RAM: {percentage}%\nUsed: {used:0.1f}G / {total:0.1f}G\nAvailable: {avail:0.1f}G\n\nSwap: {swapPercentage}%\n\nClick: Disk usage"
     },
     
     "temperature": {
         "thermal-zone": 2,
         "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
-        "interval": 5,
+        "interval": 10,
         "critical-threshold": 80,
         "format": "{icon} {temperatureC}°C",
         "format-critical": "{icon} {temperatureC}°C",
         "format-icons": ["󱃃", "󰔏", "󱃂"],
-        "tooltip-format": "CPU Temperature: {temperatureC}°C ({temperatureF}°F)",
+        "tooltip-format": "CPU Temperature: {temperatureC}°C ({temperatureF}°F)"
     },
     
     "tray": {
@@ -207,12 +205,10 @@
         "reverse-direction": false
     },
 
-    // === Center Module - Date display ===
-
     "clock#date": {
         "interval": 60,
-        "format": "󰸗  {:%a %d %b}",
-        "format-alt": "󰸗  {:%Y-%m-%d}",
+        "format": "󰸗 {:%a %d %b}",
+        "format-alt": "󰸗 {:%Y-%m-%d}",
         "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode": "month",
@@ -234,8 +230,6 @@
         }
     },
     
-    // === Left Modules ===
-
     "sway/mode": {
         "format": "󰲎 {}",
         "max-length": 50,
