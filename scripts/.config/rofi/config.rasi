@@ -1,53 +1,49 @@
 configuration {
-    modi: "drun,run,window,ssh";
-    font: "JetBrainsMono Nerd Font Propo 13";
+    modi: "drun,run,window";
+    font: "JetBrainsMono Nerd Font Propo 12";
     show-icons: true;
     icon-theme: "Papirus-Dark";
-    display-drun: "󰀻  Applications";
-    display-run: "  Command";
+    display-drun: "󰀻  Apps";
+    display-run: "  Run";
     display-window: "  Windows";
-    display-ssh: "  SSH";
     drun-display-format: "{name}";
-    window-format: "{w} · {c} · {t}";
+    window-format: "{w} · {t}";
     terminal: "alacritty";
     disable-history: false;
     sidebar-mode: true;
-    hover-select: true;
+    hover-select: false;
     me-select-entry: "";
     me-accept-entry: "MousePrimary";
     scroll-method: 0;
     case-sensitive: false;
     cycle: true;
-    matching: "fuzzy";
+    matching: "normal";
 }
 
 * {
-    bg0: #0d1117;
-    bg1: #1a1820;
-    bg2: #2a2530;
-    bg3: #3a3540;
-    fg0: #e0d5d0;
-    fg1: #c8b8b0;
-    fg2: #988880;
-    red: #ff6f3c;
-    green: #4db6ac;
-    yellow: #ffb74d;
-    blue: #4fc3f7;
-    magenta: #d946a6;
-    cyan: #26a69a;
+    // Sunset-inspired colors from your wallpaper
+    bg0: #0a1628;        // Deep ocean blue
+    bg1: #16213e;        // Dark blue
+    bg2: #1a2942;        // Mid blue
+    bg3: #243554;        // Lighter blue
+    fg0: #e8dfd8;        // Light cream
+    fg1: #d4c5bc;        // Muted cream
+    fg2: #9a8b82;        // Gray-brown
+    accent: #ff4757;     // Vibrant sunset red
+    accent2: #ff6b81;    // Light coral
+    orange: #ff8c42;     // Sunset orange
+    yellow: #ffd93d;     // Sunset yellow
     
-    background-color: @bg0;
-    border-color: @red;
+    background-color: transparent;
     text-color: @fg0;
-    
     spacing: 0;
-    width: 650px;
+    width: 600px;
 }
 
 window {
     background-color: @bg0;
     border: 2px solid;
-    border-color: @red;
+    border-color: @accent;
     border-radius: 0px;
     padding: 0;
     transparency: "real";
@@ -63,66 +59,43 @@ mainbox {
 inputbar {
     background-color: @bg1;
     text-color: @fg0;
-    padding: 14px 18px;
+    padding: 12px 16px;
     spacing: 10px;
     children: [ prompt, entry ];
     border: 0px 0px 2px 0px solid;
-    border-color: @red;
+    border-color: @accent;
 }
 
 prompt {
     background-color: transparent;
-    text-color: @red;
-    font: "JetBrainsMono Nerd Font Bold 13";
+    text-color: @accent;
+    font: "JetBrainsMono Nerd Font Bold 12";
 }
 
 entry {
     background-color: transparent;
     text-color: @fg0;
-    placeholder: "Type to search...";
+    placeholder: "Search...";
     placeholder-color: @fg2;
     cursor: text;
-}
-
-message {
-    background-color: @bg1;
-    border: 2px 0px 0px 0px solid;
-    border-color: @red;
-    padding: 10px;
-}
-
-textbox {
-    background-color: transparent;
-    text-color: @fg1;
-    padding: 6px 10px;
 }
 
 listview {
     background-color: transparent;
     columns: 1;
-    lines: 10;
-    spacing: 2px;
-    padding: 10px;
-    scrollbar: true;
+    lines: 8;
+    spacing: 0px;
+    padding: 8px;
+    scrollbar: false;
     border: 0;
-    fixed-height: false;
-    dynamic: true;
-}
-
-scrollbar {
-    background-color: @bg1;
-    handle-color: @fg2;
-    handle-width: 6px;
-    border: 0;
-    padding: 2px;
-    margin: 0px 0px 0px 6px;
-    border-radius: 0px;
+    fixed-height: true;
+    dynamic: false;
 }
 
 element {
     background-color: transparent;
     text-color: @fg1;
-    padding: 10px 14px;
+    padding: 8px 12px;
     spacing: 10px;
     border-radius: 0px;
 }
@@ -139,49 +112,32 @@ element alternate.normal {
 
 element selected.normal {
     background-color: @bg2;
-    text-color: @red;
-    border: 0px 0px 0px 4px solid;
-    border-color: @red;
+    text-color: @accent2;
+    border: 0px 0px 0px 3px solid;
+    border-color: @accent;
 }
 
 element normal.active {
     background-color: transparent;
-    text-color: @cyan;
+    text-color: @orange;
 }
 
 element alternate.active {
     background-color: @bg1;
-    text-color: @cyan;
+    text-color: @orange;
 }
 
 element selected.active {
     background-color: @bg2;
-    text-color: @green;
-    border: 0px 0px 0px 4px solid;
-    border-color: @green;
-}
-
-element normal.urgent {
-    background-color: transparent;
     text-color: @yellow;
-}
-
-element alternate.urgent {
-    background-color: @bg1;
-    text-color: @yellow;
-}
-
-element selected.urgent {
-    background-color: @bg2;
-    text-color: @yellow;
-    border: 0px 0px 0px 4px solid;
-    border-color: @yellow;
+    border: 0px 0px 0px 3px solid;
+    border-color: @orange;
 }
 
 element-icon {
     background-color: transparent;
-    size: 32px;
-    padding: 0px 10px 0px 0px;
+    size: 28px;
+    padding: 0px 8px 0px 0px;
 }
 
 element-text {
@@ -193,21 +149,21 @@ element-text {
 mode-switcher {
     background-color: @bg1;
     border: 2px 0px 0px 0px solid;
-    border-color: @red;
-    padding: 10px;
-    spacing: 10px;
+    border-color: @accent;
+    padding: 8px;
+    spacing: 8px;
 }
 
 button {
     background-color: @bg2;
     text-color: @fg1;
-    padding: 10px 14px;
+    padding: 8px 12px;
     border-radius: 0px;
 }
 
 button selected {
     background-color: @bg3;
-    text-color: @red;
-    border: 0px 0px 3px 0px solid;
-    border-color: @red;
+    text-color: @accent;
+    border: 0px 0px 2px 0px solid;
+    border-color: @accent;
 }
