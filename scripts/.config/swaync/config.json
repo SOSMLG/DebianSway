@@ -36,12 +36,6 @@
   "timeout-low": 5,
   "transition-time": 200,
   "widget-config": {
-    "backlight": {
-      "device": "amdgpu_bl0",
-      "label": "󰃠",
-      "min": 5,
-      "max": 100
-    },
     "buttons-grid": {
       "actions": [
         {
@@ -135,18 +129,12 @@
       "button-text": "󰆴  Clear All",
       "clear-all-button": true,
       "text": "Notifications"
-    },
-    "volume": {
-      "label": "󰕾",
-      "show-per-app": true
     }
   },
   "widgets": [
     "label",
     "menubar",
     "buttons-grid",
-    "volume",
-    "backlight",
     "mpris",
     "title",
     "dnd",
