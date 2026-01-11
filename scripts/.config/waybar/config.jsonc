@@ -35,7 +35,7 @@
 
     "custom/power": {
         "format": "⏻",
-        "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 3 -theme-str 'window {width: 16%; height: 28%; x-offset: -10px; y-offset: 10px; border-radius: 14px;}'",
+        "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 5 -theme-str 'window {width: 16%; height: 28%; x-offset: -10px; y-offset: 0px; border-radius: 14px;}'",
         "on-click-middle": "pkill rofi",
         "on-click-right": "systemctl suspend",
         "tooltip-format": "Power Menu\nRight-click: Suspend\nMiddle-click: Close rofi"
@@ -299,9 +299,9 @@
 
     "custom/apps": {
         "format": "󰀻",
-        "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 35%; height: 50%; x-offset: 10px; y-offset: 10px; border-radius: 14px;}'",
+        "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 7 -theme-str 'window {width: 35%; height: 50%; x-offset: 10px; y-offset: 0px; border-radius: 14px;}'",
         "on-click-middle": "pkill rofi",
-        "on-click-right": "rofi -show run -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 1 -theme-str 'window {width: 28%; height: 35%; x-offset: 10px; y-offset: 10px; border-radius: 14px;}'",
+        "on-click-right": "rofi -show run -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 7 -theme-str 'window {width: 28%; height: 35%; x-offset: 10px; y-offset: 0px; border-radius: 14px;}'",
         "tooltip-format": "Applications\nClick: App launcher\nRight-click: Run command\nMiddle-click: Close rofi"
     }
 }
