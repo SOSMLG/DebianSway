@@ -5,5 +5,6 @@ ACTUAL_USER="${SUDO_USER:-$USER}"
 
 echo "Adding $ACTUAL_USER to input group..."
 sudo usermod -aG input "$ACTUAL_USER"
+sudo usermod -a -G render,video $USER
 echo "✓ User $ACTUAL_USER added to input group"
 echo "⚠ You may need to log out and back in for changes to take effect"
