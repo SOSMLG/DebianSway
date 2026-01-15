@@ -18,22 +18,34 @@ configuration {
     case-sensitive: false;
     cycle: true;
     matching: "normal";
+    
+    /* Laptop optimizations */
+    lazy-grab: true;
+    click-to-exit: true;
 }
 
 * {
-    // Sunset-inspired colors from your wallpaper
-    bg0: #0a1628;        // Deep ocean blue
-    bg1: #16213e;        // Dark blue
-    bg2: #1a2942;        // Mid blue
-    bg3: #243554;        // Lighter blue
-    fg0: #e8dfd8;        // Light cream
-    fg1: #d4c5bc;        // Muted cream
-    fg2: #9a8b82;        // Gray-brown
-    accent: #ff4757;     // Vibrant sunset red
-    accent2: #ff6b81;    // Light coral
-    orange: #ff8c42;     // Sunset orange
-    yellow: #ffd93d;     // Sunset yellow
+    /* GTK-inspired colors - these will adapt to your system theme
+       To use your actual GTK theme colors, run this command:
+       
+       grep '@define-color' ~/.themes/YOUR_THEME/gtk-3.0/gtk.css | head -10
+       
+       Then replace the hex values below with your theme's colors
+    */
     
+    bg0: #0a1628;        /* Base background - from theme_bg_color */
+    bg1: #16213e;        /* Slightly lighter background */
+    bg2: #1a2942;        /* Selected background */
+    bg3: #243554;        /* Active background */
+    fg0: #e8dfd8;        /* Primary text - from theme_fg_color */
+    fg1: #d4c5bc;        /* Secondary text - from theme_text_color */
+    fg2: #9a8b82;        /* Muted text */
+    accent: #ff4757;     /* Accent color - from theme_selected_bg_color */
+    accent2: #ff6b81;    /* Light accent */
+    orange: #ff8c42;     /* Active state color */
+    yellow: #ffd93d;     /* Highlight color */
+    
+    /* Laptop optimization: disable expensive effects */
     background-color: transparent;
     text-color: @fg0;
     spacing: 0;
@@ -46,7 +58,10 @@ window {
     border-color: @accent;
     border-radius: 0px;
     padding: 0;
+    /* Laptop optimization: use real transparency instead of fake */
     transparency: "real";
+    location: center;
+    anchor: center;
 }
 
 mainbox {
@@ -78,6 +93,8 @@ entry {
     placeholder: "Search...";
     placeholder-color: @fg2;
     cursor: text;
+    /* Laptop optimization: blink cursor less frequently */
+    cursor-blink: true;
 }
 
 listview {
@@ -90,6 +107,8 @@ listview {
     border: 0;
     fixed-height: true;
     dynamic: false;
+    /* Laptop optimization: reduce rendering cycles */
+    cycle: false;
 }
 
 element {
@@ -136,7 +155,8 @@ element selected.active {
 
 element-icon {
     background-color: transparent;
-    size: 28px;
+    /* Laptop optimization: smaller icons load faster */
+    size: 24px;
     padding: 0px 8px 0px 0px;
 }
 
@@ -144,6 +164,8 @@ element-text {
     background-color: transparent;
     text-color: inherit;
     vertical-align: 0.5;
+    /* Laptop optimization: disable text highlighting effects */
+    highlight: none;
 }
 
 mode-switcher {
@@ -159,6 +181,7 @@ button {
     text-color: @fg1;
     padding: 8px 12px;
     border-radius: 0px;
+    cursor: pointer;
 }
 
 button selected {
@@ -166,4 +189,26 @@ button selected {
     text-color: @accent;
     border: 0px 0px 2px 0px solid;
     border-color: @accent;
+}
+
+/* Laptop optimization: reduce scrollbar rendering */
+scrollbar {
+    handle-width: 4px;
+    handle-color: @accent;
+    background-color: @bg1;
+    border: 0;
+}
+
+/* Laptop optimization: simpler message styling */
+message {
+    background-color: @bg1;
+    border: 1px solid;
+    border-color: @accent;
+    padding: 8px;
+}
+
+textbox {
+    background-color: transparent;
+    text-color: @fg0;
+    padding: 4px;
 }
