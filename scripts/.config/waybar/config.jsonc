@@ -5,7 +5,6 @@
     "spacing": 5,
     "margin": "6 10 0 10",
     "exclusive": true,
-
     "modules-right": [
         "tray",
         "cpu",
@@ -20,7 +19,6 @@
         "clock#time",
         "custom/power"
     ],
-
     "modules-left": [
         "custom/apps",
         "sway/workspaces",
@@ -28,11 +26,9 @@
         "sway/mode",
         "sway/window"
     ],
-
     "modules-center": [
         "clock#date"
     ],
-
     "custom/power": {
         "format": "⏻",
         "on-click": "rofi -show power-menu -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 5 -theme-str 'window {width: 16%; height: 28%; x-offset: -10px; y-offset: 0px; border-radius: 14px;}'",
@@ -40,7 +36,6 @@
         "on-click-right": "systemctl suspend",
         "tooltip-format": "Power Menu\nRight-click: Suspend\nMiddle-click: Close rofi"
     },
-
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {
@@ -51,7 +46,6 @@
         "tooltip-format-deactivated": "Screen Lock: ENABLED\nScreen will sleep when idle",
         "on-click-right": "~/.config/sway/scripts/"
     },
-
     "custom/notification": {
         "escape": true,
         "exec": "swaync-client -swb",
@@ -73,7 +67,6 @@
         "return-type": "json",
         "tooltip-format": "{} notifications\nClick: Toggle panel\nRight-click: Toggle DND\nMiddle-click: Clear all"
     },
-
     "clock#time": {
         "interval": 1,
         "format": "{:%I:%M %p}",
@@ -81,14 +74,12 @@
         "tooltip-format": "<big>{:%A, %B %d, %Y}</big>\n<tt>{calendar}</tt>",
         "on-click-right": "mode"
     },
-
     "sway/language": {
         "format": "{}",
         "on-click": "swaymsg input type:keyboard xkb_switch_layout next",
         "tooltip-format": "Keyboard: {long}\nClick to switch layout"
     },
     
-
     "battery": {
         "bat": "BAT0",
         "adapter": "AC",
@@ -108,7 +99,6 @@
         "on-click": "gnome-power-statistics",
         "max-length": 25
     },
-
     "backlight": {
         "device": "amdgpu_bl0",
         "interval": 2,
@@ -121,7 +111,6 @@
         "smooth-scrolling-threshold": 2,
         "tooltip-format": "Brightness: {percent}%\nClick: 50% | Right-click: 100%\nScroll: Adjust"
     },
-
     "network": {
         "interval": 10,
         "format-wifi": "{icon}",
@@ -136,7 +125,6 @@
         "on-click-right": "nmtui",
         "max-length": 30
     },
-
     "pulseaudio": {
         "format": "{icon} {volume}%",
         "format-bluetooth": "󰂯 {volume}%",
@@ -161,7 +149,6 @@
         "max-volume": 150,
         "ignored-sinks": ["Easy Effects Sink"]
     },
-
     "cpu": {
         "interval": 5,
         "format": "󰻠 {usage}%",
@@ -198,13 +185,11 @@
     },
     
     "tray": {
-        "icon-theme": "Papirus-Dark",
         "icon-size": 18,
         "spacing": 6,
         "show-passive-items": true,
         "reverse-direction": false
     },
-
     "clock#date": {
         "interval": 60,
         "format": "󰸗 {:%a %d %b}",
@@ -261,11 +246,9 @@
             "Discord": "Discord",
             "Telegram": " Telegram",
             "Thunderbird": "Mail",
-            "GIMP": " GIMP",
-            "": " Desktop"
+            "GIMP": " GIMP"
         }
     },
-
     "sway/workspaces": {
         "disable-scroll": false,
         "all-outputs": false,
@@ -281,9 +264,8 @@
             "8": "8",
             "9": "9",
             "10": "10",
-            "urgent": "",
-            "focused": "",
-            "default": ""
+            "urgent": "󰀨",
+            "default": "󰧞"
         },
         "persistent-workspaces": {
             "1": [],
@@ -296,7 +278,6 @@
         "on-click": "activate",
         "sort-by-number": true
     },
-
     "custom/apps": {
         "format": "󰀻",
         "on-click": "rofi -show drun -show-icons -hover-select -me-select-entry '' -me-accept-entry MousePrimary -location 7 -theme-str 'window {width: 35%; height: 50%; x-offset: 10px; y-offset: 0px; border-radius: 14px;}'",
