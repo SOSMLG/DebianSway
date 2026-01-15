@@ -1,41 +1,57 @@
-/* Sunset-Inspired SwayNC Theme - Optimized for Vega 8 Laptops */
+/* SwayNC Theme with GTK Colors - Laptop Optimized */
+
+/* GTK Color Variables - Edit these to match your GTK theme */
+@define-color theme_bg_color #0a1628;
+@define-color theme_base_color #16213e;
+@define-color theme_fg_color #e8dfd8;
+@define-color theme_text_color #ffd4a3;
+@define-color theme_selected_bg_color #ff4757;
+@define-color theme_selected_fg_color #ffffff;
+@define-color warning_color #ff8c42;
+@define-color error_color #ff4757;
+
+/* Derived colors */
+@define-color bg_dark #0f1e2d;
+@define-color bg_light #1a2a3a;
+@define-color fg_muted #8a9fb5;
+@define-color accent_light #ff6b85;
 
 * {
   all: unset;
   font-size: 13px;
   font-family: "JetBrainsMono Nerd Font Propo", sans-serif;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 /* === Sliders and Troughs === */
 trough highlight {
-  background: linear-gradient(90deg, #ff6b85, #ffd4a3);
+  background: @theme_selected_bg_color;
 }
 
 scale trough {
   margin: 0rem 1rem;
-  background-color: rgba(26, 42, 58, 0.6);
+  background-color: alpha(@theme_base_color, 0.6);
   min-height: 10px;
   min-width: 70px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 107, 133, 0.2);
+  border: 1px solid alpha(@accent_light, 0.2);
 }
 
 slider {
-  background: linear-gradient(135deg, #ffd4a3, #ff6b85);
+  background: @accent_light;
   border-radius: 50%;
   min-height: 18px;
   min-width: 18px;
 }
 
-/* === Floating Notifications (Extended Width) === */
+/* === Floating Notifications === */
 .floating-notifications.background .notification-row .notification-background {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 
-              inset 0 0 0 1px rgba(255, 107, 133, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   border-radius: 12px;
+  border: 1px solid alpha(@accent_light, 0.25);
   margin: 12px;
-  background: rgba(26, 42, 58, 0.96);
-  color: #ffd4a3;
+  background: alpha(@theme_base_color, 0.96);
+  color: @theme_text_color;
   padding: 0;
   min-width: 450px;
 }
@@ -46,8 +62,8 @@ slider {
 }
 
 .floating-notifications.background .notification-row .notification-background .notification.critical {
-  box-shadow: inset 0 0 8px 0 rgba(255, 71, 87, 0.4);
-  border: 2px solid rgba(255, 71, 87, 0.4);
+  box-shadow: 0 0 8px alpha(@error_color, 0.4);
+  border: 2px solid alpha(@error_color, 0.4);
 }
 
 .floating-notifications.background .notification-row .notification-background .notification .notification-content {
@@ -55,18 +71,18 @@ slider {
 }
 
 .floating-notifications.background .notification-row .notification-background .notification .notification-content .summary {
-  color: #ffd4a3;
+  color: @theme_text_color;
   font-weight: 700;
   font-size: 14px;
 }
 
 .floating-notifications.background .notification-row .notification-background .notification .notification-content .time {
-  color: #8a9fb5;
+  color: @fg_muted;
   font-size: 11px;
 }
 
 .floating-notifications.background .notification-row .notification-background .notification .notification-content .body {
-  color: #ffd4a3;
+  color: @theme_text_color;
   opacity: 0.9;
   font-size: 12px;
 }
@@ -77,84 +93,84 @@ slider {
 
 .floating-notifications.background .notification-row .notification-background .notification > *:last-child > * .notification-action {
   border-radius: 8px;
-  color: #ffd4a3;
-  background: rgba(255, 107, 133, 0.2);
-  border: 1px solid rgba(255, 107, 133, 0.3);
+  color: @theme_text_color;
+  background: alpha(@accent_light, 0.2);
+  border: 1px solid alpha(@accent_light, 0.3);
   margin: 6px;
   padding: 8px 12px;
 }
 
 .floating-notifications.background .notification-row .notification-background .notification > *:last-child > * .notification-action:hover {
-  background: rgba(255, 107, 133, 0.35);
-  border-color: rgba(255, 107, 133, 0.5);
+  background: alpha(@accent_light, 0.35);
+  border-color: alpha(@accent_light, 0.5);
 }
 
 .floating-notifications.background .notification-row .notification-background .notification > *:last-child > * .notification-action:active {
-  background: rgba(255, 107, 133, 0.5);
+  background: alpha(@accent_light, 0.5);
 }
 
 .floating-notifications.background .notification-row .notification-background .close-button {
   margin: 8px;
   padding: 4px;
   border-radius: 8px;
-  color: #ffd4a3;
-  background: rgba(255, 71, 87, 0.35);
-  border: 1px solid rgba(255, 71, 87, 0.4);
+  color: @theme_text_color;
+  background: alpha(@error_color, 0.35);
+  border: 1px solid alpha(@error_color, 0.4);
   min-width: 24px;
   min-height: 24px;
 }
 
 .floating-notifications.background .notification-row .notification-background .close-button:hover {
-  background: rgba(255, 71, 87, 0.55);
+  background: alpha(@error_color, 0.55);
 }
 
 .floating-notifications.background .notification-row .notification-background .close-button:active {
-  background: rgba(255, 71, 87, 0.75);
+  background: alpha(@error_color, 0.75);
 }
 
 /* === Control Center === */
 .control-center {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 
-              inset 0 0 0 1px rgba(255, 107, 133, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   border-radius: 14px;
+  border: 1px solid alpha(@accent_light, 0.25);
   margin: 12px;
-  background: rgba(26, 42, 58, 0.96);
-  color: #ffd4a3;
+  background: alpha(@theme_base_color, 0.96);
+  color: @theme_text_color;
   padding: 16px;
 }
 
 .control-center .widget-title > label {
-  color: #ffd4a3;
+  color: @theme_text_color;
   font-size: 1.3em;
   font-weight: 700;
 }
 
 .control-center .widget-title button {
   border-radius: 10px;
-  color: #ffd4a3;
-  background: rgba(255, 71, 87, 0.25);
-  border: 1px solid rgba(255, 71, 87, 0.35);
+  color: @theme_text_color;
+  background: alpha(@error_color, 0.25);
+  border: 1px solid alpha(@error_color, 0.35);
   padding: 8px 14px;
   font-weight: 600;
 }
 
 .control-center .widget-title button:hover {
-  background: rgba(255, 71, 87, 0.4);
-  border-color: rgba(255, 71, 87, 0.5);
+  background: alpha(@error_color, 0.4);
+  border-color: alpha(@error_color, 0.5);
 }
 
 .control-center .widget-title button:active {
-  background: rgba(255, 71, 87, 0.6);
+  background: alpha(@error_color, 0.6);
 }
 
 /* === Notifications in Control Center === */
 .control-center .notification-row .notification-background {
   border-radius: 10px;
-  color: #ffd4a3;
-  background: rgba(15, 30, 45, 0.65);
-  border: 1px solid rgba(255, 107, 133, 0.2);
+  color: @theme_text_color;
+  background: alpha(@bg_dark, 0.65);
+  border: 1px solid alpha(@accent_light, 0.2);
   margin-top: 10px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .control-center .notification-row .notification-background .notification {
@@ -163,8 +179,8 @@ slider {
 }
 
 .control-center .notification-row .notification-background .notification.critical {
-  box-shadow: inset 0 0 6px 0 rgba(255, 71, 87, 0.35);
-  border: 2px solid rgba(255, 71, 87, 0.35);
+  box-shadow: 0 0 6px alpha(@error_color, 0.35);
+  border: 2px solid alpha(@error_color, 0.35);
 }
 
 .control-center .notification-row .notification-background .notification .notification-content {
@@ -172,18 +188,18 @@ slider {
 }
 
 .control-center .notification-row .notification-background .notification .notification-content .summary {
-  color: #ffd4a3;
+  color: @theme_text_color;
   font-weight: 700;
   font-size: 13px;
 }
 
 .control-center .notification-row .notification-background .notification .notification-content .time {
-  color: #8a9fb5;
+  color: @fg_muted;
   font-size: 11px;
 }
 
 .control-center .notification-row .notification-background .notification .notification-content .body {
-  color: #ffd4a3;
+  color: @theme_text_color;
   opacity: 0.9;
   font-size: 12px;
 }
@@ -194,29 +210,29 @@ slider {
 
 .control-center .notification-row .notification-background .notification > *:last-child > * .notification-action {
   border-radius: 8px;
-  color: #ffd4a3;
-  background: rgba(255, 107, 133, 0.2);
-  border: 1px solid rgba(255, 107, 133, 0.3);
+  color: @theme_text_color;
+  background: alpha(@accent_light, 0.2);
+  border: 1px solid alpha(@accent_light, 0.3);
   margin: 6px;
   padding: 6px 12px;
 }
 
 .control-center .notification-row .notification-background .notification > *:last-child > * .notification-action:hover {
-  background: rgba(255, 107, 133, 0.35);
-  border-color: rgba(255, 107, 133, 0.45);
+  background: alpha(@accent_light, 0.35);
+  border-color: alpha(@accent_light, 0.45);
 }
 
 .control-center .notification-row .notification-background .notification > *:last-child > * .notification-action:active {
-  background: rgba(255, 107, 133, 0.5);
+  background: alpha(@accent_light, 0.5);
 }
 
 .control-center .notification-row .notification-background .close-button {
   margin: 8px;
   padding: 4px;
   border-radius: 8px;
-  color: #ffd4a3;
-  background: rgba(255, 71, 87, 0.35);
-  border: 1px solid rgba(255, 71, 87, 0.4);
+  color: @theme_text_color;
+  background: alpha(@error_color, 0.35);
+  border: 1px solid alpha(@error_color, 0.4);
 }
 
 .close-button {
@@ -224,47 +240,47 @@ slider {
 }
 
 .control-center .notification-row .notification-background .close-button:hover {
-  background: rgba(255, 71, 87, 0.5);
+  background: alpha(@error_color, 0.5);
 }
 
 .control-center .notification-row .notification-background .close-button:active {
-  background: rgba(255, 71, 87, 0.7);
+  background: alpha(@error_color, 0.7);
 }
 
 .control-center .notification-row .notification-background:hover {
-  background: rgba(15, 30, 45, 0.8);
-  border-color: rgba(255, 107, 133, 0.35);
+  background: alpha(@bg_dark, 0.8);
+  border-color: alpha(@accent_light, 0.35);
 }
 
 .control-center .notification-row .notification-background:active {
-  background: rgba(15, 30, 45, 0.9);
+  background: alpha(@bg_dark, 0.9);
 }
 
 /* === Progress Bars === */
 .notification.critical progress {
-  background: linear-gradient(90deg, #ff4757, #ff6b85);
+  background: @error_color;
 }
 
 .notification.low progress,
 .notification.normal progress {
-  background: linear-gradient(90deg, #ff6b85, #ffd4a3);
+  background: @accent_light;
 }
 
 /* === DND Toggle === */
 .control-center-dnd {
   margin-top: 8px;
   border-radius: 12px;
-  background: rgba(15, 30, 45, 0.6);
-  border: 1px solid rgba(255, 107, 133, 0.3);
+  background: alpha(@bg_dark, 0.6);
+  border: 1px solid alpha(@accent_light, 0.3);
 }
 
 .control-center-dnd:checked {
-  background: rgba(255, 71, 87, 0.3);
-  border-color: rgba(255, 71, 87, 0.45);
+  background: alpha(@error_color, 0.3);
+  border-color: alpha(@error_color, 0.45);
 }
 
 .control-center-dnd slider {
-  background: linear-gradient(135deg, #ffd4a3, #ff6b85);
+  background: @accent_light;
   border-radius: 50%;
 }
 
@@ -277,47 +293,47 @@ slider {
 .widget-dnd > switch {
   font-size: initial;
   border-radius: 12px;
-  background: rgba(15, 30, 45, 0.6);
-  border: 1px solid rgba(255, 107, 133, 0.3);
+  background: alpha(@bg_dark, 0.6);
+  border: 1px solid alpha(@accent_light, 0.3);
 }
 
 .widget-dnd > switch:checked {
-  background: rgba(255, 71, 87, 0.3);
-  border-color: rgba(255, 71, 87, 0.45);
+  background: alpha(@error_color, 0.3);
+  border-color: alpha(@error_color, 0.45);
 }
 
 .widget-dnd > switch slider {
-  background: linear-gradient(135deg, #ffd4a3, #ff6b85);
+  background: @accent_light;
   border-radius: 50%;
-  border: 2px solid rgba(255, 107, 133, 0.4);
+  border: 2px solid alpha(@accent_light, 0.4);
 }
 
 /* === Inhibitors Widget === */
 .widget-inhibitors {
   margin: 8px 0;
   padding: 8px;
-  background: rgba(15, 30, 45, 0.4);
+  background: alpha(@bg_dark, 0.4);
   border-radius: 12px;
-  border: 1px solid rgba(255, 107, 133, 0.2);
+  border: 1px solid alpha(@accent_light, 0.2);
 }
 
 .widget-inhibitors > button {
   border-radius: 8px;
-  color: #ffd4a3;
-  background: rgba(255, 107, 133, 0.2);
-  border: 1px solid rgba(255, 107, 133, 0.3);
+  color: @theme_text_color;
+  background: alpha(@accent_light, 0.2);
+  border: 1px solid alpha(@accent_light, 0.3);
   padding: 6px 12px;
   margin: 4px;
 }
 
 .widget-inhibitors > button:hover {
-  background: rgba(255, 107, 133, 0.35);
+  background: alpha(@accent_light, 0.35);
 }
 
 /* === MPRIS (Media Player) === */
 .widget-mpris {
-  background: rgba(15, 30, 45, 0.65);
-  border: 1px solid rgba(255, 107, 133, 0.2);
+  background: alpha(@bg_dark, 0.65);
+  border: 1px solid alpha(@accent_light, 0.2);
   border-radius: 12px;
   padding: 12px;
   margin: 8px 0;
@@ -330,32 +346,32 @@ slider {
 
 .widget-mpris .widget-mpris-title {
   font-size: 1.1rem;
-  color: #ffd4a3;
+  color: @theme_text_color;
   font-weight: 700;
 }
 
 .widget-mpris .widget-mpris-subtitle {
   font-size: 0.9rem;
-  color: #8a9fb5;
+  color: @fg_muted;
 }
 
 .widget-mpris button {
-  background: rgba(255, 107, 133, 0.2);
-  border: 1px solid rgba(255, 107, 133, 0.3);
+  background: alpha(@accent_light, 0.2);
+  border: 1px solid alpha(@accent_light, 0.3);
   border-radius: 8px;
-  color: #ffd4a3;
+  color: @theme_text_color;
   padding: 6px;
   margin: 4px;
 }
 
 .widget-mpris button:hover {
-  background: rgba(255, 107, 133, 0.35);
+  background: alpha(@accent_light, 0.35);
 }
 
 /* === Menubar === */
 .widget-menubar > box > .menu-button-bar > button {
-  background: rgba(255, 107, 133, 0.2);
-  border: 1px solid rgba(255, 107, 133, 0.3);
+  background: alpha(@accent_light, 0.2);
+  border: 1px solid alpha(@accent_light, 0.3);
   border-radius: 12px;
   margin: 4px;
   padding: 8px 12px;
@@ -366,19 +382,19 @@ slider {
 }
 
 .widget-menubar > box > .menu-button-bar > button:hover {
-  background: rgba(255, 107, 133, 0.35);
-  border-color: rgba(255, 107, 133, 0.5);
+  background: alpha(@accent_light, 0.35);
+  border-color: alpha(@accent_light, 0.5);
 }
 
 .widget-menubar > box > .menu-button-bar > button menu {
-  background: rgba(15, 30, 45, 0.96);
+  background: alpha(@bg_dark, 0.96);
   border-radius: 12px;
-  border: 2px solid rgba(255, 107, 133, 0.3);
+  border: 2px solid alpha(@accent_light, 0.3);
   padding: 6px;
 }
 
 .widget-menubar > box > .menu-button-bar > button menu menuitem {
-  color: #ffd4a3;
+  color: @theme_text_color;
   border-radius: 8px;
   padding: 8px 12px;
   margin: 2px;
@@ -386,34 +402,34 @@ slider {
 }
 
 .widget-menubar > box > .menu-button-bar > button menu menuitem:hover {
-  background: rgba(255, 107, 133, 0.3);
-  border: 1px solid rgba(255, 107, 133, 0.4);
+  background: alpha(@accent_light, 0.3);
+  border: 1px solid alpha(@accent_light, 0.4);
 }
 
 .widget-menubar > box > .menu-button-bar > button menu menuitem:active {
-  background: rgba(255, 107, 133, 0.45);
+  background: alpha(@accent_light, 0.45);
 }
 
 /* === Widget Labels === */
 .control-center .widget-label > label {
-  color: #ffd4a3;
+  color: @theme_text_color;
   font-size: 1.6rem;
   font-weight: 700;
 }
 
 /* === Button Grid === */
 .widget-buttons-grid {
-  background: rgba(15, 30, 45, 0.4);
+  background: alpha(@bg_dark, 0.4);
   border-radius: 12px;
   margin: 8px 0;
   padding: 12px;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button {
-  background: rgba(255, 107, 133, 0.2);
-  border: 1px solid rgba(255, 107, 133, 0.3);
+  background: alpha(@accent_light, 0.2);
+  border: 1px solid alpha(@accent_light, 0.3);
   border-radius: 12px;
-  color: #ffd4a3;
+  color: @theme_text_color;
   padding: 12px;
   margin: 4px;
   min-width: 55px;
@@ -425,13 +441,13 @@ slider {
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button:hover {
-  background: rgba(255, 107, 133, 0.35);
-  border-color: rgba(255, 107, 133, 0.5);
+  background: alpha(@accent_light, 0.35);
+  border-color: alpha(@accent_light, 0.5);
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button.active {
-  background: rgba(255, 107, 133, 0.45);
-  border-color: rgba(255, 107, 133, 0.6);
+  background: alpha(@accent_light, 0.45);
+  border-color: alpha(@accent_light, 0.6);
 }
 
 /* === Images === */
@@ -446,16 +462,18 @@ scrollbar {
 }
 
 scrollbar trough {
-  background: rgba(15, 30, 45, 0.3);
-  border-radius: 8px;
-}
-
-scrollbar slider {
-  background: rgba(255, 107, 133, 0.35);
+  background: alpha(@bg_dark, 0.3);
   border-radius: 8px;
   min-width: 8px;
 }
 
+scrollbar slider {
+  background: alpha(@accent_light, 0.35);
+  border-radius: 8px;
+  min-width: 6px;
+  min-height: 20px;
+}
+
 scrollbar slider:hover {
-  background: rgba(255, 107, 133, 0.5);
+  background: alpha(@accent_light, 0.5);
 }
