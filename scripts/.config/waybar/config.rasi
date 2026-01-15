@@ -1,0 +1,214 @@
+configuration {
+    modi: "drun,run,window";
+    font: "JetBrainsMono Nerd Font Propo 12";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    display-drun: "󰀻  Apps";
+    display-run: "  Run";
+    display-window: "  Windows";
+    drun-display-format: "{name}";
+    window-format: "{w} · {t}";
+    terminal: "alacritty";
+    disable-history: false;
+    sidebar-mode: true;
+    hover-select: false;
+    me-select-entry: "";
+    me-accept-entry: "MousePrimary";
+    scroll-method: 0;
+    case-sensitive: false;
+    cycle: true;
+    matching: "normal";
+    
+    /* Laptop optimizations */
+    lazy-grab: true;
+    click-to-exit: true;
+}
+
+* {
+    /* GTK-inspired colors - these will adapt to your system theme
+       To use your actual GTK theme colors, run this command:
+       
+       grep '@define-color' ~/.themes/YOUR_THEME/gtk-3.0/gtk.css | head -10
+       
+       Then replace the hex values below with your theme's colors
+    */
+    
+    bg0: #0a1628;        /* Base background - from theme_bg_color */
+    bg1: #16213e;        /* Slightly lighter background */
+    bg2: #1a2942;        /* Selected background */
+    bg3: #243554;        /* Active background */
+    fg0: #e8dfd8;        /* Primary text - from theme_fg_color */
+    fg1: #d4c5bc;        /* Secondary text - from theme_text_color */
+    fg2: #9a8b82;        /* Muted text */
+    accent: #ff4757;     /* Accent color - from theme_selected_bg_color */
+    accent2: #ff6b81;    /* Light accent */
+    orange: #ff8c42;     /* Active state color */
+    yellow: #ffd93d;     /* Highlight color */
+    
+    /* Laptop optimization: disable expensive effects */
+    background-color: transparent;
+    text-color: @fg0;
+    spacing: 0;
+    width: 600px;
+}
+
+window {
+    background-color: @bg0;
+    border: 2px solid;
+    border-color: @accent;
+    border-radius: 0px;
+    padding: 0;
+    /* Laptop optimization: use real transparency instead of fake */
+    transparency: "real";
+    location: center;
+    anchor: center;
+}
+
+mainbox {
+    background-color: transparent;
+    children: [ inputbar, listview, mode-switcher ];
+    spacing: 0px;
+    padding: 0;
+}
+
+inputbar {
+    background-color: @bg1;
+    text-color: @fg0;
+    padding: 12px 16px;
+    spacing: 10px;
+    children: [ prompt, entry ];
+    border: 0px 0px 2px 0px solid;
+    border-color: @accent;
+}
+
+prompt {
+    background-color: transparent;
+    text-color: @accent;
+    font: "JetBrainsMono Nerd Font Bold 12";
+}
+
+entry {
+    background-color: transparent;
+    text-color: @fg0;
+    placeholder: "Search...";
+    placeholder-color: @fg2;
+    cursor: text;
+    /* Laptop optimization: blink cursor less frequently */
+    cursor-blink: true;
+}
+
+listview {
+    background-color: transparent;
+    columns: 1;
+    lines: 8;
+    spacing: 0px;
+    padding: 8px;
+    scrollbar: false;
+    border: 0;
+    fixed-height: true;
+    dynamic: false;
+    /* Laptop optimization: reduce rendering cycles */
+    cycle: false;
+}
+
+element {
+    background-color: transparent;
+    text-color: @fg1;
+    padding: 8px 12px;
+    spacing: 10px;
+    border-radius: 0px;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: @fg1;
+}
+
+element alternate.normal {
+    background-color: @bg1;
+    text-color: @fg1;
+}
+
+element selected.normal {
+    background-color: @bg2;
+    text-color: @accent2;
+    border: 0px 0px 0px 3px solid;
+    border-color: @accent;
+}
+
+element normal.active {
+    background-color: transparent;
+    text-color: @orange;
+}
+
+element alternate.active {
+    background-color: @bg1;
+    text-color: @orange;
+}
+
+element selected.active {
+    background-color: @bg2;
+    text-color: @yellow;
+    border: 0px 0px 0px 3px solid;
+    border-color: @orange;
+}
+
+element-icon {
+    background-color: transparent;
+    /* Laptop optimization: smaller icons load faster */
+    size: 24px;
+    padding: 0px 8px 0px 0px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+    /* Laptop optimization: disable text highlighting effects */
+    highlight: none;
+}
+
+mode-switcher {
+    background-color: @bg1;
+    border: 2px 0px 0px 0px solid;
+    border-color: @accent;
+    padding: 8px;
+    spacing: 8px;
+}
+
+button {
+    background-color: @bg2;
+    text-color: @fg1;
+    padding: 8px 12px;
+    border-radius: 0px;
+    cursor: pointer;
+}
+
+button selected {
+    background-color: @bg3;
+    text-color: @accent;
+    border: 0px 0px 2px 0px solid;
+    border-color: @accent;
+}
+
+/* Laptop optimization: reduce scrollbar rendering */
+scrollbar {
+    handle-width: 4px;
+    handle-color: @accent;
+    background-color: @bg1;
+    border: 0;
+}
+
+/* Laptop optimization: simpler message styling */
+message {
+    background-color: @bg1;
+    border: 1px solid;
+    border-color: @accent;
+    padding: 8px;
+}
+
+textbox {
+    background-color: transparent;
+    text-color: @fg0;
+    padding: 4px;
+}
