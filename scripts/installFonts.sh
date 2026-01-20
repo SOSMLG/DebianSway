@@ -19,7 +19,7 @@ error()   { echo -e "${RED}${BOLD}✖${RESET} $1"; }
 # Step 1: Install Noto Fonts
 info "Installing Font Awesome and Noto fonts (English + Arabic)..."
 sudo apt update
-sudo apt install -y fonts-font-awesome fonts-noto-core fonts-noto-unhinted curl
+sudo apt install -y fonts-font-awesome fonts-noto-core fonts-noto-unhinted fonts-noto-color-emoji curl
 success "Noto fonts installed."
 
 # Step 2: Create fontconfig directory
