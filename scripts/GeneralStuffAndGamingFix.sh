@@ -48,10 +48,7 @@ log_ok "32-bit enabled"
 log_info "Installing gaming dependencies..."
 PACKAGES=(
     "libvulkan1" "libvulkan1:i386"
-    "mesa-vulkan-drivers" "mesa-vulkan-drivers:i386"
-    "libgl1-mesa-dri" "libgl1-mesa-dri:i386"
-    "xwayland" "wayland-protocols"
-    "vulkan-tools" "mesa-utils"
+    "mesa-utils"
     "gamemode" "mangohud"
 )
 
