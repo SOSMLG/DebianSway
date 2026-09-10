@@ -8,11 +8,66 @@ _DEBSWAY_LIB_ACTIONS_LOADED=1
 # --- menu / launcher ---------------------------------------------------------
 
 cmd_launcher() {
+    if ! command -v wofi >/dev/null 2>&1; then
+        d_err "wofi is not installed (run scripts/10-sway-core.sh)."
+        return 1
+    fi
     wofi --show drun --insensitive 2>/dev/null
 }
 
+# --- keybinding cheat-sheet ----------------------------------------------------
+# Parsed live from sway/config, so it can never go stale the way a
+# hand-written list does. `debsway keys` opens the wofi picker,
+# `debsway keys --list` prints plain text (terminal / grep / README gen).
+
+_keys_config() {
+    local c
+    for c in "$DS_CONFIG/sway/config" /etc/skel/.config/sway/config; do
+        if [ -f "$c" ]; then printf '%s\n' "$c"; return 0; fi
+    done
+    return 1
+}
+
+_keys_table() {  # prints "KEYSPEC<TAB>command" lines
+    local cfg="$1" line mode="" keys cmd
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Track `mode "name" {` blocks so resize binds are labeled.
+        if [[ "$line" =~ ^[[:space:]]*mode[[:space:]]+\"([^\"]+)\" ]]; then
+            mode="${BASH_REMATCH[1]}"
+            continue
+        fi
+        [[ "$line" =~ ^[[:space:]]*\} ]] && { mode=""; continue; }
+        [[ "$line" =~ ^[[:space:]]*bindsym[[:space:]]+(.*)$ ]] || continue
+        line="${BASH_REMATCH[1]}"
+        # Strip bindsym flags (--locked, --to-code, --input-device=*, ...).
+        while [[ "$line" =~ ^--[a-z-]+(=([^[:space:]]+))?[[:space:]]+(.*)$ ]]; do
+            line="${BASH_REMATCH[3]}"
+        done
+        keys="${line%%[[:space:]]*}"
+        cmd="${line#*[[:space:]]}"
+        cmd="$(printf '%s' "$cmd" | sed 's/[[:space:]]\+/ /g')"
+        keys="${keys//\$mod/Super}"
+        [ -n "$mode" ] && [ "$mode" != "default" ] && keys="[$mode] $keys"
+        printf '%s\t%s\n' "$keys" "$cmd"
+    done < "$cfg"
+}
+
+cmd_keys() {
+    local cfg
+    cfg="$(_keys_config)" || { d_err "No sway config found (expected $DS_CONFIG/sway/config)."; return 1; }
+    if [ "${1:-}" = "--list" ] || ! command -v wofi >/dev/null 2>&1; then
+        _keys_table "$cfg"
+        return 0
+    fi
+    local sel
+    sel="$(_keys_table "$cfg" | awk -F'\t' '{printf "%-28s  %s\n", $1, $2}' | wofi_pick "Keys (Super = \$mod)")" || return 1
+    [ -z "$sel" ] && return 0
+    # Copy the keyspec so it can be pasted into chat/notes.
+    command -v wl-copy >/dev/null 2>&1 && printf '%s' "${sel%%  *}" | wl-copy 2>/dev/null || true
+}
+
 cmd_menu() {
-    local poweronly="$1"
+    local poweronly="${1:-}"
     local labels=() cmds=()
 
     if [ -n "$poweronly" ]; then
@@ -38,6 +93,7 @@ cmd_menu() {
         labels+=("\uf6fb  Touchpad toggle");             cmds+=("debsway toggle touchpad")
         labels+=("\uf023  Lock screen");                 cmds+=("debsway lock")
         labels+=("\uf011  Power menu");                  cmds+=("wlogout -b 3")
+        labels+=("\uf11c  Keybindings");                cmds+=("debsway keys")
         labels+=("\uf1ec  Calculator");                  cmds+=("debsway calc")
         labels+=("\uf021  Update system");               cmds+=("debsway update")
         labels+=("\uf0f0  System doctor");               cmds+=("debsway doctor")
@@ -50,11 +106,15 @@ cmd_menu() {
     local i=0
     for l in "${labels[@]}"; do
         if [ "$l" = "$sel" ]; then
-            sh -c "${cmds[$i]}" >/dev/null 2>&1 &
+            # Detached so the menu closes immediately. Subcommands report
+            # their own errors via notify-send / stderr.
+            sh -c "${cmds[$i]}" </dev/null >/dev/null 2>&1 &
+            disown 2>/dev/null || true
             return 0
         fi
-        ((i++))
+        i=$((i + 1))
     done
+    d_warn "No match for selection: $sel"
 }
 
 cmd_style() {
@@ -116,7 +176,12 @@ cmd_bg() {
     if [ "$action" = "apply" ]; then
         local marker
         marker="$(get_marker bg)"
-        [ -n "$marker" ] && [ -f "$marker" ] && _bg_apply "$marker"
+        if [ -n "$marker" ] && [ -f "$marker" ]; then
+            _bg_persist "$marker"
+            if is_under_sway; then
+                swaymsg "output * bg \"$marker\" fill" >/dev/null 2>&1
+            fi
+        fi
         return
     fi
 
@@ -127,9 +192,10 @@ cmd_bg() {
     fi
 
     if [ "$action" = "cycle" ] || [ "$action" = "random" ]; then
-        local cur next idx n
+        local cur="" next="" idx n
         cur="$(get_marker bg)"
         n="${#imgs[@]}"
+        [ "$n" -eq 0 ] && { d_warn "No wallpapers found."; return 0; }
         if [ "$action" = "random" ]; then
             next="$(printf '%s\n' "${imgs[@]}" | shuf -n1)"
         else
@@ -139,7 +205,7 @@ cmd_bg() {
                     next="${imgs[$(((idx + 1) % n))]}"
                     break
                 fi
-                ((idx++))
+                idx=$((idx + 1))
             done
             [ -z "$next" ] && next="${imgs[0]}"
         fi
@@ -149,22 +215,40 @@ cmd_bg() {
 
     # panel
     [ "${#imgs[@]}" -eq 0 ] && { d_warn "No wallpapers found in ${bg_dirs[*]}"; return 0; }
-    local sel
-    sel="$(printf '%s\n' "${imgs[@]}" | xargs -n1 basename | wofi_pick "Background")" || return 1
+    local sel names=() f
+    for f in "${imgs[@]}"; do names+=("$(basename "$f")"); done
+    sel="$(printf '%s\n' "${names[@]}" | wofi_pick "Background")" || return 1
     [ -z "$sel" ] && return 0
     for f in "${imgs[@]}"; do
         [ "$(basename "$f")" = "$sel" ] && { _bg_apply "$f"; return; }
     done
 }
 
+_bg_persist() {
+    # Rewrite the `output * bg ...` line in sway/config so `swaymsg reload`
+    # ($mod+Shift+C) and theme reloads keep the chosen wallpaper instead of
+    # snapping back to the baked-in default.
+    local file="$1" cfg="$DS_CONFIG/sway/config"
+    [ -f "$cfg" ] || return 0
+    # Escape sed replacement chars in the path.
+    local esc
+    esc="$(printf '%s' "$file" | sed 's/[&|\\]/\\&/g')"
+    if grep -qE '^[[:space:]]*output[[:space:]]+\*[[:space:]]+bg[[:space:]]' "$cfg"; then
+        sed -i -E "s|^[[:space:]]*output[[:space:]]+\\*[[:space:]]+bg[[:space:]]+.*|output * bg $esc fill|" "$cfg"
+    else
+        printf '\noutput * bg %s fill\n' "$file" >> "$cfg"
+    fi
+}
+
 _bg_apply() {
     local file="$1"
     set_marker bg "$file"
+    _bg_persist "$file"
     if is_under_sway; then
-        swaymsg "output * bg $file fill" >/dev/null 2>&1
-        d_ok "Background set: $(basename "$file")"
+        swaymsg "output * bg \"$file\" fill" >/dev/null 2>&1
+        d_ok "Background set: $(basename "$file") (persisted across reload)"
     else
-        d_warn "Not under sway — will apply at next session."
+        d_warn "Not under sway — saved, will apply at next session (debsway bg apply)."
     fi
 }
 
@@ -204,28 +288,30 @@ cmd_agent() {
             if command -v opencode >/dev/null 2>&1; then
                 echo "opencode  $(opencode --version 2>/dev/null)"
             else
-                echo "opencode  not installed (run scripts/aiOpencode.sh)"
+                echo "opencode  not installed (run scripts/34-opencode-agent.sh)"
             fi
             ;;
         *)
             if command -v opencode >/dev/null 2>&1; then
+                [ $# -gt 0 ] && shift
                 if [ -t 0 ]; then
-                    # Already inside a terminal — run directly (no nested foot).
-                    exec opencode "${@:2}"
+                    # Already inside a terminal — run directly (no nesting).
+                    exec opencode "$@"
                 elif [ -z "${DISPLAY:-}" ] && [ -n "${WAYLAND_DISPLAY:-}" ]; then
                     # No tty + Wayland: open in a new alacritty window
-                    # (foot does not render opencode's TUI correctly).
+                    # (Alacritty is the canonical $term; it renders
+                    # opencode's TUI correctly).
                     if command -v alacritty >/dev/null 2>&1; then
-                        exec alacritty -e opencode "${@:2}"
+                        exec alacritty -e opencode "$@"
                     else
-                        exec opencode "${@:2}"
+                        exec opencode "$@"
                     fi
                 else
-                    exec opencode "${@:2}"
+                    exec opencode "$@"
                 fi
             else
                 d_err "OpenCode is not installed yet."
-                d_log  "Install it with:  cd <repo> && bash scripts/aiOpencode.sh"
+                d_log  "Install it with:  cd <repo> && bash scripts/34-opencode-agent.sh"
                 return 1
             fi
             ;;
@@ -337,12 +423,12 @@ cmd_sound() {
                 choices+=("$desc")
                 cmds+=("pactl set-default-sink $idx")
             done
-            [ ${#choices[@]} -eq 0 ] && { d_warn "No audio sinks found."; return 1; }
+            [ "${#choices[@]}" -eq 0 ] && { d_warn "No audio sinks found."; return 1; }
             local picked i=0
             picked="$(printf '%s\n' "${choices[@]}" | wofi_pick "Audio output")" || return 1
             for name in "${choices[@]}"; do
                 [ "$name" = "$picked" ] && { sh -c "${cmds[$i]}"; return 0; }
-                ((i++))
+                i=$((i + 1))
             done
             ;;
     esac
@@ -395,7 +481,7 @@ for n in nets:
 # --- toggles ------------------------------------------------------------------------------------
 
 cmd_toggle() {
-    local what="$1"
+    local what="${1:-}"
     case "$what" in
         night)
             if [ -f "$DS_STATE/night" ]; then
@@ -463,7 +549,7 @@ cmd_date() {
 }
 
 cmd_bar() {
-    case "$1" in
+    case "${1:-reload}" in
         restart)
             pkill -x waybar 2>/dev/null
             sleep 0.3
@@ -482,7 +568,7 @@ cmd_update() {
         d_ok "System up to date."
         return 0
     fi
-    if [ "$1" = "--apply" ] || [ -n "${DEBSWAY_ASSUME_YES:-}" ]; then
+    if [ "${1:-}" = "--apply" ] || [ -n "${DEBSWAY_ASSUME_YES:-}" ]; then
         sudo apt-get upgrade -y
         [ "$fb" -gt 0 ] && { command -v sudo >/dev/null 2>&1 && sudo flatpak update -y || flatpak update -y; }
     else

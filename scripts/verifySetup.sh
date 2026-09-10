@@ -122,7 +122,7 @@ for g in input video render lpadmin; do
     if id -nG "$ACTUAL_USER" 2>/dev/null | tr ' ' '\n' | grep -qx "$g"; then
         report "group: $g" ok
     else
-        report "group: $g" warn "user not in $g (lpadmin optional — re-run desktopEssentials or: sudo usermod -aG $g $ACTUAL_USER)"
+        report "group: $g" warn "user not in $g (lpadmin optional — re-run 30-desktop-essentials or: sudo usermod -aG $g $ACTUAL_USER)"
     fi
 done
 
@@ -133,8 +133,9 @@ pkg swaylock
 pkg swayidle
 pkg waybar
 pkg wofi
-pkg foot
+pkg alacritty
 pkg mako-notifier
+pkg libnotify-bin
 pkg swayosd
 pkg cliphist
 pkg swappy
@@ -185,7 +186,7 @@ pkg keepassxc optional
 if fc-list 2>/dev/null | grep -qi "JetBrainsMono Nerd Font"; then
     report "JetBrainsMono Nerd Font" ok
 else
-    report "JetBrainsMono Nerd Font" fail "not found — re-run installFonts.sh"
+    report "JetBrainsMono Nerd Font" fail "not found — re-run 17-fonts.sh"
 fi
 
 # --- 5. Firefox hardening -------------------------------------------------
@@ -200,21 +201,21 @@ bin debsway
 if [ -x "$HOME/.local/share/debsway/bin/debsway" ]; then
     report "debsway install tree" ok
 else
-    report "debsway install tree" fail "missing — re-run 26-debswayCli.sh"
+    report "debsway install tree" fail "missing — re-run 21-debsway-cli.sh"
 fi
 if [ -f "$HOME/.local/state/debsway/theme" ]; then
     report "debsway active theme" ok "$(cat "$HOME/.local/state/debsway/theme")"
 else
-    report "debsway active theme" fail "no marker — re-run 26-debswayCli.sh (debsway theme set)"
+    report "debsway active theme" fail "no marker — re-run 21-debsway-cli.sh (debsway theme set)"
 fi
 if [ -f "$HOME/.config/sway/colors.conf" ] && grep -q '^set \$bg' "$HOME/.config/sway/colors.conf"; then
     report "sway palette (colors.conf)" ok
 else
-    report "sway palette (colors.conf)" fail "missing — re-run 25-swayShellUpgrade.sh"
+    report "sway palette (colors.conf)" fail "missing — re-run 20-shell-upgrade.sh"
 fi
 cfg "sway/config" "$HOME/.config/sway/config"
 cfg "waybar/config" "$HOME/.config/waybar/config"
-cfg "foot/foot.ini" "$HOME/.config/foot/foot.ini"
+cfg "alacritty/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
 cfg "swayosd/style.css" "$HOME/.config/swayosd/style.css"
 cfg "wlogout/style.css" "$HOME/.config/wlogout/style.css"
 cfg "wlogout/layout" "$HOME/.config/wlogout/layout"
@@ -226,7 +227,7 @@ cfg "waybar/style.css" "$HOME/.config/waybar/style.css"
 if [ -f "$HOME/.config/sway/wallpapers/catppuccin-mocha.png" ]; then
     report "Catppuccin wallpaper" ok
 else
-    report "Catppuccin wallpaper" warn "wallpaper missing — re-run catppuccinSway.sh"
+    report "Catppuccin wallpaper" warn "wallpaper missing — re-run 22-theme-default.sh"
 fi
 
 # --- 8. Services -----------------------------------------------------------

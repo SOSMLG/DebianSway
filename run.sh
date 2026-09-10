@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # ==========================================
-# deb-sway-thinkpad — Debian 13 (Trixie) + Sway — Ordered Runner
-# Runs setup scripts in the order defined below,
+# deb-sway-thinkpad — Devuan 6 (Excalibur) + Sway — Ordered Runner
+# Discovers steps from scripts/??-*.sh (sorted = run order), grouped
+# into phases by leading digit: 1x core, 2x desktop, 3x apps,
+# 4x optional, 5x utils. Each step declares its own metadata:
+#   # DEBSWAY_DESC: one-line description
+#   # DEBSWAY_DEFAULT: Y|N
 # asks Y/N per script with a default value.
 # For a fully unattended run:  ./install.sh
 # This runner is for when you want to pick-and-choose.
@@ -29,12 +33,15 @@ usage() {
     cat <<EOF
 Usage: $0 [options]
 
-Runs the toolkit's setup scripts in the order defined below, asking Y/N
+Runs the toolkit's setup scripts in phase order, asking Y/N
 per script. Options:
 
-  --list                Print each script (order, description, default) and exit.
+  --list                Print each step (phase, description, default) and exit.
+  --phase a[,b]         Only run these phases: core,desktop,apps,optional,utils
   --only a.sh,b.sh      Run only the listed scripts, in their defined order.
-                        Accepts filenames with or without the '.sh' suffix.
+                        Accepts filenames with or without the '.sh' suffix,
+                        with or without the numeric prefix (e.g. 'firefox'
+                        matches '16-firefox.sh'). Pre-rename names still work.
   --yes, -y             Answer every prompt with its default (unattended).
   --full                Like --yes + treat every script's default as Y
                         (all optional groups included). Used by install.sh.
@@ -44,7 +51,8 @@ per script. Options:
 
 TL;DR:  ./install.sh         one-command, everything, unattended
         ./run.sh --list      see what it would do
-        ./run.sh --only 01-backports.sh,usefulApps.sh
+        ./run.sh --phase core,desktop
+        ./run.sh --only firefox,useful-apps
 EOF
 }
 
@@ -55,10 +63,17 @@ ASSUME_YES=0
 FULL=0
 SKIP_APT_UPDATE=0
 ONLY_NAMES=()
+PHASE_NAMES=()
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --list) DO_LIST=1 ;;
+        --phase)
+            [ $# -ge 2 ] || { echo -e "${RED}--phase needs a comma-separated list of phases.${RESET}"; exit 1; }
+            shift
+            IFS=',' read -ra _entries <<< "$1"
+            PHASE_NAMES+=("${_entries[@]}")
+            ;;
         --only)
             [ $# -ge 2 ] || { echo -e "${RED}--only needs a comma-separated list of scripts.${RESET}"; exit 1; }
             shift
@@ -92,102 +107,174 @@ if [ "$(id -u)" -eq 0 ] && [ -z "${SUDO_USER:-}" ]; then
     exit 1
 fi
 
-# --- Distro check (Debian/Devuan; both ship /etc/debian_version) ---
+# --- Distro check (Devuan/Devuan; both ship /etc/debian_version) ---
 if [ -f /etc/debian_version ]; then
     echo -e "${GREEN}Debian-based system detected: $(cat /etc/debian_version)${RESET}"
     if [ -f /etc/devuan_version ]; then
-        echo -e "${YELLOW}Devuan detected: $(cat /etc/devuan_version) — the sway/systemd parts may need manual tweaks.${RESET}"
+        echo -e "${GREEN}Devuan detected: $(cat /etc/devuan_version) — OpenRC service handling active.${RESET}"
     fi
 else
-    echo -e "${YELLOW}Warning: this toolkit targets Debian. Your system may not be compatible.${RESET}"
+    echo -e "${YELLOW}Warning: this toolkit targets Devuan/Debian. Your system may not be compatible.${RESET}"
     if [ -z "${DEBSWAY_ASSUME_YES:-}" ]; then
         read -r -p "Continue anyway? (y/N): " continue_anyway
         [[ "$continue_anyway" =~ ^[Yy]$ ]] || exit 1
     fi
 fi
 
-# --- Ordered list: "script|description|default" ---
-# Defaults: Y = core setup, N = optional group / maintenance utility.
-# --full (install.sh) forces every default to Y.
-SCRIPTS=(
-    "00-sway-core.sh|Install the Sway window-manager stack (+ greetd login, Flatpak, configs)|Y"
-    "01-backports.sh|Enable Debian backports (trixie-backports) + apt pinning|Y"
-    "addUserToGroups.sh|Add your user to input/video/render groups|Y"
-    "hardwareSupport.sh|Install WiFi/Bluetooth/AMD GPU firmware, microcode + fwupd|Y"
-    "bluetoothSetup.sh|Set up Bluetooth stack, Blueman applet + A2DP audio|Y"
-    "multimediaCodecs.sh|Install audio/video codecs + DVD playback|Y"
-    "firefoxHarden.sh|Install & harden Firefox ESR (Betterfox + privacy policies)|Y"
-    "installFonts.sh|Install Noto, Font Awesome + JetBrainsMono Nerd Font|Y"
-    "terminalButterbash.sh|Install ButterBash (saner shell + aliases)|Y"
-    "fastfetchConfig.sh|Install fastfetch + curated config presets|Y"
-    "catppuccinSway.sh|Catppuccin Mocha/Red default theme + cursor pack (legacy alias of \`debsway theme set\`)|Y"
-    "desktopEssentials.sh|Flatpak/Flathub, printing (CUPS), firewall (gufw/ufw), gparted|Y"
-    "timeshiftSetup.sh|Install Timeshift for system snapshots/restore|Y"
-    "networkTimeSync.sh|Enable NTP time sync via chrony (harmless if already synced)|N"
-    "usefulApps.sh|Install VLC, TLP (+ 80% battery cap), archive + thumbnail support|Y"
-    "aiOpencode.sh|Install OpenCode AI coding agent + Super+A hotkey + system skill file|Y"
-    "25-swayShellUpgrade.sh|Sway shell: OSD, clipboard history, screenshots, media keys, night-light + Foot terminal|Y"
-    "26-debswayCli.sh|Install the debsway CLI + theme engine (debsway menu/theme/doctor...)|Y"
-    "installVscodium.sh|(optional) Install VSCodium editor|N"
-    "vscodiumDevSetup.sh|(optional) Configure VSCodium for C++/Python development|N"
-    "devToolsExtras.sh|(optional) Dev extras: btop, eza, bat, zoxide, Neovim+lazy.nvim, KeePassXC|N"
-    "installPhotogimp.sh|(optional) Install GIMP + PhotoGIMP Photoshop-like layout|N"
-    "gamingSetup.sh|(optional) Install Heroic / Steam / Wine + game libraries|N"
-    "vesktopTelegram.sh|(optional) Install Vesktop (Discord) / Telegram|N"
-    "systemMaintenance.sh|(utility) apt cleanup + dead symlink tidy|N"
-    "configBackup.sh|(utility) Back up your $HOME config into a timestamped archive|N"
-    "exportToSkel.sh|(utility) Copy per-user defaults into /etc/skel for new accounts|N"
+# --- Step discovery ----------------------------------------------------------
+# Steps are scripts/??-*.sh, sorted. Phase comes from the leading digit.
+# Description/default come from the script's own DEBSWAY_* header lines.
+phase_of() {
+    case "${1:0:1}" in
+        1) echo "core" ;;
+        2) echo "desktop" ;;
+        3) echo "apps" ;;
+        4) echo "optional" ;;
+        5) echo "utils" ;;
+        *) echo "misc" ;;
+    esac
+}
+
+step_desc() {  # step_desc <file> — DEBSWAY_DESC header or fallback
+    local d
+    d="$(grep -m1 '^# DEBSWAY_DESC:' "$1" 2>/dev/null | sed 's/^# DEBSWAY_DESC: *//')"
+    printf '%s' "${d:-No description (add a DEBSWAY_DESC header)}"
+}
+
+step_default() {  # step_default <file> — DEBSWAY_DEFAULT header or N
+    local d
+    d="$(grep -m1 '^# DEBSWAY_DEFAULT:' "$1" 2>/dev/null | sed 's/^# DEBSWAY_DEFAULT: *//' | tr -d '[:space:]')"
+    case "${d^^}" in Y) echo "Y" ;; *) echo "N" ;; esac
+}
+
+# Pre-rename aliases (old name -> new file) so saved --only lists keep working.
+declare -A RENAMED=(
+    [00-sway-core]=10-sway-core.sh [01-backports]=11-backports.sh
+    [addUserToGroups]=12-user-groups.sh [hardwareSupport]=13-hardware.sh
+    [bluetoothSetup]=14-bluetooth.sh [multimediaCodecs]=15-codecs.sh
+    [firefoxHarden]=16-firefox.sh [installFonts]=17-fonts.sh
+    [terminalButterbash]=18-butterbash.sh [fastfetchConfig]=19-fastfetch.sh
+    [25-swayShellUpgrade]=20-shell-upgrade.sh [26-debswayCli]=21-debsway-cli.sh
+    [catppuccinSway]=22-theme-default.sh [desktopEssentials]=30-desktop-essentials.sh
+    [timeshiftSetup]=31-timeshift.sh [networkTimeSync]=32-time-sync.sh
+    [usefulApps]=33-useful-apps.sh [aiOpencode]=34-opencode-agent.sh
+    [installVscodium]=40-vscodium.sh [vscodiumDevSetup]=41-vscodium-dev.sh
+    [devToolsExtras]=42-dev-extras.sh [installPhotogimp]=43-photogimp.sh
+    [gamingSetup]=44-gaming.sh [vesktopTelegram]=45-chat.sh
+    [systemMaintenance]=50-maintenance.sh [configBackup]=51-backup.sh
+    [exportToSkel]=52-skel-export.sh
 )
+
+# Normalize a --only/--phase token to a step filename (no dir) or empty.
+resolve_step() {  # resolve_step <token> -> filename
+    local tok="$1" base f
+    tok="${tok%.sh}"
+    # Exact filename (with or without numeric prefix already included).
+    for f in "$SCRIPTS_DIR"/??-*.sh; do
+        [ -f "$f" ] || continue
+        base="$(basename "$f" .sh)"
+        if [ "$base" = "$tok" ]; then printf '%s\n' "$(basename "$f")"; return 0; fi
+    done
+    # Short name: suffix after the numeric prefix.
+    for f in "$SCRIPTS_DIR"/??-*.sh; do
+        [ -f "$f" ] || continue
+        base="$(basename "$f" .sh)"
+        if [ "${base#??-}" = "$tok" ]; then printf '%s\n' "$(basename "$f")"; return 0; fi
+    done
+    # Pre-rename alias.
+    if [ -n "${RENAMED[$tok]+x}" ]; then
+        echo -e "${YELLOW}Note: '$tok' was renamed to '${RENAMED[$tok]}' — update your notes.${RESET}" >&2
+        printf '%s\n' "${RENAMED[$tok]}"
+        return 0
+    fi
+    return 1
+}
+
+# Ordered step list: "file|phase|desc|default"
+STEPS=()
+shopt -s nullglob
+for _f in "$SCRIPTS_DIR"/??-*.sh; do
+    _b="$(basename "$_f")"
+    STEPS+=("$_b|$(phase_of "$_b")|$(step_desc "$_f")|$(step_default "$_f")")
+done
+shopt -u nullglob
+unset _f _b
+
+if [ "${#STEPS[@]}" -eq 0 ]; then
+    echo -e "${RED}No steps found in $SCRIPTS_DIR/??-*.sh — broken checkout?${RESET}"
+    exit 1
+fi
 
 # --- --list: print the ordering and exit ----------------------------------
 if [ "$DO_LIST" -eq 1 ]; then
-    echo -e "${BLUE}Toolkit scripts, in run order:${RESET}\n"
+    echo -e "${BLUE}Toolkit steps, in run order (by phase):${RESET}\n"
+    _last_phase=""
     i=1
-    for ENTRY in "${SCRIPTS[@]}"; do
+    for ENTRY in "${STEPS[@]}"; do
         SCRIPT="${ENTRY%%|*}"
         REST="${ENTRY#*|}"
+        PHASE="${REST%%|*}"
+        REST="${REST#*|}"
         DESC="${REST%%|*}"
         DEFAULT="${REST##*|}"
-        printf '  %2d.  %-28s default: %-1s  %s\n' "$i" "$SCRIPT" "${DEFAULT^^}" "$DESC"
-        ((i++))
+        if [ "$PHASE" != "$_last_phase" ]; then
+            echo -e "${CYAN}── $PHASE ──${RESET}"
+            _last_phase="$PHASE"
+        fi
+        printf '  %2d.  %-28s default: %-1s  %s\n' "$i" "$SCRIPT" "$DEFAULT" "$DESC"
+        ((i++)) || true
     done
+    unset _last_phase
     echo
+    echo -e "Phases: core desktop apps optional utils  (filter: ${CYAN}./run.sh --phase core,desktop${RESET})"
     echo -e "Run everything unattended: ${CYAN}./install.sh${RESET}"
     echo -e "Run everything interactively: ${CYAN}./run.sh${RESET}"
     exit 0
 fi
 
-# --- --only: pick the subset, keep the defined order -----------------------
+# --- Selection: --phase and/or --only, keeping defined order ----------------
 SELECTED=()
-if [ "${#ONLY_NAMES[@]}" -gt 0 ]; then
-    declare -A WANTED
-    for n in "${ONLY_NAMES[@]}"; do
+if [ "${#ONLY_NAMES[@]}" -gt 0 ] || [ "${#PHASE_NAMES[@]}" -gt 0 ]; then
+    declare -A WANT_STEPS=() WANT_PHASES=()
+    for n in "${ONLY_NAMES[@]:-}"; do
         [ -z "$n" ] && continue
-        n="${n%.sh}"
-        WANTED["${n%%.sh}"]=1
-    done
-    unset n
-    for ENTRY in "${SCRIPTS[@]}"; do
-        SCRIPT="${ENTRY%%|*}"
-        if [ -n "${WANTED[${SCRIPT%.sh}]+x}" ]; then
-            SELECTED+=("$ENTRY")
-            unset "WANTED[${SCRIPT%.sh}]"
+        if _r="$(resolve_step "$n")"; then
+            WANT_STEPS["$_r"]=1
+        else
+            echo -e "${YELLOW}⚠ Not a toolkit step, ignoring: $n${RESET}"
         fi
     done
-    for leftover in "${!WANTED[@]}"; do
-        echo -e "${YELLOW}⚠ Not a toolkit script, ignoring: $leftover.sh${RESET}"
+    for p in "${PHASE_NAMES[@]:-}"; do
+        [ -z "$p" ] && continue
+        case "$p" in
+            core|desktop|apps|optional|utils|misc) WANT_PHASES["$p"]=1 ;;
+            *) echo -e "${YELLOW}⚠ Unknown phase, ignoring: $p (core|desktop|apps|optional|utils)${RESET}" ;;
+        esac
     done
-    unset leftover
+    unset n p
+    for ENTRY in "${STEPS[@]}"; do
+        SCRIPT="${ENTRY%%|*}"
+        REST="${ENTRY#*|}"
+        PHASE="${REST%%|*}"
+        _hit=0
+        [ "${#ONLY_NAMES[@]}" -gt 0 ] && [ -n "${WANT_STEPS[$SCRIPT]+x}" ] && _hit=1
+        [ "${#PHASE_NAMES[@]}" -gt 0 ] && [ -n "${WANT_PHASES[$PHASE]+x}" ] && _hit=1
+        # Both filters given: step must satisfy at least one (union).
+        if [ "$_hit" -eq 1 ]; then
+            SELECTED+=("$ENTRY")
+        fi
+    done
+    unset _hit
     if [ "${#SELECTED[@]}" -eq 0 ]; then
-        echo -e "${RED}No matching scripts for --only. Use --list to see available ones.${RESET}"
+        echo -e "${RED}No matching steps. Use --list to see available ones.${RESET}"
         exit 1
     fi
 else
-    SELECTED=("${SCRIPTS[@]}")
+    SELECTED=("${STEPS[@]}")
 fi
 
 echo -e "${BLUE}=========================================================${RESET}"
-echo -e "${BLUE}   deb-sway-thinkpad — Debian 13 (Trixie) + Sway${RESET}"
+echo -e "${BLUE}   deb-sway-thinkpad — Devuan 6 (Excalibur) + Sway${RESET}"
 echo -e "${BLUE}=========================================================${RESET}\n"
 
 # --- One apt refresh, then let the scripts skip their own ------------------
@@ -205,7 +292,7 @@ mkdir -p "$STATE_DIR"
 LOG_FILE="$STATE_DIR/last-run.log"
 record_run() { printf '%(%F %T)T  %s\n' -1 "$1" >> "$LOG_FILE"; }
 
-record_run "$0 ${ONLY_NAMES[*]:-all} (assume-yes=${ASSUME_YES:-0}, full=${FULL:-0}, skip-apt=${SKIP_APT_UPDATE:-0})"
+record_run "$0 ${ONLY_NAMES[*]:-all} phases:${PHASE_NAMES[*]:-all} (assume-yes=${ASSUME_YES:-0}, full=${FULL:-0}, skip-apt=${SKIP_APT_UPDATE:-0})"
 
 FAILED=()
 SKIPPED=()
@@ -213,11 +300,13 @@ SKIPPED=()
 for ENTRY in "${SELECTED[@]}"; do
     SCRIPT="${ENTRY%%|*}"
     REST="${ENTRY#*|}"
+    PHASE="${REST%%|*}"
+    REST="${REST#*|}"
     DESC="${REST%%|*}"
     DEFAULT="${REST##*|}"
     SCRIPT_PATH="$SCRIPTS_DIR/$SCRIPT"
 
-    echo -e "${YELLOW}▶ ${SCRIPT}${RESET}"
+    echo -e "${YELLOW}▶ [$PHASE] ${SCRIPT}${RESET}"
     echo -e "   ${CYAN}${DESC}${RESET}"
 
     if [ ! -f "$SCRIPT_PATH" ]; then

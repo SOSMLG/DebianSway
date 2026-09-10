@@ -22,9 +22,9 @@
   ],
 
   "custom/menu": {
-    "format": "\uf0c9",
-    "tooltip": false,
-    "on-click": "wofi --show drun"
+    "format": "󰍜",
+    "tooltip": "DebSway menu",
+    "on-click": "debsway menu"
   },
 
   "sway/workspaces": {

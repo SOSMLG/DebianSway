@@ -19,7 +19,7 @@ cmd_setup() {
     echo "Current theme: $cur"
     for name in "${themes[@]}"; do
         printf '  %2d. %s\n' "$i" "$name"
-        ((i++))
+        i=$((i + 1))
     done
     read -rp "Pick a theme number (default: keep current): " reply
     if [ -n "$reply" ] && [ "$reply" -ge 1 ] && [ "$reply" -le "${#themes[@]}" ]; then

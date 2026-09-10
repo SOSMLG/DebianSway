@@ -118,7 +118,7 @@ check_repo_package() {
     fi
     log_warn "$probe is not available — the '$component' repo component is probably missing."
     log_warn "On Debian, add the component to /etc/apt/sources.list.d/ (or run"
-    log_warn "scripts/01-backports.sh which enables trixie-backports with all components),"
+    log_warn "scripts/11-backports.sh which enables trixie-backports with all components),"
     log_warn "run 'sudo apt-get update', then re-run this step."
     return 1
 }

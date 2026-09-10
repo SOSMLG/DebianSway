@@ -34,7 +34,7 @@ elif [ -f "$HOME/.local/share/debsway/lib/common.sh" ]; then
     LIB_DIR="$HOME/.local/share/debsway/lib"
 else
     echo "debsway: could not locate lib/ (expected $DS_BIN/../lib or ~/.local/share/debsway/lib)." >&2
-    echo "Run scripts/26-debswayCli.sh from deb-sway-thinkpad to install." >&2
+    echo "Run scripts/21-debsway-cli.sh from deb-sway-thinkpad to install." >&2
     exit 1
 fi
 
@@ -61,6 +61,7 @@ debsway — unified Sway desktop CLI
   sound [panel|up|down|mute]
   wire [panel|status]
   toggle [night|dnd|touchpad|layout]
+  keys [--list]       keybinding cheat-sheet (parsed from sway config)
   calc                calculator (qalc via wofi)
   date                calendar popup
   status [media|layout|updates]    waybar module backends
@@ -112,7 +113,7 @@ cmd_status() {
 case "${1:-}" in
     help|-h|--help)           usage ;;
     launcher)                 cmd_launcher ;;
-    menu)                     cmd_menu "$2" ;;
+    menu)                     cmd_menu "${2:-}" ;;
     style)                    cmd_style ;;
     theme)
         case "${2:-list}" in
@@ -131,6 +132,7 @@ case "${1:-}" in
     sound)                    cmd_sound "${2:-panel}" ;;
     wire)                     cmd_wire "${2:-panel}" ;;
     toggle)                   cmd_toggle "${2:-}" ;;
+    keys)                     cmd_keys "${2:-}" ;;
     calc)                     cmd_calc ;;
     date)                     cmd_date ;;
     status)                   cmd_status "${2:-}" ;;

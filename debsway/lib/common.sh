@@ -81,7 +81,10 @@ is_under_sway() {
 
 # wofi_pick <prompt> — reads stdin lines, prints the selected one (or empty)
 wofi_pick() {
-    command -v wofi >/dev/null 2>&1 || { return 1; }
+    if ! command -v wofi >/dev/null 2>&1; then
+        d_err "wofi is not installed (run scripts/10-sway-core.sh)."
+        return 1
+    fi
     wofi --show dmenu --insensitive --prompt "$1" 2>/dev/null
 }
 

@@ -5,7 +5,7 @@ opacity = 0.95
 decorations = "None"
 dynamic_padding = true
 
-# Font — IosevkaTerm Nerd Font (installed by scripts/installFonts.sh)
+# Font — IosevkaTerm Nerd Font (installed by scripts/17-fonts.sh)
 [font]
 size = 14.0
 [font.normal]

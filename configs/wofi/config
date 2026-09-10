@@ -6,7 +6,7 @@ width=40%
 height=45%
 lines=8
 location=center
-term=foot
+term=alacritty
 keys=unknown
 always_parse_args=no
 # Fuzzy matching: match on any key stroke order, highlight best entry.

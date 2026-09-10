@@ -1,27 +1,34 @@
 # Window settings
 [window]
 padding = { x = 8, y = 8 }
-opacity = 0.97
-decorations = "full"
+opacity = 0.95
+decorations = "None"
+dynamic_padding = true
 
-# Font — JetBrainsMono Nerd Font (installed by scripts/installFonts.sh)
+# Font — IosevkaTerm Nerd Font (installed by scripts/17-fonts.sh)
 [font]
-size = 16.0
+size = 14.0
 [font.normal]
-family = "JetBrainsMono Nerd Font"
+family = "IosevkaTerm Nerd Font Mono"
 style = "Regular"
 [font.bold]
-family = "JetBrainsMono Nerd Font"
+family = "IosevkaTerm Nerd Font Mono"
 style = "Bold"
 [font.italic]
-family = "JetBrainsMono Nerd Font"
+family = "IosevkaTerm Nerd Font Mono"
 style = "Italic"
 [font.bold_italic]
-family = "JetBrainsMono Nerd Font"
+family = "IosevkaTerm Nerd Font Mono"
 style = "Bold Italic"
+
+# Cursor
+[cursor]
+style = { shape = "Block", blinking = "Never" }
+vi_mode_style = { shape = "Block" }
 
 # Color scheme — RENDERED by the debsway theme engine (do not edit)
 [colors]
+draw_bold_text_with_bright_colors = true
 [colors.primary]
 background = "0x1e1e2e"
 foreground = "0xcdd6f4"
@@ -29,7 +36,7 @@ dim_foreground = "0xa6adc8"
 bright_foreground = "0xcdd6f4"
 [colors.cursor]
 text = "0x1e1e2e"
-cursor = "0xcdd6f4"
+cursor = "0xf38ba8"
 [colors.vi_mode_cursor]
 text = "0x1e1e2e"
 cursor = "0x89b4fa"
@@ -55,9 +62,9 @@ white = "0xa6adc8"
 text = "0x1e1e2e"
 background = "0x585b70"
 
-# Scrolling settings
+# Scrolling — 20k lines for dev workflows
 [scrolling]
-history = 10000
+history = 20000
 multiplier = 3
 
 # Key bindings
@@ -65,4 +72,5 @@ multiplier = 3
 bindings = [
   { key = "Return", mods = "Control|Shift", action = "SpawnNewInstance" },
   { key = "Space", mods = "Control|Shift", action = "ToggleViMode" },
+  { key = "F11",   mods = "None",          action = "ToggleFullscreen" },
 ]

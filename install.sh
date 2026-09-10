@@ -31,7 +31,7 @@ while [ $# -gt 0 ]; do
         --no-verify) NO_VERIFY=1 ;;
         --help|-h)
             cat <<'EOF'
-install.sh — one command, everything, unattended (Debian 13 + Sway toolkit).
+install.sh — one command, everything, unattended (Devuan 6 + Sway toolkit).
 
   ./install.sh             everything, unattended, then verify
   ./install.sh --core      core setup only (skips optional groups)

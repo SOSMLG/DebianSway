@@ -4,7 +4,7 @@
 # -------------------------------------------------------
 # Mirrors Omarchy's "colors.toml compiler": one palette per
 # theme, rendered into every app that has colors (sway,
-# waybar, wofi, mako, foot, swayosd, wlogout, alacritty).
+# waybar, wofi, mako, alacritty, swayosd, wlogout).
 # Templates live in themes/_base/tpl/ with @@TOKEN@@
 # placeholders; `debsway theme set` substitutes them from
 # the palette and soft-reloads the running session.
@@ -23,8 +23,8 @@ render_palette() {
     local sedexpr=()
     local tok var
     # Build the sed expression once: @@TOKEN@@ -> value.
-    # Hex values are stored WITHOUT '#'; templates add '#' when the consumer
-    # wants CSS-style colors (foot & alacritty use bare / 0x forms).
+    # Hex values are stored WITHOUT '#'; templates add '#' or '0x' when the
+    # consumer wants CSS-style (waybar/wofi/mako) or alacritty-style colors.
     for tok in BG MANTLE CRUST SURFACE0 SURFACE1 SURFACE2 OVERLAY \
                TEXT SUBTEXT0 SUBTEXT1 ACCENT \
                RED GREEN YELLOW BLUE PURPLE PINK TEAL ORANGE \
@@ -37,6 +37,13 @@ render_palette() {
         [ -f "$tpl" ] || continue
         rel="${tpl#"$DS_TPL"/}"
         out="$dst/$rel"
+        # Honor hand-customized files: if the destination carries a
+        # DEBSWAY_KEEP marker, leave it alone so `theme set` never
+        # clobbers user styling (remove the marker to re-join the theme).
+        if [ -f "$out" ] && grep -q 'DEBSWAY_KEEP' "$out" 2>/dev/null; then
+            d_warn "Kept custom $out (DEBSWAY_KEEP) — not re-rendered."
+            continue
+        fi
         mkdir -p "$(dirname "$out")"
         sed "${sedexpr[@]}" "$tpl" > "$out"
     done < <(find "$DS_TPL" -type f -print0)
@@ -83,6 +90,14 @@ theme_reload() {
         command -v mako >/dev/null 2>&1    && setsid --fork mako >/dev/null 2>&1 &
         command -v swayosd-server >/dev/null 2>&1 && setsid --fork swayosd-server >/dev/null 2>&1 &
         # swaylock picks up the new palette on next lock (debsway lock).
+        # Re-assert the persisted wallpaper: `swaymsg reload` re-reads
+        # sway/config, and without this a theme switch would visibly flash
+        # back to the config's fallback before the marker is re-applied.
+        local bg_marker
+        bg_marker="$(get_marker bg)"
+        if [ -n "$bg_marker" ] && [ -f "$bg_marker" ]; then
+            swaymsg "output * bg \"$bg_marker\" fill" >/dev/null 2>&1 || true
+        fi
     fi
 }
 

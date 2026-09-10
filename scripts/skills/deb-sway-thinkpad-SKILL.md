@@ -41,7 +41,8 @@ diagnosing issues on this system:
     `~/.config/sway/config` (with `colors.conf` included for theme palette).
     Reload with `$mod+Shift+C`; sway reads this file live, there is no daemon.
   - Status bar is **Waybar** (`~/.config/waybar/config` + `style.css`, themed).
-  - Launcher/menus are **wofi**, terminal is **Foot** (`$term`), lockscreen
+  - Launcher/menus are **wofi** (`debsway menu` palette, `debsway launcher`
+    for plain drun), terminal is **Alacritty** (`$term`), lockscreen
     is **swaylock** + **swayidle**, notifications are **mako**,
     volume/brightness OSD is **swayosd-server + swayosd-client**.
   - Login manager is **greetd** with **wlgreet** (`/etc/greetd/config.toml`),
@@ -65,14 +66,14 @@ diagnosing issues on this system:
     sets `options usbhid mousepoll=2` for a snappier pointer.
 
 ## The `debsway` CLI
-- Installed by `scripts/26-debswayCli.sh` to `~/.local/share/debsway`
+- Installed by `scripts/21-debsway-cli.sh` to `~/.local/share/debsway`
   (`bin/` router, `lib/` actions + theme engine + doctor + setup,
   `themes/` palettes + `_base/tpl` templates); symlinked from
   `~/.local/bin/debsway` **and** `/usr/local/bin/debsway` so sway binds can
   `exec debsway …`.
 - Theming: `debsway theme set <name>` renders `themes/<name>/palette.sh`
   (hex without `#`) through the `_base/tpl` templates into `~/.config/`
-  (sway, waybar, wofi, foot, mako, swayosd, wlogout, alacritty) and
+  (sway, waybar, wofi, mako, swayosd, wlogout, alacritty) and
   soft-reloads waybar/mako/swayosd + `swaymsg reload`. Palettes:
   catppuccin-mocha-(red|blue), catppuccin-frappe, nord, dracula, tokyo-night,
   gruvbox-dark, solarized-dark.
@@ -102,5 +103,5 @@ diagnosing issues on this system:
   `DEBSWAY_SKIP_APT_UPDATE=1` (skip per-script `apt-get update`).
 - Every apt action checks what's actually installed first — nothing is
   blindly force-purged, so scripts are safe to re-run.
-- The default terminal is **Foot**; keep custom `$term` references to foot
+- The default terminal is **Alacritty**; keep `$term` references to alacritty
   in sway config and shell aliases consistent with that.
