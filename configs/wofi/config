@@ -1,0 +1,17 @@
+# wofi launcher — DebSway (theme lives in style.css, rides on the active
+# GTK theme + the Nerd Font patched glyphs).
+allow_images=true
+image_size=24
+width=40%
+height=45%
+lines=8
+location=center
+term=foot
+keys=unknown
+always_parse_args=no
+# Fuzzy matching: match on any key stroke order, highlight best entry.
+matching=enabled
+fuzzy=yes
+case=smart
+# Don't show multiple instances of the same app.
+show=Mode,Wid,Name,Cat,Arcid,Generic,Platform,Desktop,Filename

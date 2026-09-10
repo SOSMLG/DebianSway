@@ -1,0 +1,68 @@
+# Window settings
+[window]
+padding = { x = 8, y = 8 }
+opacity = 0.97
+decorations = "full"
+
+# Font — JetBrainsMono Nerd Font (installed by scripts/installFonts.sh)
+[font]
+size = 16.0
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Bold"
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font"
+style = "Bold Italic"
+
+# Color scheme — RENDERED by the debsway theme engine (do not edit)
+[colors]
+[colors.primary]
+background = "0x1e1e2e"
+foreground = "0xcdd6f4"
+dim_foreground = "0xa6adc8"
+bright_foreground = "0xcdd6f4"
+[colors.cursor]
+text = "0x1e1e2e"
+cursor = "0xcdd6f4"
+[colors.vi_mode_cursor]
+text = "0x1e1e2e"
+cursor = "0x89b4fa"
+[colors.normal]
+black = "0x45475a"
+red = "0xf38ba8"
+green = "0xa6e3a1"
+yellow = "0xf9e2af"
+blue = "0x89b4fa"
+magenta = "0xf5c2e7"
+cyan = "0x94e2d5"
+white = "0xbac2de"
+[colors.bright]
+black = "0x585b70"
+red = "0xf38ba8"
+green = "0xa6e3a1"
+yellow = "0xf9e2af"
+blue = "0x89b4fa"
+magenta = "0xf5c2e7"
+cyan = "0x94e2d5"
+white = "0xa6adc8"
+[colors.selection]
+text = "0x1e1e2e"
+background = "0x585b70"
+
+# Scrolling settings
+[scrolling]
+history = 10000
+multiplier = 3
+
+# Key bindings
+[keyboard]
+bindings = [
+  { key = "Return", mods = "Control|Shift", action = "SpawnNewInstance" },
+  { key = "Space", mods = "Control|Shift", action = "ToggleViMode" },
+]

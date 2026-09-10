@@ -1,0 +1,43 @@
+/* wlogout — power menu. RENDERED by debsway (do not edit). */
+window {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 14px;
+  background-color: #@@BG@@;
+  color: #@@TEXT@@;
+}
+
+button {
+  background-color: #@@SURFACE0@@;
+  border: 2px solid #@@SURFACE0@@;
+  border-radius: 10px;
+  margin: 8px;
+  padding: 0;
+  min-width: 90px;
+  min-height: 90px;
+  color: #@@TEXT@@;
+  background-size: 42px;
+  background-position: center 30px;
+  background-repeat: no-repeat;
+}
+
+button:hover {
+  background-color: #@@SURFACE1@@;
+  border-color: #@@ACCENT@@;
+  color: #@@ACCENT@@;
+}
+
+#lock {
+  background-image: url("/usr/share/wlogout/icons/lock.png");
+}
+#logout {
+  background-image: url("/usr/share/wlogout/icons/logout.png");
+}
+#reboot {
+  background-image: url("/usr/share/wlogout/icons/restart.png");
+}
+#suspend {
+  background-image: url("/usr/share/wlogout/icons/suspend.png");
+}
+#power {
+  background-image: url("/usr/share/wlogout/icons/power.png");
+}

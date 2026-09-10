@@ -1,0 +1,26 @@
+/* swayosd — on-screen-display theme. RENDERED by debsway (do not edit). */
+.default {
+  color: #@@TEXT@@;
+}
+
+.background {
+  border-radius: 12px;
+  border: 2px solid #@@SURFACE0@@;
+  background-color: #@@MANTLE@@;
+}
+
+.trough {
+  background-color: #@@SURFACE0@@;
+}
+
+.highlight {
+  background-color: #@@ACCENT@@;
+}
+
+.volume popup .default {
+  color: #@@TEXT@@;
+}
+
+progress {
+  min-width: 6px;
+}

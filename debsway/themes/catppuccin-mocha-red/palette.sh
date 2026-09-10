@@ -1,0 +1,37 @@
+# catppuccin-mocha-red — the DebSway default theme.
+# Hex values carry NO '#'; the theme engine adds the prefix where needed.
+C_BG=1e1e2e
+C_MANTLE=181825
+C_CRUST=11111b
+C_SURFACE0=313244
+C_SURFACE1=45475a
+C_SURFACE2=585b70
+C_OVERLAY=6c7086
+C_TEXT=cdd6f4
+C_SUBTEXT0=a6adc8
+C_SUBTEXT1=bac2de
+C_ACCENT=f38ba8
+C_RED=f38ba8
+C_GREEN=a6e3a1
+C_YELLOW=f9e2af
+C_BLUE=89b4fa
+C_PURPLE=cba6f7
+C_PINK=f5c2e7
+C_TEAL=94e2d5
+C_ORANGE=fab387
+C_T0=45475a
+C_T1=f38ba8
+C_T2=a6e3a1
+C_T3=f9e2af
+C_T4=89b4fa
+C_T5=f5c2e7
+C_T6=94e2d5
+C_T7=bac2de
+C_TB0=585b70
+C_TB1=f38ba8
+C_TB2=a6e3a1
+C_TB3=f9e2af
+C_TB4=89b4fa
+C_TB5=f5c2e7
+C_TB6=94e2d5
+C_TB7=a6adc8

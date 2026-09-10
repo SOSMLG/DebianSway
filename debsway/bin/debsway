@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+# =======================================================
+# debsway — the unified DebSway CLI (Omarchy-style router)
+# -------------------------------------------------------
+# One command for every desktop-surface action on this Sway
+# setup. Mirror of the `omarchy <group> <action>` UX:
+#
+#   debsway menu|launcher|style|theme|bg|power|lock
+#   debsway agent|clip|shot|sound|wire|toggle|calc
+#   debsway status|bar|update|doctor|setup
+#
+# Help:          debsway help
+# Sub-help:      debsway <group> help
+# =======================================================
+
+set -uo pipefail
+# DEBSWAY_QUIET=1   — suppress informational output (reserved)
+# DEBSWAY_ASSUME_YES=1 — take defaults on all interactive prompts
+# DEBSWAY_HOME=<path>  — override install directory
+
+DS_SELF="$(readlink -f "${BASH_SOURCE[0]}")"
+DS_BIN="$(cd "$(dirname "$DS_SELF")" && pwd)"
+DS_INSTALL="${DEBSWAY_HOME:-$HOME/.local/share/debsway}"
+
+# Resolve the lib dir: DEBSWAY_HOME (e.g. repo tree during dev/tests),
+# the repo layout next to bin/debsway, or the installed ~/.local/share copy.
+if [ -n "${DEBSWAY_HOME:-}" ] && [ -f "$DS_INSTALL/lib/common.sh" ]; then
+    LIB_DIR="$DS_INSTALL/lib"
+elif [ -f "$(cd "$DS_BIN/.." && pwd)/lib/common.sh" ]; then
+    REPO_ROOT="$(cd "$DS_BIN/.." && pwd)"
+    export DEBSWAY_HOME="$REPO_ROOT"
+    LIB_DIR="$REPO_ROOT/lib"
+elif [ -f "$HOME/.local/share/debsway/lib/common.sh" ]; then
+    LIB_DIR="$HOME/.local/share/debsway/lib"
+else
+    echo "debsway: could not locate lib/ (expected $DS_BIN/../lib or ~/.local/share/debsway/lib)." >&2
+    echo "Run scripts/26-debswayCli.sh from deb-sway-thinkpad to install." >&2
+    exit 1
+fi
+
+source "$LIB_DIR/common.sh"
+source "$LIB_DIR/theme.sh"
+source "$LIB_DIR/actions.sh"
+source "$LIB_DIR/doctor.sh"
+source "$LIB_DIR/setup.sh"
+
+usage() {
+    cat <<'EOF'
+debsway — unified Sway desktop CLI
+
+  launcher            open the app launcher (wofi drun)
+  menu [power]        command palette (apps + commands + power)
+  style               theme & background switcher menu
+  theme list|current|set <name>
+  bg panel|set|cycle|random|reset|apply
+  power               grid power menu (wlogout)
+  lock                themed lockscreen
+  agent [status]      coding agent (OpenCode)
+  clip [pick|watch|clear]      clipboard history (cliphist + wofi)
+  shot [full|area|annotate|record|menu]
+  sound [panel|up|down|mute]
+  wire [panel|status]
+  toggle [night|dnd|touchpad|layout]
+  calc                calculator (qalc via wofi)
+  date                calendar popup
+  status [media|layout|updates]    waybar module backends
+  bar restart|reload
+  update [--apply]    check / install system updates
+  doctor              session self-check
+  setup               first-run customization wizard
+  help                this text
+
+Environment variables:
+  DEBSWAY_ASSUME_YES=1   take defaults on all prompts
+  DEBSWAY_HOME=<path>    override install directory
+EOF
+}
+
+# --- Dispatch -----------------------------------------------------------------
+
+cmd_status() {
+    case "${1:-}" in
+        media)
+            if command -v playerctl >/dev/null 2>&1; then
+                local out
+                out="$(playerctl metadata --format '{"text":"\ue1cd {{artist}} — {{title}}","tooltip":"{{playerName}}: {{title}}","class":"playing"}' 2>/dev/null)"
+                [ -n "$out" ] && printf '%s\n' "$out" || printf '%s\n' '{"text":""}'
+            else
+                printf '%s\n' '{"text":""}'
+            fi
+            ;;
+        layout)
+            if is_under_sway && command -v jq >/dev/null 2>&1; then
+                local L
+                L="$(swaymsg -t get_inputs 2>/dev/null | jq -r '[.[]|select(.type=="keyboard")|.xkb_active_layout_name//empty][0]//""')"
+                case "$L" in
+                    *Thai*)    echo "TH" ;;
+                    *English*) echo "US" ;;
+                    *)         [ -n "$L" ] && echo "${L:0:2}" ;;
+                esac
+            fi
+            ;;
+        updates)
+            local n
+            n="$(apt list --upgradable 2>/dev/null | sed '1d' | grep -c '^')" || n=0
+            [ "${n:-0}" -gt 0 ] && printf '\uf4f9 %s\n' "$n" || true
+            ;;
+        *) d_err "status: media|layout|updates"; return 1 ;;
+    esac
+}
+
+case "${1:-}" in
+    help|-h|--help)           usage ;;
+    launcher)                 cmd_launcher ;;
+    menu)                     cmd_menu "$2" ;;
+    style)                    cmd_style ;;
+    theme)
+        case "${2:-list}" in
+            list)    theme_list ;;
+            current) echo "$(current_theme)" ;;
+            set)     [ -n "${3:-}" ] && theme_set "$3" || { d_err "usage: debsway theme set <name>"; exit 1; } ;;
+            *)       usage ;;
+        esac
+        ;;
+    bg)                       cmd_bg "${2:-panel}" "${3:-}" ;;
+    power)                    exec wlogout -b 3 ;;
+    lock)                     cmd_lock ;;
+    agent)                    cmd_agent "${2:-run}" "${@:3}" ;;
+    clip)                     cmd_clip "${2:-pick}" ;;
+    shot)                     cmd_shot "${2:-menu}" ;;
+    sound)                    cmd_sound "${2:-panel}" ;;
+    wire)                     cmd_wire "${2:-panel}" ;;
+    toggle)                   cmd_toggle "${2:-}" ;;
+    calc)                     cmd_calc ;;
+    date)                     cmd_date ;;
+    status)                   cmd_status "${2:-}" ;;
+    bar)                      cmd_bar "${2:-reload}" ;;
+    update)                   cmd_update "${2:-}" ;;
+    doctor)                   doctor_run ;;
+    setup)                    cmd_setup ;;
+    *)                        usage ;;
+esac
