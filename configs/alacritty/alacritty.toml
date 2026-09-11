@@ -1,0 +1,76 @@
+# Window settings
+[window]
+padding = { x = 8, y = 8 }
+opacity = 0.95
+decorations = "None"
+dynamic_padding = true
+
+# Font — IosevkaTerm Nerd Font (installed by scripts/17-fonts.sh)
+[font]
+size = 14.0
+[font.normal]
+family = "IosevkaTerm Nerd Font Mono"
+style = "Regular"
+[font.bold]
+family = "IosevkaTerm Nerd Font Mono"
+style = "Bold"
+[font.italic]
+family = "IosevkaTerm Nerd Font Mono"
+style = "Italic"
+[font.bold_italic]
+family = "IosevkaTerm Nerd Font Mono"
+style = "Bold Italic"
+
+# Cursor
+[cursor]
+style = { shape = "Block", blinking = "Never" }
+vi_mode_style = { shape = "Block" }
+
+# Color scheme — RENDERED by the debsway theme engine (do not edit)
+[colors]
+draw_bold_text_with_bright_colors = true
+[colors.primary]
+background = "0x1e1e2e"
+foreground = "0xcdd6f4"
+dim_foreground = "0xa6adc8"
+bright_foreground = "0xcdd6f4"
+[colors.cursor]
+text = "0x1e1e2e"
+cursor = "0xf38ba8"
+[colors.vi_mode_cursor]
+text = "0x1e1e2e"
+cursor = "0x89b4fa"
+[colors.normal]
+black = "0x45475a"
+red = "0xf38ba8"
+green = "0xa6e3a1"
+yellow = "0xf9e2af"
+blue = "0x89b4fa"
+magenta = "0xf5c2e7"
+cyan = "0x94e2d5"
+white = "0xbac2de"
+[colors.bright]
+black = "0x585b70"
+red = "0xf38ba8"
+green = "0xa6e3a1"
+yellow = "0xf9e2af"
+blue = "0x89b4fa"
+magenta = "0xf5c2e7"
+cyan = "0x94e2d5"
+white = "0xa6adc8"
+[colors.selection]
+text = "0x1e1e2e"
+background = "0x585b70"
+
+# Scrolling — 20k lines for dev workflows
+[scrolling]
+history = 20000
+multiplier = 3
+
+# Key bindings
+[keyboard]
+bindings = [
+  { key = "Return", mods = "Control|Shift", action = "SpawnNewInstance" },
+  { key = "Space", mods = "Control|Shift", action = "ToggleViMode" },
+  { key = "F11",   mods = "None",          action = "ToggleFullscreen" },
+]

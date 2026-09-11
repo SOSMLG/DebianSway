@@ -1,0 +1,117 @@
+/* Waybar — laptop-optimized (13-14" screens). RENDERED by debsway. */
+
+/* ===== GLOBAL ===== */
+* {
+  font-family: "IosevkaTerm Nerd Font Propo", monospace;
+  font-size: 11pt;
+  font-weight: 700;
+  color: #cdd6f4;
+  padding: 0;
+  min-height: 0;
+  margin: 0;
+  text-shadow: none;
+  transition: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+window#waybar {
+  background: #1e1e2e;
+  border-bottom: 2px solid #313244;
+}
+
+/* ===== LEFT: menu + workspaces ===== */
+#custom-menu,
+#workspaces button {
+  padding: 0 6px;
+  margin: 2px 1px;
+}
+
+/* ===== LAUNCHER ===== */
+#custom-menu {
+  color: #11111b;
+  background: #89b4fa;
+  font-size: 13pt;
+}
+
+#custom-menu:hover {
+  background: #45475a;
+}
+
+/* ===== WORKSPACES ===== */
+#workspaces button {
+  color: #cdd6f4;
+  background-color: #313244;
+  min-width: 18px;
+  font-weight: 900;
+}
+
+#workspaces button:hover {
+  color: #11111b;
+  background: #f5c2e7;
+}
+
+#workspaces button.visible,
+#workspaces button.visible:hover {
+  color: #11111b;
+  background: #a6e3a1;
+}
+
+#workspaces button.focused {
+  color: #11111b;
+  background: #f38ba8;
+}
+
+#workspaces button.urgent {
+  color: #11111b;
+  background: #f38ba8;
+}
+
+/* ===== CENTER: clock ===== */
+#clock {
+  padding: 0 10px;
+  margin: 2px 1px;
+  color: #a6e3a1;
+  font-weight: 900;
+}
+
+/* ===== RIGHT: system modules ===== */
+#tray,
+#network,
+#cpu,
+#custom-memory,
+#pulseaudio,
+#battery {
+  padding: 0 6px;
+  margin: 2px 1px;
+  color: #cdd6f4;
+}
+
+/* ===== SPECIAL STATES ===== */
+#pulseaudio.muted {
+  color: #f38ba8;
+}
+
+#battery.critical {
+  color: #f38ba8;
+}
+
+#battery.warning {
+  color: #fab387;
+}
+
+/* ===== TRAY ===== */
+#tray {
+  padding: 0 4px;
+}
+
+/* ===== TOOLTIP ===== */
+tooltip {
+  background-color: #181825;
+  border: 1px solid #313244;
+  color: #cdd6f4;
+}
+
+tooltip label {
+  color: #cdd6f4;
+}

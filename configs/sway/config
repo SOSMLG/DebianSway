@@ -1,0 +1,319 @@
+# Sway configuration — deb-sway-thinkpad
+# Reload after editing: $mod+Shift+C
+
+### Variables
+set $mod Mod4
+
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+
+# Core apps
+set $term alacritty
+set $menu debsway menu
+set $file nautilus
+set $browser firefox
+
+# Workspace names
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Theme palette (rendered by `debsway theme`)
+include colors.conf
+
+### Appearance
+title_align center
+font pango:JetBrainsMono Nerd Font Bold 10
+
+# Borders — thin pixel borders
+for_window [app_id="^.*"] border pixel 3
+
+# Gaps — tight, productivity-focused
+gaps inner 5
+gaps outer 0
+
+# Window colors (from colors.conf)
+#                  border     background text      indicator  child_border
+client.focused          $accent  $mantle    $text    $accent    $accent
+client.focused_inactive $surface $mantle    $subtext $surface   $surface
+client.unfocused        $surface $crust     $subtext $surface   $surface
+client.urgent           $red     $crust     $text    $red       $red
+client.placeholder      $crust   $crust     $text     $surface    $surface
+client.background       $crust
+
+# Misc look & feel
+workspace_layout default
+mouse_warping none
+focus_follows_mouse no
+focus_wrapping no
+seat * hide_cursor 10000
+
+# Disable titlebar mouse scroll
+bindsym button4 nop
+bindsym button5 nop
+
+### Autostart
+exec waybar
+exec mako
+# On-screen volume/brightness display (swayosd). Guarded so a missing binary
+# or an already-running server is a no-op instead of an error.
+exec sh -c 'if command -v swayosd-server >/dev/null 2>&1; then pgrep -x swayosd-server >/dev/null 2>&1 || exec swayosd-server; fi'
+exec /usr/libexec/polkit-mate-authentication-agent-1
+# Audio daemons (pipewire + pulse compatibility)
+exec sh -c 'command -v pipewire >/dev/null 2>&1 && pipewire >/dev/null 2>&1'
+exec sh -c 'command -v wireplumber >/dev/null 2>&1 && sleep 0.4 && wireplumber >/dev/null 2>&1'
+exec sh -c 'command -v pipewire-pulse >/dev/null 2>&1 && sleep 0.6 && pipewire-pulse >/dev/null 2>&1'
+exec sh -c 'command -v debsway >/dev/null 2>&1 && debsway clip watch'
+# Battery & temperature warnings — exactly one instance each, via flock
+# (lock files in ~/.cache, released automatically on exit). NOTE: do NOT
+# "simplify" this into a pgrep -f guard: any such pattern also matches the
+# very `sh -c` wrapper running the check (it contains the script path), so
+# the guard is permanently true and the monitors silently never start.
+exec sh -c 'mkdir -p ~/.cache && exec flock -n ~/.cache/debsway-batteryWarning.lock ~/.config/sway/scripts/batteryWarning.sh'
+exec sh -c 'mkdir -p ~/.cache && exec flock -n ~/.cache/debsway-tempWarning.lock ~/.config/sway/scripts/tempWarning.sh'
+# Display management (kanshi)
+exec kanshi
+# Restore persisted wallpaper (debsway bg set > marker); falls back to the
+# `output * bg` line below when no marker exists yet.
+exec debsway bg apply
+# Idle management
+exec swayidle -w \
+     timeout 300 'command -v debsway >/dev/null 2>&1 && debsway lock || swaylock -f' \
+     timeout 600 'swaymsg "output * dpms off"' \
+     resume 'swaymsg "output * dpms on"' \
+     before-sleep 'command -v debsway >/dev/null 2>&1 && debsway lock || swaylock -f'
+
+### Output configuration
+# Managed by `debsway bg set` — _bg_apply rewrites this line AND the
+# ~/.local/state/debsway/bg marker, so `reload` no longer reverts wallpaper.
+# Use `debsway bg set <file>` instead of hand-editing.
+output * bg ${HOME}/.config/sway/wallpapers/catppuccin-mocha.png fill
+
+### Input configuration
+input type:touchpad {
+    tap enabled
+    natural_scroll disabled
+    middle_emulation enabled
+    dwt enabled
+    accel_profile adaptive
+}
+
+input type:pointer {
+    accel_profile adaptive
+    pointer_accel 0.3
+}
+
+# Thai keyboard with Alt+Shift toggle (us primary, th secondary)
+input type:keyboard {
+    xkb_layout us,th
+    xkb_options grp:alt_shift_toggle
+}
+
+# Touchpad gestures
+bindgesture swipe:right focus next
+bindgesture swipe:left focus prev
+bindgesture swipe:up workspace prev
+bindgesture swipe:down workspace next
+
+### Workspace assignments
+# Note: rules for apps not installed by the toolkit (Brave, LibreWolf, Thunar,
+# Inkscape, LibreOffice, Zathura, Kdenlive, OBS, Lutris) are included so they
+# land on sensible workspaces if the user installs them later.
+assign [app_id="(?i).*alacritty.*"]            $ws1
+assign [app_id="(?i).*firefox.*"]             $ws2
+assign [app_id="(?i).*firefox-esr.*"]         $ws2
+assign [app_id="(?i).*brave.*"]               $ws2
+assign [class="(?i).*brave.*"]                $ws2
+assign [app_id="(?i).*librewolf.*"]           $ws2
+assign [app_id="(?i).*code.*"]                $ws3
+assign [app_id="(?i).*codium.*"]              $ws3
+assign [app_id="(?i).*nautilus.*"]            $ws4
+assign [app_id="(?i).*thunar.*"]              $ws4
+assign [app_id="(?i).*vesktop.*"]             $ws5
+assign [class="(?i).*discord.*"]              $ws5
+assign [app_id="(?i).*telegram.*"]            $ws5
+assign [app_id="(?i).*gimp.*"]                $ws6
+assign [app_id="(?i).*inkscape.*"]            $ws6
+assign [app_id="(?i).*libreoffice.*"]         $ws7
+assign [app_id="(?i).*zathura.*"]             $ws7
+assign [app_id="(?i).*kdenlive.*"]            $ws8
+assign [app_id="(?i).*obsproject.*"]          $ws8
+assign [app_id="(?i).*steam.*"]               $ws9
+assign [class="(?i).*steam.*"]                $ws9
+assign [app_id="(?i).*heroic.*"]              $ws9
+assign [app_id="(?i).*lutris.*"]              $ws9
+
+### Window rules
+for_window {
+    # All floating windows centered automatically
+    [floating] move position center; sticky disable
+
+    # Dialogs and popups
+    [window_type="dialog"]    floating enable; move position center
+    [window_type="utility"]   floating enable; move position center
+    [window_type="popup_menu"] floating enable; move position center
+
+    # System apps
+    [app_id="(?i).*pavucontrol.*"]       floating enable; move position center; resize set 70ppt 75ppt
+    [app_id="(?i).*blueman-manager.*"]   floating enable; move position center; resize set 70ppt 75ppt
+    [app_id="(?i).*nm-connection-editor.*"] floating enable; move position center
+    [app_id="(?i).*wdisplays.*"]         floating enable; move position center
+    [app_id="(?i).*nwg-look.*"]          floating enable; move position center
+
+    # File dialogs
+    [title="^(Open File|Open Folder|Save File|Print|Properties|Preferences|Settings|Rename)$"] floating enable; move position center
+    [app_id="(?i).*xdg-desktop-portal-gtk.*"] floating enable; move position center; resize set 70ppt 75ppt
+
+    # GIMP — floating dialogs, tiled canvas
+    [app_id="(?i).*gimp.*" title="(?i).*open.*"]     floating enable; move position center; resize set 70ppt 75ppt
+    [app_id="(?i).*gimp.*" title="(?i).*gnu image.*"] floating disable
+
+    # Inkscape
+    [app_id="(?i).*inkscape.*" title="(?i).*select file.*"] floating enable; move position center; resize set 70ppt 75ppt
+    [app_id="(?i).*inkscape.*" title="(?i).*new document.*"] floating disable
+
+    # LibreOffice
+    [app_id="(?i).*soffice.*" title="(?i).*open.*"] floating enable; move position center; resize set 70ppt 75ppt
+}
+
+### Key bindings
+    # ── Terminal / launcher ──────────────────────────────────
+    bindsym $mod+Return exec $term
+    bindsym $mod+d exec $menu
+    bindsym $mod+Shift+d exec wofi --show run
+
+    # ── Core apps ────────────────────────────────────────────
+    bindsym $mod+Shift+q kill
+    bindsym $mod+t exec $file
+    bindsym $mod+z exec $browser
+
+    # ── Coding agent (OpenCode via debsway) ──────────────────
+    bindsym $mod+a exec $term -e debsway agent
+
+    # ── Power / lock ─────────────────────────────────────────
+    bindsym $mod+Ctrl+p exec debsway power
+    bindsym $mod+Escape exec debsway power
+    bindsym $mod+x exec debsway lock
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
+
+    # ── Clipboard history ────────────────────────────────────
+    bindsym $mod+v exec debsway clip pick
+
+    # ── Keybinding cheat-sheet (parsed live from this file) ────
+    bindsym $mod+slash exec debsway keys
+
+    # ── Screenshots (via debsway so files are saved + copied + notified) ──
+    bindsym Print exec debsway shot full
+    bindsym $mod+Print exec debsway shot area
+    bindsym $mod+Ctrl+Print exec debsway shot record
+
+    # ── Volume / brightness (via debsway so the swayosd OSD shows) ───
+    bindsym --locked XF86AudioMute exec debsway sound mute
+    bindsym --locked XF86AudioLowerVolume exec debsway sound down
+    bindsym --locked XF86AudioRaiseVolume exec debsway sound up
+    bindsym --locked XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+    bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
+    bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+
+    # ── Media keys ───────────────────────────────────────────
+    bindsym --locked XF86AudioPlay exec playerctl play-pause
+    bindsym --locked XF86AudioNext exec playerctl next
+    bindsym --locked XF86AudioPrev exec playerctl previous
+
+    # ── Window operations ────────────────────────────────────
+    bindsym $mod+m fullscreen toggle
+    bindsym $mod+Shift+o layout toggle tabbed splitv splith
+    bindsym $mod+b splith
+    bindsym $mod+Shift+v splitv
+    bindsym $mod+space floating toggle; [floating con_id="__focused__"] move position center; [floating con_id="__focused__"] resize set 70ppt 75ppt
+    bindsym $mod+Shift+space [floating con_id="__focused__"] move position center; [floating con_id="__focused__"] resize set 70ppt 75ppt
+    bindsym $mod+Shift+y [floating con_id="__focused__"] move position center
+    bindsym $mod+Shift+f focus mode_toggle
+    bindsym $mod+n focus mode_toggle
+
+    # ── Focus navigation (vim) ──────────────────────────────
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+
+    # ── Focus parent / child ─────────────────────────────────
+    bindsym $mod+u focus parent
+    bindsym $mod+i focus child
+
+    # ── Cycle between workspaces on output ───────────────────
+    bindsym $mod+Tab workspace next_on_output
+    bindsym Alt+Tab workspace prev_on_output
+
+    # ── Cycle between fullscreened windows ───────────────────
+    bindsym $mod+Shift+n fullscreen toggle; focus next; fullscreen toggle
+    bindsym $mod+Shift+p fullscreen toggle; focus prev; fullscreen toggle
+
+    # ── Scratchpad ───────────────────────────────────────────
+    bindsym $mod+Shift+minus move scratchpad
+    bindsym $mod+minus scratchpad show
+
+    # ── Reload ───────────────────────────────────────────────
+    bindsym $mod+Shift+c reload
+
+# Resize mode
+mode "resize" {
+    bindsym $left resize grow   width  20 px or 5 ppt
+    bindsym $down resize shrink height 20 px or 5 ppt
+    bindsym $up resize grow   height 20 px or 5 ppt
+    bindsym $right resize shrink width  20 px or 5 ppt
+    bindsym Left resize grow   width  20 px or 5 ppt
+    bindsym Down resize shrink height 20 px or 5 ppt
+    bindsym Up resize grow   height 20 px or 5 ppt
+    bindsym Right resize shrink width  20 px or 5 ppt
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+alt+r mode "resize"
+
+# Workspace switching
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+# Move container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10

@@ -1,0 +1,109 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 28,
+  "spacing": 0,
+  "margin-top": 4,
+  "margin-left": 5,
+  "margin-right": 5,
+  "modules-left": [
+    "custom/menu",
+    "sway/workspaces"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "tray",
+    "network",
+    "cpu",
+    "custom/memory",
+    "pulseaudio",
+    "battery"
+  ],
+
+  "custom/menu": {
+    "format": "󰍜",
+    "tooltip": "DebSway menu",
+    "on-click": "debsway menu"
+  },
+
+  "sway/workspaces": {
+    "format": "{name}",
+    "all-outputs": false,
+    "disable-scroll": false,
+    "sort-by-number": true,
+    "warp-on-scroll": false,
+    "persistent_workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+      "9": [],
+      "10": []
+    }
+  },
+
+  "tray": {
+    "icon-size": 14,
+    "spacing": 6
+  },
+
+  "clock": {
+    "format": " \uf017 {:%a %d %b %H:%M}",
+    "tooltip": true,
+    "tooltip-format": "{:%Y-%m-%d  ISO week %V}",
+    "interval": 60
+  },
+
+  "pulseaudio": {
+    "scroll-step": 1,
+    "format": "{icon} {volume}%",
+    "format-muted": " \uf131 {volume}%",
+    "format-icons": {
+      "default": ["\uf028", "\uf028", "\uf028"]
+    },
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "max-volume": 100
+  },
+
+  "network": {
+    "interval": 30,
+    "format-wifi": " \uf1eb {signalStrength}%",
+    "format-ethernet": " \uf1e6 {ifname}",
+    "format-disconnected": " \uf059",
+    "on-click": "debsway wire panel"
+  },
+
+  "cpu": {
+    "format": " \uf2db {usage}%",
+    "tooltip": false,
+    "interval": 3
+  },
+
+  "custom/memory": {
+    "exec": "$HOME/.config/sway/scripts/memoryUsage.sh",
+    "interval": 3,
+    "return-type": "json",
+    "format": "{}"
+  },
+
+  "battery": {
+    "interval": 30,
+    "states": {
+      "warning": 30,
+      "critical": 20
+    },
+    "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
+    "format": "{icon} {capacity}%",
+    "format-critical": " \uf240 {capacity}%",
+    "format-warning": " {icon} {capacity}%",
+    "format-charging": " \uf0e7 {capacity}%",
+    "format-plugged": " \uf0e7 {capacity}%",
+    "tooltip": false
+  }
+}

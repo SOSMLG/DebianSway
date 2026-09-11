@@ -1,0 +1,15 @@
+# wofi launcher — DebSway (theme lives in style.css, rides on the active
+# GTK theme + the Nerd Font patched glyphs).
+# See `man 5 wofi` for every key; keep this file to valid wofi options only
+# so a typo can't silently break `debsway menu` / `debsway launcher`.
+allow_images=true
+image_size=24
+width=40%
+lines=8
+location=center
+term=alacritty
+insensitive=true
+# Fuzzy matching: match on any key stroke order, highlight best entry.
+matching=fuzzy
+allow_markup=true
+always_parse_args=false
