@@ -35,7 +35,7 @@ for dep in wget gpg; do
     if ! command -v "$dep" >/dev/null 2>&1; then
         log_info "Installing dependency: $dep"
         apt_update -qq || true
-        sudo apt-get install -y "$dep" || { log_err "Failed to install $dep"; exit 1; }
+        priv apt-get install -y "$dep" || { log_err "Failed to install $dep"; exit 1; }
     fi
 done
 
@@ -44,7 +44,7 @@ SOURCES_FILE="/etc/apt/sources.list.d/vscodium.list"
 
 log_info "Adding VSCodium's GPG key..."
 if wget -qO - "https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg" \
-        | gpg --dearmor | sudo tee "$KEYRING" > /dev/null; then
+        | gpg --dearmor | priv tee "$KEYRING" > /dev/null; then
     log_ok "Key installed to $KEYRING"
 else
     log_err "Failed to fetch/install the VSCodium GPG key."
@@ -54,7 +54,7 @@ fi
 log_info "Adding VSCodium APT repository..."
 ARCH="$(dpkg --print-architecture)"
 if echo "deb [arch=${ARCH} signed-by=${KEYRING}] https://download.vscodium.com/debs vscodium main" \
-        | sudo tee "$SOURCES_FILE" > /dev/null; then
+        | priv tee "$SOURCES_FILE" > /dev/null; then
     log_ok "Repository added at $SOURCES_FILE (scoped to arch=${ARCH})"
 else
     log_err "Failed to write $SOURCES_FILE"
@@ -65,7 +65,7 @@ log_info "Updating package lists..."
 apt_update || { log_err "apt-get update failed after adding the VSCodium repo."; exit 1; }
 
 log_info "Installing codium..."
-if sudo apt-get install -y codium; then
+if priv apt-get install -y codium; then
     log_ok "VSCodium installed. Launch it with 'codium'."
 else
     log_err "Failed to install codium."

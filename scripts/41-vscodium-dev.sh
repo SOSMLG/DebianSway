@@ -49,7 +49,7 @@ install_ext() {
 
 if [[ $EUID -eq 0 ]]; then
     log_err "Do not run this as root — it needs to write to your own \$HOME."
-    log_err "Run it as your normal user; it will call sudo itself when needed."
+    log_err "Run it as your normal user; it will call priv itself when needed."
     exit 1
 fi
 

@@ -44,8 +44,8 @@ if ask "Install the Bluetooth stack (bluez)?"; then
         log_ok "bluetooth service started."
 
         if command_exists rfkill && rfkill list bluetooth 2>/dev/null | grep -qi "soft blocked: yes"; then
-            sudo rfkill unblock bluetooth && log_ok "Bluetooth was rfkill-soft-blocked — unblocked it." \
-                || log_warn "Couldn't rfkill unblock automatically — try 'sudo rfkill unblock bluetooth' yourself."
+            priv rfkill unblock bluetooth && log_ok "Bluetooth was rfkill-soft-blocked — unblocked it." \
+                || log_warn "Couldn't rfkill unblock automatically — try 'doas rfkill unblock bluetooth' yourself."
         fi
     fi
 else

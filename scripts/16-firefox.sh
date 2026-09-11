@@ -53,9 +53,9 @@ ensure_firefox_esr() {
 
     echo -e "${CYAN}firefox-esr not found, installing it...${NC}"
     if [ -z "${DEBSWAY_SKIP_APT_UPDATE:-}" ]; then
-        sudo apt-get update || { echo -e "${RED}apt-get update failed.${NC}"; return 1; }
+        priv apt-get update || { echo -e "${RED}apt-get update failed.${NC}"; return 1; }
     fi
-    if sudo apt-get install -y firefox-esr; then
+    if priv apt-get install -y firefox-esr; then
         echo -e "${GREEN}firefox-esr installed.${NC}"
     else
         echo -e "${RED}Failed to install firefox-esr.${NC}"
@@ -153,14 +153,14 @@ PROF_EOF
 install_policies() {
     local distribution_dir="$1"
 
-    [ ! -d "$distribution_dir" ] && sudo mkdir -p "$distribution_dir"
+    [ ! -d "$distribution_dir" ] && priv mkdir -p "$distribution_dir"
 
     if [ ! -f "$SCRIPT_DIR/policies.json" ]; then
         echo -e "${RED}Error: policies.json not found in $SCRIPT_DIR${NC}"
         return 1
     fi
 
-    if sudo cp "$SCRIPT_DIR/policies.json" "$distribution_dir/policies.json"; then
+    if priv cp "$SCRIPT_DIR/policies.json" "$distribution_dir/policies.json"; then
         echo -e "${GREEN}Policies installed to $distribution_dir${NC}"
     else
         echo -e "${RED}Failed to install policies.json${NC}"
@@ -168,7 +168,7 @@ install_policies() {
     fi
 }
 
-# Replace system .desktop file (requires sudo)
+# Replace system .desktop file (requires root)
 install_desktop_file() {
     local exec_name="$1"
     local desktop_file="$2"
@@ -177,7 +177,7 @@ install_desktop_file() {
 
     local system_desktop="/usr/share/applications/$desktop_file"
 
-    sudo tee "$system_desktop" > /dev/null << EOF
+    priv tee "$system_desktop" > /dev/null << EOF
 [Desktop Entry]
 Name=$browser_name
 GenericName=Web Browser
@@ -372,7 +372,7 @@ show_menu() {
 # Preflight checks
 if [[ $EUID -eq 0 ]]; then
     echo -e "${RED}Do not run this script as root — it needs to write to your own \$HOME.${NC}"
-    echo -e "${YELLOW}Run it as your normal user; it will call sudo itself when needed.${NC}"
+    echo -e "${YELLOW}Run it as your normal user; it will escalate itself (doas) when needed.${NC}"
     exit 1
 fi
 

@@ -14,7 +14,7 @@ diagnosing issues on this system:
 - **Backports are enabled natively** — Devuan ships `<suite>-backports`
   (`excalibur-backports`) from `deb.devuan.org/merged` in `/etc/apt/sources.list`;
   there is NO `deb.debian.org` backports line (that 404s). Install newer
-  versions deliberately with `sudo apt install -t excalibur-backports <pkg>` —
+  versions deliberately with `doas apt install -t excalibur-backports <pkg>` —
   never with a bare `apt upgrade`. Pinning lives in
   `/etc/apt/preferences.d/backports` (priority 100).
 - Flatpak is available (`flatpak install flathub <app>`) as a secondary
@@ -103,5 +103,11 @@ diagnosing issues on this system:
   `DEBSWAY_SKIP_APT_UPDATE=1` (skip per-script `apt-get update`).
 - Every apt action checks what's actually installed first — nothing is
   blindly force-purged, so scripts are safe to re-run.
+- Root escalation goes through the `priv()` helper (`scripts/lib/common.sh`,
+  also mirrored in `debsway/lib/common.sh`): **doas** first, sudo fallback,
+  override with `DEBSWAY_PRIV=doas|sudo`. Never write bare `sudo` in new
+  code — and never "fix" `doas` back to `sudo`. Detached contexts without
+  the helper (`sh -c` menu commands, wlogout `layout`) must call `doas`
+  directly (helpers don't survive `exec` into a fresh shell).
 - The default terminal is **Alacritty**; keep `$term` references to alacritty
   in sway config and shell aliases consistent with that.

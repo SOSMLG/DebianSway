@@ -78,18 +78,18 @@ start_service NetworkManager
 # Create the D-Bus session wrapper so sway gets DBUS_SESSION_BUS_ADDRESS.
 # Without this, mako, waybar, xdg-desktop-portal-wlr, playerctl etc. fail.
 if [ ! -x /usr/local/bin/sway-session ]; then
-    sudo tee /usr/local/bin/sway-session > /dev/null << 'WRAPPER'
+    priv tee /usr/local/bin/sway-session > /dev/null << 'WRAPPER'
 #!/bin/sh
 exec dbus-run-session -- sway
 WRAPPER
-    sudo chmod +x /usr/local/bin/sway-session
+    priv chmod +x /usr/local/bin/sway-session
     log_ok "Created /usr/local/bin/sway-session (D-Bus session wrapper)"
 fi
 # Greeter session entry so the "DebSway" picker choice (not raw sway)
 # always launches inside a D-Bus session. Without the bus, mako,
 # portals, and debsway notify() silently do nothing. A distro upgrade
 # may overwrite sway.desktop, but this file is ours and survives.
-sudo tee /usr/share/wayland-sessions/debsway-sway.desktop > /dev/null << 'DESKTOP'
+priv tee /usr/share/wayland-sessions/debsway-sway.desktop > /dev/null << 'DESKTOP'
 [Desktop Entry]
 Name=DebSway (Sway + session bus)
 Comment=Sway via dbus-run-session so notifications and portals work
@@ -98,6 +98,13 @@ Type=Application
 DesktopNames=sway
 DESKTOP
 log_ok "Installed DebSway greeter session (pick it instead of raw Sway)."
+# opendoas — the privilege escalator for this toolkit (BSD-minimal `doas`;
+# every script reaches root through the priv() helper in lib/common.sh,
+# which prefers doas and falls back to sudo). Installed here, first, so
+# all later steps can rely on it. sudo stays installed as a fallback.
+if ! is_installed opendoas; then
+    install_pkgs "opendoas (doas privilege escalation)" opendoas
+fi
 # tuigreet is the greeter: a TUI purpose-built for greetd session picking
 # (far less fragile than wlgreet's GTK layer-shell). wlgreet stays installed
 # as a fallback greeter.
@@ -108,16 +115,16 @@ fi
 # greetd runs its greeter as a dedicated unprivileged user. Debian's
 # package doesn't create one, so make sure "greeter" exists + can render.
 if ! id -u greeter >/dev/null 2>&1; then
-    sudo adduser --disabled-password --gecos "greetd greeter" greeter
-    sudo usermod -aG video,render,input greeter
+    priv adduser --disabled-password --gecos "greetd greeter" greeter
+    priv usermod -aG video,render,input greeter
 fi
 
-sudo mkdir -p /etc/greetd
+priv mkdir -p /etc/greetd
 if [ -f /etc/greetd/config.toml ]; then
-    sudo cp /etc/greetd/config.toml "/etc/greetd/config.toml.bak.$(date +%Y%m%d_%H%M%S)"
+    priv cp /etc/greetd/config.toml "/etc/greetd/config.toml.bak.$(date +%Y%m%d_%H%M%S)"
     log_info "Existing /etc/greetd/config.toml backed up."
 fi
-sudo tee /etc/greetd/config.toml > /dev/null << 'EOF'
+priv tee /etc/greetd/config.toml > /dev/null << 'EOF'
 [terminal]
 vt = 2
 
@@ -141,6 +148,17 @@ log_ok "greetd configured to boot into the tuigreet login screen."
 start_service greetd
 log_ok "greetd enabled — your next login goes through the tuigreet picker."
 
+# Seat management belongs to elogind on this stack (sway speaks the logind
+# API); a stray seatd only competes for the same devices. Park it wherever
+# it is enabled (both init systems — package stays, re-enable any time).
+if command_exists update-rc.d || [ -x /usr/sbin/update-rc.d ]; then
+    priv /usr/sbin/update-rc.d seatd disable >/dev/null 2>&1 || true
+fi
+if command_exists rc-update || [ -x /usr/sbin/rc-update ]; then
+    priv /usr/sbin/rc-update del seatd default >/dev/null 2>&1 || true
+fi
+priv service seatd stop >/dev/null 2>&1 || true
+
 # ---------------------------------------------------------------------------
 # 5b. Give greetd sole ownership of the boot console
 # ---------------------------------------------------------------------------
@@ -148,7 +166,7 @@ log_ok "greetd enabled — your next login goes through the tuigreet picker."
 # manual fallback, but its runlevel links are removed so it no longer races
 # greetd (both enabled = neither owns the VT reliably).
 for _rl in 2 3 4 5; do
-    sudo rm -f "/etc/rc${_rl}.d"/S??sddm 2>/dev/null || true
+    priv rm -f "/etc/rc${_rl}.d"/S??sddm 2>/dev/null || true
 done
 log_ok "SDDM demoted to manual fallback (still installed; re-enable with S-links if ever needed)."
 
@@ -157,13 +175,13 @@ log_ok "SDDM demoted to manual fallback (still installed; re-enable with S-links
 # tty1's getty is restored for boot messages/console login, tty2's is parked,
 # and tty3-6 gettys stay untouched. Reload init without rebooting.
 if grep -qE '^#(1:.*tty1)  # debsway:' /etc/inittab 2>/dev/null; then
-    sudo sed -i -E 's/^#(1:.*tty1)  # debsway:.*/\1/' /etc/inittab
+    priv sed -i -E 's/^#(1:.*tty1)  # debsway:.*/\1/' /etc/inittab
     log_ok "getty restored on tty1."
 fi
 if grep -qE '^2:.*getty.*tty2' /etc/inittab 2>/dev/null; then
-    sudo cp /etc/inittab "/etc/inittab.bak.$(date +%Y%m%d_%H%M%S)"
-    sudo sed -i -E 's/^(2:.*getty.*tty2)/#\1  # debsway: greetd owns tty2/' /etc/inittab
-    sudo init q 2>/dev/null || true
+    priv cp /etc/inittab "/etc/inittab.bak.$(date +%Y%m%d_%H%M%S)"
+    priv sed -i -E 's/^(2:.*getty.*tty2)/#\1  # debsway: greetd owns tty2/' /etc/inittab
+    priv init q 2>/dev/null || true
     log_ok "getty moved off tty2 (backup: /etc/inittab.bak.*)."
 else
     log_ok "tty2 already free of getty — greetd owns the console."
@@ -175,7 +193,7 @@ fi
 if ask "Set up Flatpak + Flathub?"; then
     install_pkgs "Flatpak" flatpak
     if command -v flatpak >/dev/null 2>&1; then
-        if sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo; then
+        if priv flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo; then
             log_ok "Flathub remote added system-wide."
         else
             log_warn "Could not add the Flathub remote (may already exist)."

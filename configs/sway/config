@@ -74,9 +74,13 @@ exec sh -c 'command -v pipewire >/dev/null 2>&1 && pipewire >/dev/null 2>&1'
 exec sh -c 'command -v wireplumber >/dev/null 2>&1 && sleep 0.4 && wireplumber >/dev/null 2>&1'
 exec sh -c 'command -v pipewire-pulse >/dev/null 2>&1 && sleep 0.6 && pipewire-pulse >/dev/null 2>&1'
 exec sh -c 'command -v debsway >/dev/null 2>&1 && debsway clip watch'
-# Battery & temperature warnings
-exec sh -c 'pgrep -f batteryWarning.sh >/dev/null 2>&1 || ~/.config/sway/scripts/batteryWarning.sh &'
-exec sh -c 'pgrep -f tempWarning.sh >/dev/null 2>&1 || ~/.config/sway/scripts/tempWarning.sh &'
+# Battery & temperature warnings — exactly one instance each, via flock
+# (lock files in ~/.cache, released automatically on exit). NOTE: do NOT
+# "simplify" this into a pgrep -f guard: any such pattern also matches the
+# very `sh -c` wrapper running the check (it contains the script path), so
+# the guard is permanently true and the monitors silently never start.
+exec sh -c 'mkdir -p ~/.cache && exec flock -n ~/.cache/debsway-batteryWarning.lock ~/.config/sway/scripts/batteryWarning.sh'
+exec sh -c 'mkdir -p ~/.cache && exec flock -n ~/.cache/debsway-tempWarning.lock ~/.config/sway/scripts/tempWarning.sh'
 # Display management (kanshi)
 exec kanshi
 # Restore persisted wallpaper (debsway bg set > marker); falls back to the

@@ -10,7 +10,16 @@
 # Environment variables honored (all optional):
 #   DEBSWAY_ASSUME_YES=1        ask() answers with its default instead of prompting
 #   DEBSWAY_SKIP_APT_UPDATE=1   apt_update() is a no-op (run.sh updates once)
+#   DEBSWAY_PRIV=doas|priv      force the privilege escalator (default: doas, priv fallback)
 # =======================================================
+
+# sbin lives outside a normal user's PATH, but this toolkit drives sysadmin
+# tools (usermod, rc-service, ufw, rfkill...). Export it once here so
+# command -v checks and direct calls resolve before any escalation.
+case ":$PATH:" in
+    *:/usr/sbin:*) ;;
+    *) export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH" ;;
+esac
 
 # Guard against being sourced twice in the same shell.
 [ -n "${_DEBSWAY_COMMON_SH_LOADED:-}" ] && return 0
@@ -31,26 +40,58 @@ log_head() {
 
 command_exists() { command -v "$1" >/dev/null 2>&1; }
 
+# have_priv — true if any privilege escalator is available
+have_priv() { command_exists doas || command_exists sudo; }
+
+# priv() — run a command as root. Prefers doas (BSD-minimal, the toolkit
+# default once scripts/10-sway-core.sh installs opendoas), falls back to
+# sudo so scripts keep working on machines that only have sudo.
+# DEBSWAY_PRIV=doas|sudo forces one. Flags pass through (-n and -u exist
+# in both). Usage: priv apt-get install -y foo / priv -n reboot
+priv() {
+    local tool="${DEBSWAY_PRIV:-}"
+    if [ -z "$tool" ]; then
+        if command_exists doas; then tool=doas; else tool=sudo; fi
+    fi
+    "$tool" "$@"
+}
+
 is_installed() {
     dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "install ok installed"
 }
 
 require_not_root() {
     if [ "$(id -u)" -eq 0 ]; then
-        log_err "Do not run this as root — run it as your normal user; it will call sudo itself when needed."
+        log_err "Do not run this as root — run it as your normal user; it will escalate itself when needed (doas, sudo fallback)."
         exit 1
+    fi
+    if ! have_priv; then
+        log_err "Neither doas nor sudo found — install one (scripts/10-sway-core.sh installs opendoas)."
+        exit 1
+    fi
+    # Minimal installs often ship an escalator the user can't actually use
+    # (sudo installed but user in no empowered group, doas without a rule):
+    # escalation then dies mid-run with a bare password rejection. Warn once,
+    # early, with the exact fix — never fatal, the user may know better.
+    if ! id -nG 2>/dev/null | grep -qwE "sudo|wheel|doas" \
+       && ! grep -qw "$USER" /etc/doas.conf 2>/dev/null; then
+        log_warn "Your user is in no privilege group (sudo/wheel) and /etc/doas.conf names no rule for $USER."
+        log_warn "Escalation is likely to fail. Fix with ONE of these (as root), then relogin:"
+        log_warn "  usermod -aG sudo $USER   # Debian stock path"
+        log_warn "  printf 'permit persist $USER as root\n' > /etc/doas.conf   # BSD-minimal path"
     fi
 }
 
-# Real (non-root) user, even if this got invoked via sudo somewhere upstream.
-ACTUAL_USER="${SUDO_USER:-$USER}"
+# Real (non-root) user, even if this got invoked via escalation upstream.
+# doas exports DOAS_USER the way sudo exports SUDO_USER.
+ACTUAL_USER="${SUDO_USER:-${DOAS_USER:-$USER}}"
 [ -z "$ACTUAL_USER" ] && ACTUAL_USER="$(id -un)"
 
 run_as_user() {
     if [ "$(id -un)" = "$ACTUAL_USER" ]; then
         "$@"
     else
-        sudo -u "$ACTUAL_USER" "$@"
+        priv -u "$ACTUAL_USER" "$@"
     fi
 }
 
@@ -82,7 +123,7 @@ install_pkgs() {
         return 0
     fi
     log_info "$label: installing ${to_install[*]}"
-    if sudo apt-get install -y "${to_install[@]}"; then
+    if priv apt-get install -y "${to_install[@]}"; then
         log_ok "$label installed."
         return 0
     else
@@ -98,11 +139,56 @@ install_pkgs() {
 apt_update() {
     [ -n "${DEBSWAY_SKIP_APT_UPDATE:-}" ] && return 0
     if command_exists apt-get; then
-        sudo apt-get update "$@"
+        priv apt-get update "$@"
     else
         log_err "apt-get not found — this needs a Debian/Devuan APT system."
         return 1
     fi
+}
+
+# ensure_repo_component <component> [suite] — make sure an APT component
+# (e.g. non-free-firmware) is actually available, adding a debsway snippet
+# file if the configured sources lack it. Minimal installs often ship
+# without it, which would silently drop all firmware/microcode. Idempotent:
+# no-op when already present, never edits existing files (writes only
+# debsway-<component>.sources), and refreshes package lists on change.
+# Honors APT_SOURCES_D override (tests). Usage:
+#   ensure_repo_component non-free-firmware && install_pkgs ...firmware...
+ensure_repo_component() {
+    local comp="$1" suite="${2:-}"
+    local srcd="${APT_SOURCES_D:-/etc/apt/sources.list.d}"
+    . /etc/os-release 2>/dev/null || true
+    local id="${ID:-debian}"
+    [ -z "$suite" ] && suite="${VERSION_CODENAME:-}"
+    if [ -z "$suite" ]; then
+        log_warn "ensure_repo_component: cannot detect suite codename."
+        return 1
+    fi
+    if apt-cache policy 2>/dev/null | grep -Eq "(^|[, ])c=${comp}([, ]|$)"; then
+        return 0
+    fi
+    log_info "APT component '$comp' missing — adding ${srcd}/debsway-${comp}.sources ..."
+    local uris="http://deb.debian.org/debian" sig=""
+    if [ "$id" = "devuan" ]; then
+        uris="http://deb.devuan.org/merged"
+    else
+        sig=$'\nSigned-By: /usr/share/keyrings/debian-archive-keyring.gpg'
+    fi
+    mkdir -p "$srcd" 2>/dev/null || priv mkdir -p "$srcd"
+    if [ -f "$srcd/debsway-${comp}.sources" ]; then
+        priv cp -a "$srcd/debsway-${comp}.sources" "$srcd/debsway-${comp}.sources.bak.$(date +%Y%m%d_%H%M%S)"
+    fi
+    priv tee "$srcd/debsway-${comp}.sources" > /dev/null << EOF
+# Written by deb-sway-thinkpad (ensure_repo_component) — base suite + firmware
+# components. Safe to delete once your main sources carry '$comp' themselves.
+Types: deb
+URIs: $uris
+Suites: $suite
+Components: main contrib non-free non-free-firmware${sig}
+EOF
+    # Refresh only when the lists lack the component (common case: no-op above).
+    priv apt-get update || { log_warn "apt-get update failed after adding '$comp'."; return 1; }
+    apt-cache policy 2>/dev/null | grep -Eq "(^|[, ])c=${comp}([, ]|$)"
 }
 
 # check_repo_package — probe whether a package is even available before
@@ -119,25 +205,29 @@ check_repo_package() {
     log_warn "$probe is not available — the '$component' repo component is probably missing."
     log_warn "On Debian, add the component to /etc/apt/sources.list.d/ (or run"
     log_warn "scripts/11-backports.sh which enables trixie-backports with all components),"
-    log_warn "run 'sudo apt-get update', then re-run this step."
+    log_warn "run 'apt-get update' as root, then re-run this step."
     return 1
 }
 
 # start_service — enable+start a service under whatever init this box
 # actually runs: systemd (Debian default), OpenRC or sysvinit (Devuan).
-# Never assumes systemd exists — works on Debian (systemd) and Devuan (OpenRC).
+# Never assumes systemd exists. sbin tools are invoked by absolute path
+# because an escalator's PATH may not include /usr/sbin.
 start_service() {
     local svc="$1"
     if command_exists systemctl && [ -d /run/systemd/system ]; then
-        sudo systemctl enable --now "$svc" >/dev/null 2>&1 || true
-    elif command_exists rc-service && [ -d /run/openrc/softlevel ]; then
-        sudo rc-update add "$svc" default >/dev/null 2>&1 || true
-        sudo rc-service "$svc" start >/dev/null 2>&1 || true
+        priv systemctl enable --now "$svc" >/dev/null 2>&1 || true
+    elif { command_exists rc-service || [ -x /usr/sbin/rc-service ]; } \
+            && [ -d /run/openrc/softlevel ]; then
+        priv /usr/sbin/rc-update add "$svc" default >/dev/null 2>&1 || true
+        priv /usr/sbin/rc-service "$svc" start >/dev/null 2>&1 || true
     else
-        if command_exists update-rc.d; then
-            sudo update-rc.d "$svc" defaults >/dev/null 2>&1 || true
+        if command_exists update-rc.d || [ -x /usr/sbin/update-rc.d ]; then
+            priv /usr/sbin/update-rc.d "$svc" defaults >/dev/null 2>&1 || true
         fi
-        sudo service "$svc" start >/dev/null 2>&1 || true
+        if command_exists service || [ -x /usr/sbin/service ]; then
+            priv /usr/sbin/service "$svc" start >/dev/null 2>&1 || true
+        fi
     fi
 }
 

@@ -34,6 +34,11 @@ echo -e "${CYAN}=========================================================${NC}"
 log_info "Refreshing package lists..."
 apt_update || { log_err "apt-get update failed, aborting."; exit 1; }
 
+# Firmware lives in non-free-firmware, which minimal installs often lack.
+# Enable it (idempotent snippet file) instead of silently skipping firmware.
+ensure_repo_component non-free-firmware \
+    || log_warn "Continuing without non-free-firmware — firmware steps may skip."
+
 # ---------------------------------------------------------------------------
 # 1. Common WiFi/Bluetooth firmware — Wi-Fi on the L14 G2 AMD is Intel
 #    (AX200) or Realtek/MediaTek depending on the exact SKU, so install

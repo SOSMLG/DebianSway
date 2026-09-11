@@ -43,7 +43,7 @@ install_pkgs "Timeshift" timeshift
 
 if is_installed timeshift; then
     echo -e "${GREEN}Timeshift installed.${NC}"
-    log_warn "One-time setup needed: run 'sudo timeshift-launcher' (or find Timeshift in the"
+    log_warn "One-time setup needed: run 'doas timeshift-launcher' (or find Timeshift in the"
     log_warn "app menu) to choose rsync vs BTRFS mode, where snapshots are stored, and a"
     log_warn "schedule. That choice is left to you rather than guessed automatically."
 else

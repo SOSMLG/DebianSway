@@ -13,7 +13,7 @@
 #   ./install.sh --list      show what's included, then exit
 #
 # Anything else is passed through to run.sh. You run this as
-# your NORMAL user; the scripts sudo themselves as needed.
+# your NORMAL user; the scripts escalate themselves (doas) as needed.
 # ==========================================
 
 set -uo pipefail

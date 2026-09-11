@@ -47,8 +47,8 @@ SRCS_FILE="/etc/apt/sources.list.d/debian-backports.sources"
 if [ "$ID" = "devuan" ]; then
     log_info "Detected Devuan $CODENAME — backports suite ships in sources.list already."
     if [ -f "$SRCS_FILE" ]; then
-        sudo cp -a "$SRCS_FILE" "${SRCS_FILE}.bak.$(date +%Y%m%d_%H%M%S)"
-        sudo rm "$SRCS_FILE"
+        priv cp -a "$SRCS_FILE" "${SRCS_FILE}.bak.$(date +%Y%m%d_%H%M%S)"
+        priv rm "$SRCS_FILE"
         log_ok "Removed stale Debian-mirror $SRCS_FILE (Devuan provides $BACKPORTS_SUITE)."
     else
         log_ok "$BACKPORTS_SUITE is provided by devuan.org/merged sources.list — no extra file needed."
@@ -67,11 +67,11 @@ else
     fi
 
     if [ "$NEED_WRITE" -eq 1 ]; then
-        sudo mkdir -p /etc/apt/sources.list.d
+        priv mkdir -p /etc/apt/sources.list.d
         if [ -f "$SRCS_FILE" ]; then
-            sudo cp "$SRCS_FILE" "${SRCS_FILE}.bak.$(date +%Y%m%d_%H%M%S)"
+            priv cp "$SRCS_FILE" "${SRCS_FILE}.bak.$(date +%Y%m%d_%H%M%S)"
         fi
-        sudo tee "$SRCS_FILE" > /dev/null << EOF
+        priv tee "$SRCS_FILE" > /dev/null << EOF
 # Written by deb-sway-thinkpad 11-backports.sh — $BACKPORTS_SUITE
 # Backports hold newer versions of stable packages; they are NOT
 # installed automatically (see the apt pinning in $PREFS_FILE).
@@ -92,9 +92,9 @@ if [ -f "$PREFS_FILE" ] && grep -q "release a=${BACKPORTS_SUITE}" "$PREFS_FILE";
     log_ok "Apt pin for $BACKPORTS_SUITE already present."
 else
     if [ -f "$PREFS_FILE" ]; then
-        sudo cp "$PREFS_FILE" "${PREFS_FILE}.bak.$(date +%Y%m%d_%H%M%S)"
+        priv cp "$PREFS_FILE" "${PREFS_FILE}.bak.$(date +%Y%m%d_%H%M%S)"
     fi
-    sudo tee "$PREFS_FILE" > /dev/null << EOF
+    priv tee "$PREFS_FILE" > /dev/null << EOF
 # Written by deb-sway-thinkpad 11-backports.sh
 # Never auto-upgrade to backports; only explicit -t ${BACKPORTS_SUITE}
 # installs (or direct dependency pulls) select these versions.
@@ -109,15 +109,15 @@ fi
 # 3. Refresh + verify
 # ---------------------------------------------------------------------------
 log_info "Refreshing package lists (backports included)..."
-if sudo apt-get update; then
+if priv apt-get update; then
     if apt-cache policy 2>/dev/null | sed -n 's/^ .*n/\n&/p' | grep -qi "$BACKPORTS_SUITE" \
-        || sudo apt-cache policy 2>/dev/null | grep -qi "$BACKPORTS_SUITE"; then
+        || priv apt-cache policy 2>/dev/null | grep -qi "$BACKPORTS_SUITE"; then
         log_ok "$BACKPORTS_SUITE is live. Install from it with:"
-        log_ok "    sudo apt install -t ${BACKPORTS_SUITE} <package>"
-        log_ok "e.g. newer sway: sudo apt install -t ${BACKPORTS_SUITE} sway"
+        log_ok "    doas apt install -t ${BACKPORTS_SUITE} <package>"
+        log_ok "e.g. newer sway: doas apt install -t ${BACKPORTS_SUITE} sway"
     else
         log_warn "$BACKPORTS_SUITE didn't visibly show up in apt-cache policy yet —"
-        log_warn "double-check $SRCS_FILE contents, then 'sudo apt-get update'."
+        log_warn "double-check $SRCS_FILE contents, then 'doas apt-get update'."
     fi
 else
     log_warn "apt-get update failed — check your network and the new sources file."

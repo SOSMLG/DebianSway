@@ -33,7 +33,7 @@ apt_update || { log_err "apt-get update failed, aborting."; exit 1; }
 if ask "Set up Flatpak + Flathub?"; then
     install_pkgs "Flatpak" flatpak
     if command -v flatpak >/dev/null 2>&1; then
-        if sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo; then
+        if priv flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo; then
             log_ok "Flathub remote added system-wide."
         else
             log_warn "Could not add the Flathub remote (may already exist)."
@@ -55,7 +55,7 @@ if ask "Install printing support (CUPS + drivers + network printer auto-discover
     if getent group lpadmin >/dev/null 2>&1; then
         if id -nG "$ACTUAL_USER" 2>/dev/null | tr ' ' '\n' | grep -qx lpadmin; then
             log_ok "$ACTUAL_USER already in the lpadmin group."
-        elif sudo usermod -aG lpadmin "$ACTUAL_USER"; then
+        elif priv usermod -aG lpadmin "$ACTUAL_USER"; then
             log_ok "Added $ACTUAL_USER to lpadmin (manage printers without a password prompt each time)."
             log_warn "Log out and back in for this to take effect."
         fi
@@ -79,20 +79,20 @@ if ask "Install firewall control panel (gufw + ufw)?"; then
         fi
         if [ "$NEEDS_SSH_RULE" -eq 1 ]; then
             log_info "Active SSH session or listening sshd detected — allowing SSH before enabling default-deny."
-            sudo ufw allow ssh comment 'preserve SSH access before enabling default-deny' \
+            priv ufw allow ssh comment 'preserve SSH access before enabling default-deny' \
                 || log_warn "Couldn't add the SSH allow-rule — double-check before enabling ufw if you're on SSH."
         fi
-        sudo ufw default deny incoming
-        sudo ufw default allow outgoing
-        if sudo ufw --force enable; then
+        priv ufw default deny incoming
+        priv ufw default allow outgoing
+        if priv ufw --force enable; then
             log_ok "ufw enabled: incoming denied by default, outgoing allowed. Manage exceptions via"
-            log_ok "gufw (the GUI) or 'sudo ufw allow <port>'."
+            log_ok "gufw (the GUI) or 'doas ufw allow <port>'."
         else
-            log_warn "ufw failed to enable — check 'sudo ufw status verbose'."
+            log_warn "ufw failed to enable — check 'doas ufw status verbose'."
         fi
     else
         log_warn "Installed only — ufw is NOT enabled. Turn it on yourself via gufw"
-        log_warn "(or 'sudo ufw enable') once you've confirmed it won't block anything you rely on."
+        log_warn "(or 'doas ufw enable') once you've confirmed it won't block anything you rely on."
     fi
 fi
 

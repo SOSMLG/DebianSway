@@ -39,7 +39,7 @@ ensure_i386() {
         log_ok "i386 multiarch already enabled."
     else
         log_info "Enabling i386 multiarch (needed for 32-bit game/Windows libraries)..."
-        sudo dpkg --add-architecture i386
+        priv dpkg --add-architecture i386
     fi
     log_info "Refreshing package lists..."
     apt_update || { log_err "apt-get update failed."; return 1; }
@@ -82,7 +82,7 @@ install_steam() {
     verify_download "$tmp_deb" 102400 || return 1
 
     log_info "Installing Steam..."
-    if sudo apt-get install -y "$tmp_deb"; then
+    if priv apt-get install -y "$tmp_deb"; then
         log_ok "Steam installed. It will self-update on first launch."
     else
         log_err "Steam install failed."
@@ -139,12 +139,12 @@ print((amd64 or candidates or [''])[0])
     verify_download "$tmp_deb" 102400 || return 1
 
     log_info "Installing Heroic .deb..."
-    if sudo apt-get install -y "$tmp_deb"; then
+    if priv apt-get install -y "$tmp_deb"; then
         log_ok "Heroic Games Launcher installed."
     else
         log_err "Heroic install failed (dependency issue?). Trying dpkg + fix-broken..."
-        sudo dpkg -i "$tmp_deb" || true
-        if sudo apt-get install -f -y; then
+        priv dpkg -i "$tmp_deb" || true
+        if priv apt-get install -f -y; then
             log_ok "Heroic Games Launcher installed after dependency fix-up."
         else
             rm -f "$tmp_deb"
@@ -166,7 +166,7 @@ install_wine() {
     ensure_i386 || return 1
 
     log_info "Installing wine + winetricks..."
-    if sudo apt-get install -y wine ; then
+    if priv apt-get install -y wine ; then
         log_ok "Wine installed. Run 'winecfg' once to set up your first Wine prefix."
     else
         log_err "Wine install failed."

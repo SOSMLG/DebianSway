@@ -16,8 +16,8 @@ Intel Sway guide) and the script runner + post-install toolkit of
 ./run.sh            # pick-and-choose interactively
 ```
 
-You run it as your **normal user** (never `sudo bash install.sh`); each script
-calls `sudo` itself for the parts that need it.
+You run it as your **normal user** (never `doas bash install.sh`); each script
+escalates itself (`doas`, `sudo` fallback) for the parts that need it.
 
 ---
 
@@ -32,7 +32,7 @@ git clone <this-repo> && cd deb-sway-thinkpad
 # ~everything, then a verification report; reboot when it finishes
 
 # 2. Reboot — greetd/tuigreet gives you a login screen
-#    (systemd: `systemctl reboot`; Devuan/OpenRC: `sudo reboot`)
+#    (systemd: `systemctl reboot`; Devuan/OpenRC: `doas reboot`)
 ```
 
 `install.sh` = `run.sh --full --verify`: every step answers **yes**, including
@@ -49,6 +49,30 @@ Variants:
 
 Install with `bash -x ./install.sh` to watch every step, if you're curious or
 something looks off.
+
+### Minimal Debian netinst notes
+
+Two things a bare netinst often lacks — handle them before `./install.sh`:
+
+* **Privilege for your user.** Either leave the root password **empty** during
+  install (Debian then puts your user in `sudo`), or afterwards as root:
+  ```bash
+  apt install -y sudo opendoas && usermod -aG sudo <you>
+  printf 'permit persist <you> as root\n' > /etc/doas.conf
+  ```
+  then **relogin**. The toolkit refuses to run as root and warns early if
+  escalation can't work — but it can't test your password for you, so a wrong
+  setup fails mid-run at the first privileged step.
+* **Firmware component.** Prefer an installer image that includes
+  non-free-firmware (otherwise WiFi may not even work for the install). If
+  the component is missing afterwards, script `13-hardware.sh` enables it
+  itself (`ensure_repo_component`) instead of skipping firmware.
+
+Everything else is automatic across both distros: backports branch (Debian
+`.sources` file vs Devuan merged), PAM provider (`libpam-systemd` vs
+`libpam-elogind`), service handling (systemd unit vs sysvinit script), and
+the greetd login. If a niche package ever goes missing from trixie,
+`verifySetup.sh` reports it per-package, loudly, instead of failing obscurely.
 
 ---
 
@@ -229,7 +253,7 @@ tarball before major operations.
 ## Maintenance & troubleshooting
 
 * **Not launched to a graphical session after reboot?** Check greetd's
-  status (`sudo rc-service greetd status` — `/sbin` isn't on a normal user's
+  status (`doas rc-service greetd status` — `/sbin` isn't on a normal user's
   PATH — or `pgrep -a greetd`) — it needs the seat, and your user must exist
   in `input`/`video`/`render` (script 02). Exactly **one** display manager may
   own the console: the installer enables `greetd` (tuigreet picker), demotes
@@ -310,7 +334,7 @@ tarball before major operations.
 run.sh           ordered runner (phases: core/desktop/apps/optional/utils)
 install.sh       one-command unattended wrapper
 scripts/
-  lib/common.sh  shared helpers (DEBSWAY_* envs, ask, pkgs, sudo wrapper)
+  lib/common.sh  shared helpers (DEBSWAY_* envs, ask, pkgs, priv helper)
   ??-*.sh        one step each, numbered = run order; runnable standalone
   verifySetup.sh end-state audit (run.sh --verify)
   skills/deb-sway-thinkpad-SKILL.md   system context for AI agents

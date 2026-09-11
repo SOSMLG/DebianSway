@@ -18,8 +18,8 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
-if ! command -v sudo &>/dev/null; then
-    log_err "sudo not found."
+if ! have_priv; then
+    log_err "Neither doas nor sudo found — cannot escalate."
     exit 1
 fi
 
@@ -37,7 +37,7 @@ log_info "Updating package lists..."
 apt_update -qq
 
 log_info "Installing Noto + Font Awesome via apt..."
-if sudo apt-get install -y \
+if priv apt-get install -y \
     curl \
     fonts-font-awesome \
     fonts-noto-core \
@@ -178,7 +178,7 @@ log_ok "fonts.conf written"
 # 4. Rebuild font cache
 # ---------------------------------------------------------------------------
 log_info "Rebuilding font cache..."
-sudo fc-cache -f
+priv fc-cache -f
 fc-cache -f "$NERD_FONT_DIR"
 log_ok "Font cache updated"
 

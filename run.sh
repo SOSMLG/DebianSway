@@ -99,11 +99,11 @@ done
 
 # --- Refuse to run as root directly ---
 # Per-user state (Firefox profile, ~/.bashrc, sway configs, ~/.local/bin)
-# must land in the real user's $HOME, not /root. Scripts call sudo
+# must land in the real user's $HOME, not /root. Scripts escalate (doas)
 # themselves for the bits that need it.
-if [ "$(id -u)" -eq 0 ] && [ -z "${SUDO_USER:-}" ]; then
-    echo -e "${RED}Please run this as your normal user, not as root / sudo bash run.sh.${RESET}"
-    echo -e "${YELLOW}Each script will call sudo itself for the parts that need it.${RESET}"
+if [ "$(id -u)" -eq 0 ] && [ -z "${SUDO_USER:-${DOAS_USER:-}}" ]; then
+    echo -e "${RED}Please run this as your normal user, not as root / doas bash run.sh.${RESET}"
+    echo -e "${YELLOW}Each script will escalate itself (doas) for the parts that need it.${RESET}"
     exit 1
 fi
 
@@ -281,7 +281,7 @@ echo -e "${BLUE}=========================================================${RESET
 export DEBSWAY_SKIP_APT_UPDATE=1
 if [ "$SKIP_APT_UPDATE" -eq 0 ]; then
     echo -e "${CYAN}[*] Refreshing package lists once (scripts skip their own refreshes)...${RESET}"
-    if ! sudo apt-get update; then
+    if ! priv apt-get update; then
         echo -e "${YELLOW}[!] apt-get update failed — continuing anyway. Some installs may fail if lists are stale.${RESET}"
     fi
 fi

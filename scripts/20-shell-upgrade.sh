@@ -54,7 +54,7 @@ install_pkgs "Shell upgrade" \
 # Purge it idempotently so stale foot.ini / binds can't shadow Alacritty.
 if is_installed foot; then
     log_info "Removing retired terminal (foot) — Alacritty is now \$term."
-    sudo apt-get purge -y foot 2>/dev/null || log_warn "Couldn't remove foot."
+    priv apt-get purge -y foot 2>/dev/null || log_warn "Couldn't remove foot."
 fi
 if [ -f "$HOME/.config/foot/foot.ini" ]; then
     mv "$HOME/.config/foot/foot.ini" "$HOME/.config/foot/foot.ini.retired.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true

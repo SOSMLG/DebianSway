@@ -19,8 +19,8 @@ if [ "$(id -u)" -eq 0 ]; then
     exit 1
 fi
 
-if ! command -v sudo &>/dev/null; then
-    log_err "sudo not found."
+if ! have_priv; then
+    log_err "Neither doas nor sudo found — cannot escalate."
     exit 1
 fi
 
@@ -36,7 +36,7 @@ if is_installed fastfetch; then
 else
     log_info "Updating package lists..."
     apt_update -qq
-    if sudo apt-get install -y fastfetch; then
+    if priv apt-get install -y fastfetch; then
         log_ok "fastfetch installed."
     else
         log_err "Failed to install fastfetch."

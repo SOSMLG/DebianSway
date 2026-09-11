@@ -19,8 +19,8 @@ log_head "System Maintenance"
 
 # --- 1. APT housekeeping --------------------------------------------------
 if ask "Run apt autoclean + autoremove (remove unneeded packages)?"; then
-    sudo apt-get autoclean || true
-    sudo apt-get autoremove -y || log_warn "autoremove reported issues (continuing)."
+    priv apt-get autoclean || true
+    priv apt-get autoremove -y || log_warn "autoremove reported issues (continuing)."
 fi
 
 # --- 2. Obsolete transitional package -------------------------------------
@@ -28,7 +28,7 @@ fi
 # has been dropped by the PipeWire packaging; if it lingers it's pure cruft.
 if is_installed pipewire-audio-client-libraries; then
     if ask "Remove obsolete pipewire-audio-client-libraries (now an empty transitional package)?"; then
-        sudo apt-get purge -y pipewire-audio-client-libraries || log_warn "Removal failed — ignorable if APT is mid-transition."
+        priv apt-get purge -y pipewire-audio-client-libraries || log_warn "Removal failed — ignorable if APT is mid-transition."
     fi
 fi
 
@@ -55,7 +55,7 @@ fi
 # --- 4. Optional full upgrade ---------------------------------------------
 if ask "Run 'apt full-upgrade' (upgrade all installed packages)? This can be large. (y/N)?" "N"; then
     apt_update
-    sudo apt-get full-upgrade -y
+    priv apt-get full-upgrade -y
 fi
 
 echo -e "${GREEN}Maintenance complete.${NC}"

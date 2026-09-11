@@ -56,7 +56,7 @@ log_ok "  tree copied (bin/, lib/, themes/)."
 if [ -x "$INSTALL_DIR/bin/debsway" ]; then
     ln -sf "$INSTALL_DIR/bin/debsway" "$BIN_DIR/debsway"
     log_ok "  ~/.local/bin/debsway → $INSTALL_DIR/bin/debsway"
-    sudo ln -sf "$INSTALL_DIR/bin/debsway" /usr/local/bin/debsway 2>/dev/null || true
+    priv ln -sf "$INSTALL_DIR/bin/debsway" /usr/local/bin/debsway 2>/dev/null || true
     if [ -e /usr/local/bin/debsway ]; then
         log_ok "  /usr/local/bin/debsway → $INSTALL_DIR/bin/debsway (sway binds can exec it)"
     else

@@ -11,12 +11,12 @@
 # app entries, fastfetch config, ButterBash.
 #
 # Existing files in /etc/skel are never clobbered unless
-# --force is given. Run with sudo (or as root).
+# --force is given. Run with doas (or as root).
 #
-#   sudo bash scripts/52-skel-export.sh              # copy (as root user)
-#   sudo bash scripts/52-skel-export.sh --user bob   # copy from bob's HOME
-#   sudo bash scripts/52-skel-export.sh --list       # show what would be copied
-#   sudo bash scripts/52-skel-export.sh --dry-run    # copy plan, no changes
+#   doas bash scripts/52-skel-export.sh              # copy (as root user)
+#   doas bash scripts/52-skel-export.sh --user bob   # copy from bob's HOME
+#   doas bash scripts/52-skel-export.sh --list       # show what would be copied
+#   doas bash scripts/52-skel-export.sh --dry-run    # copy plan, no changes
 # =======================================================
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -24,8 +24,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 
 # Which user's config to export. Default: the invoking user; when run with
-# sudo that's SUDO_USER. In the ISO chroot (root, no SUDO_USER) use --user.
-SOURCE_USER="${SUDO_USER:-$USER}"
+# doas exports DOAS_USER (sudo exports SUDO_USER). In the ISO chroot (root, neither set) use --user.
+SOURCE_USER="${SUDO_USER:-${DOAS_USER:-$USER}}"
 MODE="copy"
 FORCE=0
 

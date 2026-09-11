@@ -122,7 +122,7 @@ for g in input video render lpadmin; do
     if id -nG "$ACTUAL_USER" 2>/dev/null | tr ' ' '\n' | grep -qx "$g"; then
         report "group: $g" ok
     else
-        report "group: $g" warn "user not in $g (lpadmin optional — re-run 30-desktop-essentials or: sudo usermod -aG $g $ACTUAL_USER)"
+        report "group: $g" warn "user not in $g (lpadmin optional — re-run 30-desktop-essentials or: doas usermod -aG $g $ACTUAL_USER)"
     fi
 done
 
@@ -150,6 +150,7 @@ pkg nwg-look
 pkg gammastep
 pkg qalc optional
 pkg jq
+pkg opendoas
 pkg greetd
 pkg tuigreet
 pkg wlgreet optional

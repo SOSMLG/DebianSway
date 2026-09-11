@@ -59,7 +59,7 @@ else
             fi
             if command_exists npm; then
                 log_info "Installing opencode-ai via npm..."
-                if sudo npm install -g opencode-ai; then
+                if priv npm install -g opencode-ai; then
                     log_ok "OpenCode installed via npm."
                 else
                     log_err "npm install failed."

@@ -48,26 +48,26 @@ if ask "Install TLP (laptop battery/power management)?" "N"; then
     if is_installed power-profiles-daemon; then
         log_info "power-profiles-daemon conflicts with TLP — removing it first."
         start_service power-profiles-daemon stop 2>/dev/null || true
-        sudo apt-get purge -y power-profiles-daemon 2>/dev/null || log_warn "Couldn't remove power-profiles-daemon."
+        priv apt-get purge -y power-profiles-daemon 2>/dev/null || log_warn "Couldn't remove power-profiles-daemon."
     fi
 
     install_pkgs "TLP" tlp tlp-rdw
     if is_installed tlp; then
         start_service tlp
-        log_ok "TLP installed and running. Check status: sudo tlp-stat -s"
+        log_ok "TLP installed and running. Check status: doas tlp-stat -s"
 
         BAT_PATH=$(find /sys/class/power_supply -maxdepth 1 -iname 'BAT*' -print -quit 2>/dev/null)
         if [ -n "$BAT_PATH" ] && [ -f "${BAT_PATH}/charge_control_end_threshold" ]; then
             BAT_NAME=$(basename "$BAT_PATH")
             log_info "Charge-threshold support detected on ${BAT_NAME}."
             if ask "Cap charging at 80% to slow battery wear?" "N"; then
-                sudo mkdir -p /etc/tlp.d
-                sudo tee /etc/tlp.d/60-battery-threshold.conf > /dev/null << EOF
+                priv mkdir -p /etc/tlp.d
+                priv tee /etc/tlp.d/60-battery-threshold.conf > /dev/null << EOF
 # Written by 33-useful-apps.sh — charge threshold for ${BAT_NAME}.
 START_CHARGE_THRESH_${BAT_NAME}=75
 STOP_CHARGE_THRESH_${BAT_NAME}=80
 EOF
-                sudo tlp start >/dev/null 2>&1 || true
+                priv tlp start >/dev/null 2>&1 || true
                 log_ok "Charge capped at 80% (resumes below 75%)."
             fi
         else

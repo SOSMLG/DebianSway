@@ -54,13 +54,13 @@ if ask "Install DVD playback support (libdvd-pkg)?"; then
         log_ok "libdvd-pkg already installed and libdvdcss already built."
     elif check_repo_package libdvd-pkg "contrib"; then
         log_info "Installing libdvd-pkg..."
-        if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y libdvd-pkg; then
+        if priv DEBIAN_FRONTEND=noninteractive apt-get install -y libdvd-pkg; then
             log_info "Building libdvdcss (this runs non-interactively, capped at 5 minutes)..."
-            if sudo timeout 300 env DEBIAN_FRONTEND=noninteractive dpkg-reconfigure libdvd-pkg; then
+            if priv timeout 300 env DEBIAN_FRONTEND=noninteractive dpkg-reconfigure libdvd-pkg; then
                 log_ok "libdvd-pkg configured."
             else
                 log_warn "libdvd-pkg's build step timed out or failed."
-                log_warn "Retry manually later with: sudo dpkg-reconfigure libdvd-pkg"
+                log_warn "Retry manually later with: doas dpkg-reconfigure libdvd-pkg"
             fi
 
             # The build produces a separate "libdvdcss2" package — its
@@ -69,7 +69,7 @@ if ask "Install DVD playback support (libdvd-pkg)?"; then
                 log_ok "libdvdcss built successfully."
             else
                 log_warn "Could not confirm libdvdcss built. DVDs with copy protection may not play."
-                log_warn "Check manually with: sudo dpkg-reconfigure libdvd-pkg"
+                log_warn "Check manually with: doas dpkg-reconfigure libdvd-pkg"
             fi
         else
             log_err "Failed to install libdvd-pkg."

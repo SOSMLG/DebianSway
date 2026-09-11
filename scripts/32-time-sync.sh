@@ -30,6 +30,17 @@ fi
 
 start_service chrony
 
+# One NTP daemon is enough, and chrony is the toolkit standard: park the
+# overlapping openntpd wherever it is enabled (both init systems — package
+# stays installed, re-enable any time). Best-effort; absent is the norm.
+if command_exists update-rc.d || [ -x /usr/sbin/update-rc.d ]; then
+    priv /usr/sbin/update-rc.d openntpd disable >/dev/null 2>&1 || true
+fi
+if command_exists rc-update || [ -x /usr/sbin/rc-update ]; then
+    priv /usr/sbin/rc-update del openntpd default >/dev/null 2>&1 || true
+fi
+priv service openntpd stop >/dev/null 2>&1 || true
+
 # Sanity check — chronyc tracking as a normal user usually works.
 if sleep 2 && command_exists chronyc && chronyc tracking >/dev/null 2>&1; then
     log_ok "chrony is tracking time; system clock will stay in sync."

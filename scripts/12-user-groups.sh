@@ -11,8 +11,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-# Get actual user even when this was invoked with sudo somewhere upstream
-ACTUAL_USER="${SUDO_USER:-$USER}"
+# Get actual user even when this was invoked via doas/sudo somewhere upstream
+ACTUAL_USER="${SUDO_USER:-${DOAS_USER:-$USER}}"
 
 if [ -z "$ACTUAL_USER" ] || [ "$ACTUAL_USER" = "root" ]; then
     echo -e "${RED}Could not determine a non-root user to modify. Aborting.${NC}"
@@ -31,7 +31,7 @@ for grp in input video render; do
         echo -e "${GREEN}  Already in '$grp'${NC}"
         continue
     fi
-    if sudo usermod -aG "$grp" "$ACTUAL_USER"; then
+    if priv usermod -aG "$grp" "$ACTUAL_USER"; then
         echo -e "${GREEN}  ✓ Added to '$grp'${NC}"
     else
         echo -e "${RED}  ✗ Failed to add to '$grp'${NC}"

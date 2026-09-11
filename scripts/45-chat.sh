@@ -21,7 +21,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 if [[ $EUID -eq 0 ]]; then
     log_err "Do not run this as root — it needs to write to your own \$HOME."
-    log_err "Run it as your normal user; it will call sudo itself when needed."
+    log_err "Run it as your normal user; it will call priv itself when needed."
     exit 1
 fi
 
@@ -74,12 +74,12 @@ print((amd64 or candidates or [''])[0])
     verify_download "$tmp_deb" 102400 || return 1
 
     log_info "Installing Vesktop..."
-    if sudo apt-get install -y "$tmp_deb"; then
+    if priv apt-get install -y "$tmp_deb"; then
         log_ok "Vesktop installed."
     else
         log_err "Vesktop install failed (dependency issue?). Trying dpkg + fix-broken..."
-        sudo dpkg -i "$tmp_deb" || true
-        if sudo apt-get install -f -y; then
+        priv dpkg -i "$tmp_deb" || true
+        if priv apt-get install -f -y; then
             log_ok "Vesktop installed after dependency fix-up."
         else
             rm -f "$tmp_deb"
@@ -90,7 +90,7 @@ print((amd64 or candidates or [''])[0])
 }
 
 # ---------------------------------------------------------------------------
-# Telegram Desktop — official tar.xz, no sudo needed at all
+# Telegram Desktop — official tar.xz, no root needed at all
 # ---------------------------------------------------------------------------
 install_telegram() {
     if [ -x "$HOME/.local/opt/Telegram/Telegram" ]; then
