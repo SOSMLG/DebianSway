@@ -101,8 +101,8 @@ cmd_menu() {
         labels+=($'\uf011  Power menu');                  cmds+=("$_ds power")
         labels+=($'\uf04e  Log out');                     cmds+=("swaymsg exit")
         labels+=($'\uf2f2  Suspend');                     cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl suspend || { command -v loginctl >/dev/null 2>&1 && loginctl suspend || notify-send -u critical 'debsway' 'No suspend method available'; }")
-        labels+=($'\uf2f2  Reboot');                      cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl reboot || { command -v loginctl >/dev/null 2>&1 && loginctl reboot || sudo -n reboot; }")
-        labels+=($'\uf011  Shutdown');                    cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl poweroff || { command -v loginctl >/dev/null 2>&1 && loginctl poweroff || sudo -n shutdown -h now; }")
+        labels+=($'\uf2f2  Reboot');                      cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl reboot || { command -v loginctl >/dev/null 2>&1 && loginctl reboot || doas -n /sbin/reboot; }")
+        labels+=($'\uf011  Shutdown');                    cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl poweroff || { command -v loginctl >/dev/null 2>&1 && loginctl poweroff || doas -n /sbin/shutdown -h now; }")
     else
         labels+=($'\uf0ae  Apps');                        cmds+=("$_ds launcher")
         labels+=($'\uf52e  Run command');                 cmds+=("wofi --show run")
@@ -603,9 +603,9 @@ cmd_update() {
         return 0
     fi
     if [ "${1:-}" = "--apply" ] || [ -n "${DEBSWAY_ASSUME_YES:-}" ]; then
-        sudo apt-get upgrade -y
-        [ "$fb" -gt 0 ] && { command -v sudo >/dev/null 2>&1 && sudo flatpak update -y || flatpak update -y; }
+        priv apt-get upgrade -y
+        [ "$fb" -gt 0 ] && { priv flatpak update -y || flatpak update -y; }
     else
-        printf 'Run with --apply (or sudo apt-get upgrade) to install.\n'
+        printf 'Run with --apply (or doas apt-get upgrade) to install.\n'
     fi
 }

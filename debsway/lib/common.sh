@@ -30,6 +30,16 @@ d_ok()   { echo -e "${D_GREEN}[OK]${D_RESET} $*"; }
 d_warn() { echo -e "${D_YELLOW}[!]${D_RESET} $*"; }
 d_err()  { echo -e "${D_RED}[ERROR]${D_RESET} $*" >&2; }
 
+# priv() — run a command as root. Prefers doas (the toolkit default),
+# falls back to sudo. DEBSWAY_PRIV=doas|sudo forces one.
+priv() {
+    local tool="${DEBSWAY_PRIV:-}"
+    if [ -z "$tool" ]; then
+        if command -v doas >/dev/null 2>&1; then tool=doas; else tool=sudo; fi
+    fi
+    "$tool" "$@"
+}
+
 # --- palette / theme plumbing ------------------------------------------------
 current_theme() {
     if [ -n "${DEBSWAY_THEME:-}" ]; then
