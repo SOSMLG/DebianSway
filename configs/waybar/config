@@ -1,5 +1,6 @@
 {
   "layer": "top",
+  "position": "top",
   "height": 28,
   "spacing": 0,
   "margin-top": 4,
@@ -75,7 +76,7 @@
     "format-wifi": " \uf1eb {signalStrength}%",
     "format-ethernet": " \uf1e6 {ifname}",
     "format-disconnected": " \uf059",
-    "on-click": "nmtui"
+    "on-click": "debsway wire panel"
   },
 
   "cpu": {

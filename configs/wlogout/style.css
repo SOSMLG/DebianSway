@@ -15,8 +15,8 @@ button {
   min-width: 90px;
   min-height: 90px;
   color: #cdd6f4;
-  background-size: 42px;
-  background-position: center 30px;
+  background-size: 64px;
+  background-position: center 48px;
   background-repeat: no-repeat;
 }
 
@@ -33,11 +33,11 @@ button:hover {
   background-image: url("/usr/share/wlogout/icons/logout.png");
 }
 #reboot {
-  background-image: url("/usr/share/wlogout/icons/restart.png");
+  background-image: url("/usr/share/wlogout/icons/reboot.png");
 }
 #suspend {
   background-image: url("/usr/share/wlogout/icons/suspend.png");
 }
 #power {
-  background-image: url("/usr/share/wlogout/icons/power.png");
+  background-image: url("/usr/share/wlogout/icons/shutdown.png");
 }

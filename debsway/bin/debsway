@@ -6,7 +6,7 @@
 # setup. Mirror of the `omarchy <group> <action>` UX:
 #
 #   debsway menu|launcher|style|theme|bg|power|lock
-#   debsway agent|clip|shot|sound|wire|toggle|calc
+#   debsway agent|clip|shot|sound|wire|toggle
 #   debsway status|bar|update|doctor|setup
 #
 # Help:          debsway help
@@ -62,8 +62,6 @@ debsway — unified Sway desktop CLI
   wire [panel|status]
   toggle [night|dnd|touchpad|layout]
   keys [--list]       keybinding cheat-sheet (parsed from sway config)
-  calc                calculator (qalc via wofi)
-  date                calendar popup
   status [media|layout|updates]    waybar module backends
   bar restart|reload
   update [--apply]    check / install system updates
@@ -124,7 +122,7 @@ case "${1:-}" in
         esac
         ;;
     bg)                       cmd_bg "${2:-panel}" "${3:-}" ;;
-    power)                    exec wlogout -b 3 ;;
+    power)                    exec wlogout -b 5 -L 300 -R 300 -T 400 -B 400 ;;
     lock)                     cmd_lock ;;
     agent)                    cmd_agent "${2:-run}" "${@:3}" ;;
     clip)                     cmd_clip "${2:-pick}" ;;
@@ -133,8 +131,6 @@ case "${1:-}" in
     wire)                     cmd_wire "${2:-panel}" ;;
     toggle)                   cmd_toggle "${2:-}" ;;
     keys)                     cmd_keys "${2:-}" ;;
-    calc)                     cmd_calc ;;
-    date)                     cmd_date ;;
     status)                   cmd_status "${2:-}" ;;
     bar)                      cmd_bar "${2:-reload}" ;;
     update)                   cmd_update "${2:-}" ;;

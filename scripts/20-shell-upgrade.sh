@@ -20,7 +20,7 @@
 #   wf-recorder recording (video notes) + wlr-randr/wdisplays (layout UI)
 #   nwg-look    GTK theme tweaker (used by the debsway style menu)
 #   gammastep   blue-light filter (debsway toggle night)
-#   qalc        calculator (debsway calc)
+#   qalc        standalone CLI calculator (no debsway wrapper; just run `qalc`)
 #   jq          JSON glue for the debsway CLI
 #
 # Then bakes this repo's configs into ~/.config (backing up anything it

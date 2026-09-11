@@ -100,19 +100,19 @@ if [ -f "$SWAY_CONFIG" ] && ask "Bind Super+A to launch OpenCode?"; then
         log_warn "\$mod+a is already bound to something else in $SWAY_CONFIG:"
         grep -nE '^[[:space:]]*bindsym[[:space:]]+[^#]*\$mod\+a([[:space:]]|$)' "$SWAY_CONFIG" 2>/dev/null || true
         log_warn "Not adding a duplicate — free \$mod+a first (or bind the agent manually):"
-        log_info "  bindsym \$mod+a exec alacritty -e debsway agent"
+        log_info "  bindsym \$mod+a exec \$term -e debsway agent"
     else
         cat >> "$SWAY_CONFIG" << 'EOF'
 
 # OpenCode (Super+A) — added by scripts/34-opencode-agent.sh
-bindsym $mod+a exec alacritty -e debsway agent
+bindsym $mod+a exec $term -e debsway agent
 EOF
         log_ok "Super+A now launches OpenCode (via debsway agent)."
         log_info "It takes effect on your next sway reload: \$mod+Shift+C (or re-login)."
     fi
 else
     log_info "Skipped the hotkey — add it manually to ~/.config/sway/config if you want it:"
-    log_info "  bindsym \$mod+a exec alacritty -e debsway agent"
+    log_info "  bindsym \$mod+a exec \$term -e debsway agent"
 fi
 
 # ---------------------------------------------------------------------------

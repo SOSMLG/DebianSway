@@ -9,7 +9,7 @@
 # themes/<name>/palette.sh palettes compiled into every app.
 #
 #   debsway menu|launcher|style|theme|bg|power|lock|agent
-#   debsway clip|shot|sound|wire|toggle|calc|date|status|bar|update|doctor
+#   debsway clip|shot|sound|wire|toggle|status|bar|update|doctor
 #
 # Installs to:
 #   ~/.local/share/debsway/           the tree (bin/, lib/, themes/)

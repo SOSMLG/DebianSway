@@ -1,8 +1,9 @@
-/* wofi — RENDERED by the debsway theme engine. Do not edit; use `debsway theme`. */
+/* wofi — RENDERED by the debsway theme engine. Do not edit; use `debsway theme`.
+   Square corners are intentional (flat DebSway look). */
 window {
   background-color: #1e1e2e;
   border: 2px solid #313244;
-  border-radius: 12px;
+  border-radius: 0;
   color: #cdd6f4;
   font-family: "JetBrainsMono Nerd Font", monospace;
   font-size: 14px;
@@ -15,7 +16,7 @@ window {
 #input {
   background-color: #181825;
   border: 1px solid #313244;
-  border-radius: 8px;
+  border-radius: 0;
   color: #cdd6f4;
   padding: 6px 10px;
   margin-bottom: 8px;
@@ -27,7 +28,7 @@ window {
 
 #entry {
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 #entry:selected {

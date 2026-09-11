@@ -11,7 +11,7 @@
 #   * Wayland utilities (grim/slurp/clipboard/screenshot)
 #   * AMD GPU support (mesa vulkan — ThinkPad L14 G2 AMD)
 #   * audio: PipeWire + WirePlumber
-#   * greetd + wlgreet login manager (Wayland-native)
+#   * greetd + tuigreet login manager (Wayland-native, TUI session picker)
 #   * NetworkManager, printing, Flatpak + Flathub
 #   * copies this repo's configs/ into ~/.config
 #
@@ -73,7 +73,7 @@ install_pkgs "NetworkManager" network-manager network-manager-gnome
 start_service NetworkManager
 
 # ---------------------------------------------------------------------------
-# 5. greetd + wlgreet — minimal Wayland login manager
+# 5. greetd + tuigreet — minimal Wayland login manager
 # ---------------------------------------------------------------------------
 # Create the D-Bus session wrapper so sway gets DBUS_SESSION_BUS_ADDRESS.
 # Without this, mako, waybar, xdg-desktop-portal-wlr, playerctl etc. fail.
@@ -98,8 +98,11 @@ Type=Application
 DesktopNames=sway
 DESKTOP
 log_ok "Installed DebSway greeter session (pick it instead of raw Sway)."
-if ! is_installed greetd || ! is_installed wlgreet; then
-    install_pkgs "greetd login manager" greetd wlgreet
+# tuigreet is the greeter: a TUI purpose-built for greetd session picking
+# (far less fragile than wlgreet's GTK layer-shell). wlgreet stays installed
+# as a fallback greeter.
+if ! is_installed greetd || ! is_installed tuigreet; then
+    install_pkgs "greetd login manager" greetd tuigreet
 fi
 
 # greetd runs its greeter as a dedicated unprivileged user. Debian's
@@ -116,23 +119,55 @@ if [ -f /etc/greetd/config.toml ]; then
 fi
 sudo tee /etc/greetd/config.toml > /dev/null << 'EOF'
 [terminal]
-vt = 1
+vt = 2
 
-# wlgreet renders the login screen (user picker + password), then launches
-# the selected command as the logged-in user. Remove "wlgreet --command"
-# to auto-boot straight into the command instead.
+# tuigreet renders the login screen (user picker + password + session menu),
+# then launches the selected session as the logged-in user. --cmd is the
+# default (pre-selected) session; the full list comes from
+# /usr/share/wayland-sessions (pick "DebSway" there, not raw Sway, so the
+# session gets a D-Bus bus for mako/portals/notify).
+# To auto-boot straight into a session instead, use an [initial_session]
+# block (example below) rather than removing the picker.
 [default_session]
-command = "wlgreet --command /usr/local/bin/sway-session"
+command = "tuigreet --time --remember --remember-session -d --cmd /usr/local/bin/sway-session"
 user = "greeter"
 
 # Optional auto-login block — uncomment to skip the picker for that user:
 # [initial_session]
-# command = "sway"
+# command = "/usr/local/bin/sway-session"
 # user = "your-username"
 EOF
-log_ok "greetd configured to boot into the wlgreet login screen."
+log_ok "greetd configured to boot into the tuigreet login screen."
 start_service greetd
-log_ok "greetd enabled — your next login goes through the wlgreet picker."
+log_ok "greetd enabled — your next login goes through the tuigreet picker."
+
+# ---------------------------------------------------------------------------
+# 5b. Give greetd sole ownership of the boot console
+# ---------------------------------------------------------------------------
+# Exactly one display manager may auto-start: SDDM stays *installed* as a
+# manual fallback, but its runlevel links are removed so it no longer races
+# greetd (both enabled = neither owns the VT reliably).
+for _rl in 2 3 4 5; do
+    sudo rm -f "/etc/rc${_rl}.d"/S??sddm 2>/dev/null || true
+done
+log_ok "SDDM demoted to manual fallback (still installed; re-enable with S-links if ever needed)."
+
+# getty on the greeter's VT fights it (a respawning getty steals the console
+# back and forth). The greeter takes vt=2 (reachable via Ctrl+Alt+F2), so:
+# tty1's getty is restored for boot messages/console login, tty2's is parked,
+# and tty3-6 gettys stay untouched. Reload init without rebooting.
+if grep -qE '^#(1:.*tty1)  # debsway:' /etc/inittab 2>/dev/null; then
+    sudo sed -i -E 's/^#(1:.*tty1)  # debsway:.*/\1/' /etc/inittab
+    log_ok "getty restored on tty1."
+fi
+if grep -qE '^2:.*getty.*tty2' /etc/inittab 2>/dev/null; then
+    sudo cp /etc/inittab "/etc/inittab.bak.$(date +%Y%m%d_%H%M%S)"
+    sudo sed -i -E 's/^(2:.*getty.*tty2)/#\1  # debsway: greetd owns tty2/' /etc/inittab
+    sudo init q 2>/dev/null || true
+    log_ok "getty moved off tty2 (backup: /etc/inittab.bak.*)."
+else
+    log_ok "tty2 already free of getty — greetd owns the console."
+fi
 
 # ---------------------------------------------------------------------------
 # 6. Flatpak + Flathub (used by some optional scripts; browser stays native)

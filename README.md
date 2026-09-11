@@ -31,7 +31,7 @@ git clone <this-repo> && cd deb-sway-thinkpad
 ./install.sh
 # ~everything, then a verification report; reboot when it finishes
 
-# 2. Reboot — greetd/wlgreet gives you a login screen
+# 2. Reboot — greetd/tuigreet gives you a login screen
 #    (systemd: `systemctl reboot`; Devuan/OpenRC: `sudo reboot`)
 ```
 
@@ -56,10 +56,10 @@ something looks off.
 
 | Layer | Choice |
 |---|---|
-| Window manager | **Sway** (Wayland) via **greetd + wlgreet** login. No SDDM/Plasma anywhere |
+| Window manager | **Sway** (Wayland) via **greetd + tuigreet** login (SDDM stays installed only as a manual fallback, never auto-started) |
 | Shell layer | **swayosd** OSD, **cliphist** clipboard history, **swappy**/grim/wf-recorder capture, waybar now-playing via **playerctl**, **gammastep** night-light, **kanshi** auto display profiles |
 | Theme | **`debsway theme set`** engine (Omarchy-style): 8 one-shot palettes (Catppuccin Mocha/Red default, Mocha/Blue, Frappe, Nord, Dracula, Tokyo Night, Gruvbox, Solarized) compiled into sway/waybar/wofi/mako/swayosd/wlogout/alacritty. Catppuccin Mocha Red cursor pack + red gradient wallpaper |
-| Terminal | **Alacritty** (GPU-accelerated Wayland terminal — `$term`; `debsway agent` also opens here) |
+| Terminal | **Alacritty** (GPU-accelerated Wayland terminal — `set $term alacritty` in `configs/sway/config`; themed via `~/.config/alacritty/alacritty.toml`; `debsway agent` also opens here; `wofi` uses `term=alacritty`) |
 | Launcher/menu | **wofi** driving the `debsway` command palette (`$mod+d` → `debsway menu`, waybar ☰ → `debsway menu`) |
 | Browser | **Firefox ESR** hardened with Betterfox-derived preferences + a locked `policies.json` |
 | Shell | **ButterBash**: saner bash (aliases, history, `eza`/`bat` where present) |
@@ -139,16 +139,16 @@ Always toggleable: edit `run.sh`'s list and answer N, or remove the file later.
 
 | Keys | Action |
 |---|---|
-| `$mod+Return` | Terminal (Alacritty, `$term`) |
-| `$mod+d` / `$mod+Shift+d` | DebSway command palette (`debsway menu`) / run dialog (`wofi --show run`) |
-| `$mod+a` | Coding agent (`alacritty -e debsway agent` → OpenCode) |
+| `$mod+Return` | Terminal (Alacritty via `$term` — `set $term alacritty`) |
+| `$mod+d` / `$mod+Shift+d` | DebSway command palette (`debsway menu`, `$menu`) / run dialog (`wofi --show run`) |
+| `$mod+a` | Coding agent (`$term -e debsway agent` → Alacritty + OpenCode) |
 | `$mod+t` / `$mod+z` | File manager (`nautilus`) / browser (`firefox`) |
 | `$mod+Shift+q` | Kill focused window |
 | `$mod+v` | Clipboard history (`debsway clip pick` → cliphist + wofi) |
 | `$mod+slash` | Keybinding cheat-sheet (`debsway keys`, parsed live from sway config) |
 | `Print` / `$mod+Print` / `$mod+Ctrl+Print` | Screenshot full / area / screen-record toggle (`debsway shot …` — saves to `~/Pictures/screenshots`, copies to clipboard, notifies) |
-| `$mod+Escape` / `$mod+Ctrl+p` | Power menu (`wlogout -b 3` grid) |
-| `Super+x` | Lock screen (`debsway lock` — themed swaylock; note `$mod+l` is vim-nav *focus right*, not lock) |
+| `$mod+Escape` / `$mod+Ctrl+p` | Power menu (`debsway power` → wlogout grid) |
+| `$mod+x` | Lock screen (`debsway lock` — themed swaylock; note `$mod+l` is vim-nav *focus right*, not lock) |
 | `$mod+Shift+e` | Exit sway (swaynag confirm → back to greetd) |
 | `XF86AudioMute/LowerVolume/RaiseVolume` | Volume mute/down/up via `debsway sound …` (swayosd OSD when available, `pactl` fallback) |
 | `XF86AudioMicMute` | Mic mute (`pactl`) |
@@ -157,8 +157,8 @@ Always toggleable: edit `run.sh`'s list and answer N, or remove the file later.
 | `$mod+m` | Fullscreen toggle |
 | `$mod+Shift+o` | Layout toggle (tabbed / splitv / splith) |
 | `$mod+b` / `$mod+Shift+v` | Split horizontal / vertical |
-| `$mod+space` / `$mod+Shift+space` | Toggle floating (+ center + 70×75% resize) / re-center floating window |
-| `$mod+Shift+y` | Center floating window |
+| `$mod+space` / `$mod+Shift+space` | Toggle floating (+ center + 70×75% resize) / re-center + resize floating window to 70×75% |
+| `$mod+Shift+y` | Center floating window (no resize) |
 | `$mod+Shift+f` / `$mod+n` | Focus mode toggle (tiling ↔ floating focus) |
 | `$mod+h/j/k/l` + arrows | Focus left/down/up/right (vim + arrows) |
 | `$mod+Shift+h/j/k/l` + arrows | Move window left/down/up/right |
@@ -188,7 +188,7 @@ debsway menu | launcher | style | theme list|current|set <name>
 debsway bg panel|set|cycle|random|reset | power | lock
 debsway agent | clip pick|watch|clear | shot full|area|annotate|record|menu
 debsway sound panel|up|down|mute | wire panel|status
-debsway toggle night|dnd|touchpad|layout | keys [--list] | calc | date
+debsway toggle night|dnd|touchpad|layout | keys [--list]
 debsway status media|layout|updates | bar restart|reload
 debsway update [--apply] | doctor | setup | help
 ```
@@ -229,15 +229,57 @@ tarball before major operations.
 ## Maintenance & troubleshooting
 
 * **Not launched to a graphical session after reboot?** Check greetd's
-  status (`rc-service greetd status` on OpenRC/Devuan, `systemctl status greetd`
-  on systemd) — it needs the seat, and your user must exist in
-  `input`/`video`/`render` (script 02). Single-GPU laptops are the common case
-  and work out of the box; `wlgreet` renders the login list.
-* **`debsway menu` does nothing?** Fixed: the router used `$2` under `set -u`,
-  so a bare `debsway menu` crashed. Update (`git pull` + re-run
+  status (`sudo rc-service greetd status` — `/sbin` isn't on a normal user's
+  PATH — or `pgrep -a greetd`) — it needs the seat, and your user must exist
+  in `input`/`video`/`render` (script 02). Exactly **one** display manager may
+  own the console: the installer enables `greetd` (tuigreet picker), demotes
+  SDDM to manual fallback, and moves getty off tty1 (greetd takes `vt = 1`).
+  If you re-enable a second DM or re-add a tty1 getty, they fight and none
+  wins reliably. At the picker, choose the **DebSway** session (not raw Sway)
+  so the login gets a D-Bus session bus for mako/portals/notify.
+* **`debsway menu` does nothing?** Update (`git pull` + re-run
   `scripts/21-debsway-cli.sh`), then `$mod+Shift+c` to reload binds. Test with
-  `debsway help` and `debsway menu` from Alacritty — missing `wofi` now reports
-  an error instead of silently exiting.
+  `debsway help` and `debsway menu` from Alacritty. This round fixed four
+  silent-failure causes: (1) `configs/wofi/config` contained invalid keys
+  (`keys=`, `fuzzy=`, `case=`, `show=`, `matching=enabled`) — now only valid
+  wofi options (`matching=fuzzy`, `insensitive=true`, `term=alacritty`);
+  (2) `wofi_pick`/`launcher` hid wofi's stderr, so a broken config/display
+  looked like "nothing happens" — errors are now visible; (3) menu entries
+  re-exec through the absolute `debsway` path instead of a bare `debsway`,
+  so picks work even when sway/waybar launch with a minimal PATH;
+  (4) from a terminal the pick now runs foreground so subcommand output
+  stays visible (from a keybind it still detaches). The older `$2`-under-
+  `set -u` crash on a bare `debsway menu` stays fixed (`"${2:-}"`).
+* **`debsway wire panel` (Wi-Fi) shows nothing?** Fixed: it used
+  `nmcli --json`, which this NetworkManager rejects
+  (`Option '--json' is unknown`). It now parses portable
+  `nmcli -t -f IN-USE,SIGNAL,SSID dev wifi list` output — no JSON, no python
+  dependency.
+* **`debsway calc` eats your expression?** Fixed: wofi needs
+  `--exec-search` to return free-form input on Enter, otherwise the typed
+  `1+1` never reaches `qalc`. The result is now printed, copied
+  (`wl-copy`), and notified.
+* **`debsway keys` shows `$left` / `$term`?** Fixed: the cheat-sheet now
+  expands `set $var` from your sway config, so `$mod+h` (not `$mod+$left`)
+  and the real `$term`/`$menu` commands show. `debsway keys --list` prints
+  the same table this README is generated from — if they drift, trust
+  `debsway keys --list` (it parses `~/.config/sway/config` live).
+* **Volume keys change nothing / no OSD popup?** Two layers: `swayosd-server`
+  must be running for the on-screen display (`pgrep -x swayosd-server`; the
+  sway autostart launches it, `debsway theme set` restarts it). If the server
+  is down, `debsway sound up|down|mute` automatically falls back to `pactl`,
+  so volume still moves without the popup. Media keys (`playerctl`) only do
+  something while a player (VLC/Firefox/…) is actually playing.
+* **Power menu (`debsway power` / wlogout) exits instantly with
+  `Invalid JSON Data`?** wlogout 1.2.2's parser only accepts top-level JSON
+  **objects** — a pretty-printed `[{…}, {…}]` array is rejected even though it
+  is valid JSON. `configs/wlogout/layout` is therefore written as one object
+  per line (JSONL-style, no comments — `#` lines break the parser too).
+  Keep that shape when editing it. Second rule: the button count must divide
+  evenly into the `-b` row width in `debsway power` (5 buttons at `-b 5`):
+  wlogout fills the grid column-major and iterates rows×cols, so any
+  remainder spawns phantom empty buttons (plus a Gtk-CRITICAL on stderr).
+  If you add/remove a button, adjust `-b` to match.
 * **Wallpaper reverts after reload?** Fixed: `debsway bg set` now persists to
   both the marker and `sway/config`, and the config autostarts
   `debsway bg apply`. If you edited `sway/config` by hand before updating,

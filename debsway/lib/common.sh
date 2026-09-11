@@ -79,13 +79,42 @@ is_under_sway() {
         && swaymsg -t get_version >/dev/null 2>&1
 }
 
+# debsway_bin — absolute path to the running debsway router.
+# Menu entries re-exec through this path instead of a bare `debsway` so
+# picks keep working when sway/waybar launch with a minimal PATH that
+# lacks ~/.local/bin (the /usr/local/bin symlink may also be missing).
+debsway_bin() {
+    if [ -x "$DS_BIN_DIR/debsway" ]; then
+        printf '%s\n' "$DS_BIN_DIR/debsway"
+    elif [ -x /usr/local/bin/debsway ]; then
+        printf '%s\n' "/usr/local/bin/debsway"
+    else
+        printf '%s\n' "debsway"
+    fi
+}
+
+# term_bin — preferred GUI terminal for showing CLI output visibly.
+# Used by `debsway menu` for report-style entries (update/doctor) picked
+# from a keybind, where detached stdout would otherwise vanish unheard.
+term_bin() {
+    if [ -n "${TERMINAL:-}" ] && command -v "$TERMINAL" >/dev/null 2>&1; then
+        printf '%s\n' "$TERMINAL"
+        return 0
+    fi
+    command -v alacritty >/dev/null 2>&1 && { printf '%s\n' "alacritty"; return 0; }
+    command -v x-terminal-emulator >/dev/null 2>&1 && { printf '%s\n' "x-terminal-emulator"; return 0; }
+    return 1
+}
+
 # wofi_pick <prompt> — reads stdin lines, prints the selected one (or empty)
+# stderr is left visible so a broken wofi config/display fails loudly
+# instead of `debsway menu` silently doing nothing.
 wofi_pick() {
     if ! command -v wofi >/dev/null 2>&1; then
         d_err "wofi is not installed (run scripts/10-sway-core.sh)."
         return 1
     fi
-    wofi --show dmenu --insensitive --prompt "$1" 2>/dev/null
+    wofi --show dmenu --insensitive --prompt "$1"
 }
 
 # set_marker <key> <value>

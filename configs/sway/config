@@ -65,6 +65,9 @@ bindsym button5 nop
 ### Autostart
 exec waybar
 exec mako
+# On-screen volume/brightness display (swayosd). Guarded so a missing binary
+# or an already-running server is a no-op instead of an error.
+exec sh -c 'if command -v swayosd-server >/dev/null 2>&1; then pgrep -x swayosd-server >/dev/null 2>&1 || exec swayosd-server; fi'
 exec /usr/libexec/polkit-mate-authentication-agent-1
 # Audio daemons (pipewire + pulse compatibility)
 exec sh -c 'command -v pipewire >/dev/null 2>&1 && pipewire >/dev/null 2>&1'
@@ -191,12 +194,12 @@ for_window {
     bindsym $mod+z exec $browser
 
     # ── Coding agent (OpenCode via debsway) ──────────────────
-    bindsym $mod+a exec alacritty -e debsway agent
+    bindsym $mod+a exec $term -e debsway agent
 
     # ── Power / lock ─────────────────────────────────────────
-    bindsym $mod+Ctrl+p exec wlogout -b 3
-    bindsym $mod+Escape exec wlogout -b 3
-    bindsym Super+x exec debsway lock
+    bindsym $mod+Ctrl+p exec debsway power
+    bindsym $mod+Escape exec debsway power
+    bindsym $mod+x exec debsway lock
     bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
 
     # ── Clipboard history ────────────────────────────────────

@@ -148,10 +148,11 @@ pkg wdisplays
 pkg wlr-randr
 pkg nwg-look
 pkg gammastep
-pkg qalc
+pkg qalc optional
 pkg jq
 pkg greetd
-pkg wlgreet
+pkg tuigreet
+pkg wlgreet optional
 pkg blueman
 pkg vlc
 pkg tlp

@@ -12,7 +12,7 @@ cmd_launcher() {
         d_err "wofi is not installed (run scripts/10-sway-core.sh)."
         return 1
     fi
-    wofi --show drun --insensitive 2>/dev/null
+    wofi --show drun --insensitive
 }
 
 # --- keybinding cheat-sheet ----------------------------------------------------
@@ -25,11 +25,34 @@ _keys_config() {
     for c in "$DS_CONFIG/sway/config" /etc/skel/.config/sway/config; do
         if [ -f "$c" ]; then printf '%s\n' "$c"; return 0; fi
     done
+    # Repo checkout without install: configs/ sits next to debsway/.
+    if [ -n "${DEBSWAY_HOME:-}" ]; then
+        c="$(cd "${DEBSWAY_HOME}/.." 2>/dev/null && pwd)/configs/sway/config"
+        if [ -f "$c" ]; then printf '%s\n' "$c"; return 0; fi
+    fi
     return 1
 }
 
 _keys_table() {  # prints "KEYSPEC<TAB>command" lines
     local cfg="$1" line mode="" keys cmd
+    # Collect `set $var value` so $mod/$left/... resolve instead of
+    # leaking raw `$left` into `debsway keys` output.
+    declare -A _kv=()
+    while IFS= read -r line || [ -n "$line" ]; do
+        if [[ "$line" =~ ^[[:space:]]*set[[:space:]]+(\$[A-Za-z0-9_]+)[[:space:]]+(.*)$ ]]; then
+            _kv["${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
+        fi
+    done < "$cfg"
+    _expand_vars() {
+        local s="$1" k
+        for k in "${!_kv[@]}"; do
+            s="${s//"$k"/"${_kv[$k]}"}"
+        done
+        # Normalize to the README's spelling: $mod (Mod4) displays as Super.
+        s="${s//\$mod/Super}"
+        s="${s//Mod4/Super}"
+        printf '%s' "$s"
+    }
     while IFS= read -r line || [ -n "$line" ]; do
         # Track `mode "name" {` blocks so resize binds are labeled.
         if [[ "$line" =~ ^[[:space:]]*mode[[:space:]]+\"([^\"]+)\" ]]; then
@@ -46,7 +69,8 @@ _keys_table() {  # prints "KEYSPEC<TAB>command" lines
         keys="${line%%[[:space:]]*}"
         cmd="${line#*[[:space:]]}"
         cmd="$(printf '%s' "$cmd" | sed 's/[[:space:]]\+/ /g')"
-        keys="${keys//\$mod/Super}"
+        keys="$(_expand_vars "$keys")"
+        cmd="$(_expand_vars "$cmd")"
         [ -n "$mode" ] && [ "$mode" != "default" ] && keys="[$mode] $keys"
         printf '%s\t%s\n' "$keys" "$cmd"
     done < "$cfg"
@@ -69,35 +93,36 @@ cmd_keys() {
 cmd_menu() {
     local poweronly="${1:-}"
     local labels=() cmds=()
+    local _ds
+    _ds="$(debsway_bin)"
 
     if [ -n "$poweronly" ]; then
-        labels+=("\uf023  Lock screen");                 cmds+=("debsway lock")
-        labels+=("\uf011  Power menu");                  cmds+=("wlogout -b 3")
-        labels+=("\uf04e  Log out");                     cmds+=("swaymsg exit 2>/dev/null")
-        labels+=("\uf2f2  Suspend");                     cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl suspend || { command -v loginctl >/dev/null 2>&1 && loginctl suspend || notify-send -u critical 'debsway' 'No suspend method available'; }")
-        labels+=("\uf2f2  Reboot");                      cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl reboot || sudo reboot")
-        labels+=("\uf011  Shutdown");                    cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl poweroff || sudo shutdown -h now")
+        labels+=($'\uf023  Lock screen');                 cmds+=("$_ds lock")
+        labels+=($'\uf011  Power menu');                  cmds+=("$_ds power")
+        labels+=($'\uf04e  Log out');                     cmds+=("swaymsg exit")
+        labels+=($'\uf2f2  Suspend');                     cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl suspend || { command -v loginctl >/dev/null 2>&1 && loginctl suspend || notify-send -u critical 'debsway' 'No suspend method available'; }")
+        labels+=($'\uf2f2  Reboot');                      cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl reboot || { command -v loginctl >/dev/null 2>&1 && loginctl reboot || sudo -n reboot; }")
+        labels+=($'\uf011  Shutdown');                    cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl poweroff || { command -v loginctl >/dev/null 2>&1 && loginctl poweroff || sudo -n shutdown -h now; }")
     else
-        labels+=("\uf0ae  Apps");                        cmds+=("debsway launcher")
-        labels+=("\uf52e  Run command");                 cmds+=("wofi --show run")
-        labels+=("\uf108  Display settings");            cmds+=("wdisplays")
-        labels+=("\uf5fd  GTK look & feel");             cmds+=("nwg-look")
-        labels+=("\uf53f  Switch theme");                cmds+=("debsway style")
-        labels+=("\uf87c  Backgrounds");                 cmds+=("debsway bg panel")
-        labels+=("\uf03e  Screenshot menu");             cmds+=("debsway shot menu")
-        labels+=("\uf0ea  Clipboard history");           cmds+=("debsway clip")
-        labels+=("\uf025  Audio devices");               cmds+=("debsway sound panel")
-        labels+=("\uf1eb  Wi-Fi");                       cmds+=("debsway wire panel")
-        labels+=("\uf186  Night light");                 cmds+=("debsway toggle night")
-        labels+=("\uf628  Do not disturb");              cmds+=("debsway toggle dnd")
-        labels+=("\uf6fb  Touchpad toggle");             cmds+=("debsway toggle touchpad")
-        labels+=("\uf023  Lock screen");                 cmds+=("debsway lock")
-        labels+=("\uf011  Power menu");                  cmds+=("wlogout -b 3")
-        labels+=("\uf11c  Keybindings");                cmds+=("debsway keys")
-        labels+=("\uf1ec  Calculator");                  cmds+=("debsway calc")
-        labels+=("\uf021  Update system");               cmds+=("debsway update")
-        labels+=("\uf0f0  System doctor");               cmds+=("debsway doctor")
-        labels+=("\uf187  Coding agent");                cmds+=("debsway agent")
+        labels+=($'\uf0ae  Apps');                        cmds+=("$_ds launcher")
+        labels+=($'\uf52e  Run command');                 cmds+=("wofi --show run")
+        labels+=($'\uf108  Display settings');            cmds+=("wdisplays")
+        labels+=($'\uf1fb  GTK look & feel');             cmds+=("nwg-look")
+        labels+=($'\uf042  Switch theme');                cmds+=("$_ds style")
+        labels+=($'\uf1c5  Backgrounds');                 cmds+=("$_ds bg panel")
+        labels+=($'\uf03e  Screenshot menu');             cmds+=("$_ds shot menu")
+        labels+=($'\uf0ea  Clipboard history');           cmds+=("$_ds clip")
+        labels+=($'\uf025  Audio devices');               cmds+=("$_ds sound panel")
+        labels+=($'\uf1eb  Wi-Fi');                       cmds+=("$_ds wire panel")
+        labels+=($'\uf186  Night light');                 cmds+=("$_ds toggle night")
+        labels+=($'\uf1f6  Do not disturb');              cmds+=("$_ds toggle dnd")
+        labels+=($'\uf205  Touchpad toggle');             cmds+=("$_ds toggle touchpad")
+        labels+=($'\uf023  Lock screen');                 cmds+=("$_ds lock")
+        labels+=($'\uf011  Power menu');                  cmds+=("$_ds power")
+        labels+=($'\uf11c  Keybindings');                cmds+=("$_ds keys")
+        labels+=($'\uf021  Update system');               cmds+=("$_ds update")
+        labels+=($'\uf0f0  System doctor');               cmds+=("$_ds doctor")
+        labels+=($'\uf187  Coding agent');                cmds+=("$_ds agent")
     fi
 
     local sel
@@ -106,9 +131,28 @@ cmd_menu() {
     local i=0
     for l in "${labels[@]}"; do
         if [ "$l" = "$sel" ]; then
-            # Detached so the menu closes immediately. Subcommands report
-            # their own errors via notify-send / stderr.
-            sh -c "${cmds[$i]}" </dev/null >/dev/null 2>&1 &
+            case "$sel" in
+                *"Update system"|*"System doctor")
+                    # Report-style entries: when picked from a keybind there
+                    # is no tty, so detached stdout vanishes unheard — open
+                    # them in a terminal that waits before closing.
+                    if [ ! -t 1 ]; then
+                        _tb="$(term_bin)" || _tb=""
+                        if [ -n "$_tb" ]; then
+                            setsid --fork "$_tb" -e sh -c "${cmds[$i]}; printf '\n-- done — press Enter to close --\n'; read -r _" >/dev/null 2>&1 &
+                            disown 2>/dev/null || true
+                            return 0
+                        fi
+                    fi
+                    ;;
+            esac
+            # In a terminal run foreground so output/errors stay visible;
+            # from a keybind (no tty) detach so the menu closes immediately.
+            if [ -t 1 ]; then
+                sh -c "${cmds[$i]}"
+                return $?
+            fi
+            setsid --fork sh -c "${cmds[$i]}" >/dev/null 2>&1 &
             disown 2>/dev/null || true
             return 0
         fi
@@ -359,12 +403,14 @@ cmd_shot() {
         area)
             local f="$SHOT_DIR/shot-area-$(date +%Y%m%d-%H%M%S).png"
             local g
-            g="$(slurp 2>/dev/null)" || return 0
+            command -v slurp >/dev/null 2>&1 || { d_err "slurp not installed."; return 1; }
+            g="$(slurp)" || return 0
             grim -g "$g" "$f" && wl-copy < "$f" && notify "Screenshot saved" "$f"
             ;;
         annotate)
             local g
-            g="$(slurp 2>/dev/null)" || return 0
+            command -v slurp >/dev/null 2>&1 || { d_err "slurp not installed."; return 1; }
+            g="$(slurp)" || return 0
             command -v swappy >/dev/null 2>&1 && grim -g "$g" - | swappy -f -
             ;;
         record)
@@ -373,7 +419,8 @@ cmd_shot() {
             else
                 local f="$SHOT_DIR/rec-$(date +%Y%m%d-%H%M%S).mp4"
                 local g
-                g="$(slurp 2>/dev/null)" || g=""
+                notify "Recording" "Drag a region to record (Esc = full output)…"
+                g="$(slurp)" || g=""
                 # wf-recorder wants WxH+X+Y; slurp gives "x,y WxH".
                 if [ -n "$g" ]; then
                     g="$(printf '%s' "$g" | sed 's/^\([0-9]*\),\([0-9]*\) \([0-9]*\)x\([0-9]*\)$/\3x\4+\1+\2/')"
@@ -381,18 +428,17 @@ cmd_shot() {
                     g="$(swaymsg -t get_outputs 2>/dev/null | jq -r '.[]|select(.focused)|.rect|"\(.width)x\(.height)+\(.x)+\(.y)"' 2>/dev/null)"
                 fi
                 [ -n "$g" ] || g="1920x1080+0+0"
-                notify "Recording" "Select an area to record…"
-                setsid --fork bash -c "wf-recorder -g '$g' -f '$f'" >/dev/null 2>&1 &
-                notify "Recording" "Playing: press Super+Ctrl+Print or run 'debsway shot record' to stop"
+                setsid --fork wf-recorder -g "$g" -f "$f" >/dev/null 2>&1 &
+                notify "Recording" "Started — press Super+Ctrl+Print or run 'debsway shot record' to stop"
             fi
             ;;
         menu|*)
             local sel
             sel="$(printf '%s\n' \
-                        "\uf030  Full screen" \
-                        "\uf0b2  Screen region" \
-                        "\uf304  Region + annotate" \
-                        "\uf03d  Record area (toggle)" | wofi_pick "Screenshot")" || return 1
+                        $'\uf030  Full screen' \
+                        $'\uf0b2  Screen region' \
+                        $'\uf304  Region + annotate' \
+                        $'\uf03d  Record area (toggle)' | wofi_pick "Screenshot")" || return 1
             case "$sel" in
                 *Full*)    cmd_shot full ;;
                 *region*)  cmd_shot area ;;
@@ -405,12 +451,23 @@ cmd_shot() {
 
 # --- sound ----------------------------------------------------------------------------------
 
+# _sound_osd <swayosd-client args...> — true iff the OSD accepted the command
+_sound_osd() {
+    command -v swayosd-client >/dev/null 2>&1 || return 1
+    pgrep -x swayosd-server >/dev/null 2>&1 || return 1
+    swayosd-client "$@" >/dev/null 2>&1
+}
+
 cmd_sound() {
     local action="${1:-panel}"
+    # Prefer the swayosd OSD, but only when its server is actually reachable:
+    # a bare `exec swayosd-client` with a dead server would swallow the pactl
+    # fallback (exec replaces the shell), leaving the key dead. So try the
+    # client first and fall back to pactl on failure.
     case "$action" in
-        up)   [ -x /usr/bin/swayosd-client ] && exec swayosd-client --output-volume +5 || pactl set-sink-volume @DEFAULT_SINK@ +5% ;;
-        down) [ -x /usr/bin/swayosd-client ] && exec swayosd-client --output-volume -5 || pactl set-sink-volume @DEFAULT_SINK@ -5% ;;
-        mute) [ -x /usr/bin/swayosd-client ] && exec swayosd-client --output-volume mute || pactl set-sink-mute @DEFAULT_SINK@ toggle ;;
+        up)   _sound_osd --output-volume +5    || pactl set-sink-volume @DEFAULT_SINK@ +5% ;;
+        down) _sound_osd --output-volume -5    || pactl set-sink-volume @DEFAULT_SINK@ -5% ;;
+        mute) _sound_osd --output-volume mute  || pactl set-sink-mute @DEFAULT_SINK@ toggle ;;
         panel|*)
             local sel choices=() cmds=() line idx name desc
             command -v pactl >/dev/null 2>&1 || { d_err "pactl not installed (pipewire-pulse)."; return 1; }
@@ -444,30 +501,20 @@ cmd_wire() {
             ;;
         panel|*)
             command -v nmcli >/dev/null 2>&1 || { d_err "nmcli not installed (network-manager)."; return 1; }
-            command -v python3 >/dev/null 2>&1 || { d_err "python3 not installed (needed for wifi panel)."; return 1; }
             nmcli dev wifi rescan >/dev/null 2>&1
             sleep 1
-            local out
-            out="$(nmcli --json dev wifi list 2>/dev/null)"
-            local pick ssid
-            pick="$(printf '%s\n' "$out" | python3 -c '
-import sys, json
-try:
-    d = json.load(sys.stdin.read())
-except Exception:
-    sys.exit(0)
-nets = d.get("device", {}).get("wifi", {}).get("networks", [])
-seen = []
-for n in nets:
-    s = n.get("ssid")
-    if not s or s in seen:
-        continue
-    seen.append(s)
-    inuse = "●" if n.get("in-use") else "○"
-    sig = n.get("signal") or 0
-    bars = min(int(sig / 25) + 1, 4)
-    print("%s %s\t%s" % (inuse, "\u2588" * bars + "\u2591" * (4 - bars), s))
-' | wofi_pick "Wi-Fi")" || return 1
+            # Terse output works on every nmcli (unlike --json, which older
+            # NetworkManager builds reject with "Option '--json' is unknown").
+            local rows pick ssid
+            rows="$(nmcli -t -f IN-USE,SIGNAL,SSID dev wifi list 2>/dev/null \
+                | awk -F: '!seen[$3]++ && $3 != "" {
+                    inuse=($1=="*") ? "●" : "○";
+                    sig=$2+0; bars=int(sig/25)+1; if (bars<1) bars=1; if (bars>4) bars=4;
+                    bar=""; for (i=0;i<bars;i++) bar=bar "█"; for (i=bars;i<4;i++) bar=bar "░";
+                    printf "%s %s\t%s\n", inuse, bar, $3
+                }')"
+            [ -n "$rows" ] || { d_warn "No Wi-Fi networks found."; return 0; }
+            pick="$(printf '%s\n' "$rows" | wofi_pick "Wi-Fi")" || return 1
             [ -z "$pick" ] && return 0
             ssid="$(printf '%s\n' "$pick" | cut -f2)"
             notify "Connecting to" "$ssid"
@@ -534,19 +581,6 @@ cmd_toggle() {
 }
 
 # --- misc -------------------------------------------------------------------------------------------
-
-cmd_calc() {
-    command -v qalc >/dev/null 2>&1 || { d_err "qalc not installed."; return 1; }
-    local expr result
-    expr="$(printf '\n' | wofi --show dmenu --insensitive --prompt "Calculate" 2>/dev/null)" || return 1
-    [ -z "$expr" ] && return 0
-    result="$(qalc -t "$expr" 2>/dev/null)"
-    [ -n "$result" ] && { printf '%s\n' "$result"; wl-copy "$result" 2>/dev/null; }
-}
-
-cmd_date() {
-    notify "Calendar" "$(cal -h 2>/dev/null | grep -v 'Calendar is highligh' || cal)"
-}
 
 cmd_bar() {
     case "${1:-reload}" in

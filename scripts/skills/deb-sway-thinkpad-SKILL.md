@@ -29,7 +29,7 @@ diagnosing issues on this system:
   **no `systemctl`/systemd** — enable/start services with
   `rc-update add <svc> default` and `rc-service <svc> start`, list with
   `rc-status`. User *session* bus is NOT provided by systemd; the graphical
-  session is launched by **greetd+wlgreet** via a `dbus-run-session` wrapper
+  session is launched by **greetd+tuigreet** via a `dbus-run-session` wrapper
   (`/usr/local/bin/sway-session`) so `DBUS_SESSION_BUS_ADDRESS` reaches sway +
   apps (mako, portals, playerctl…). greetd is the active DM through
   `/etc/X11/default-display-manager`; SDDM stays installed as a fallback.
@@ -45,14 +45,14 @@ diagnosing issues on this system:
     for plain drun), terminal is **Alacritty** (`$term`), lockscreen
     is **swaylock** + **swayidle**, notifications are **mako**,
     volume/brightness OSD is **swayosd-server + swayosd-client**.
-  - Login manager is **greetd** with **wlgreet** (`/etc/greetd/config.toml`),
+  - Login manager is **greetd** with **tuigreet** (`/etc/greetd/config.toml`),
     not SDDM/GDM. Logging out lands you back on the greeter, not a TTY.
   - Global hotkeys are `bindsym` lines in the sway config — there is **no**
     `gsettings`, `kglobalaccel`, or `kwriteconfig`. E.g.
-    `bindsym $mod+a exec alacritty -e debsway agent`.
+    `bindsym $mod+a exec $term -e debsway agent` (`$term` = Alacritty).
   - Most desktop actions go through the **`debsway`** CLI (see below):
     `debsway menu|launcher|style|theme|bg|power|lock|agent|clip|shot|sound|
-    wire|toggle|calc|date|status|bar|update|doctor|setup`.
+    wire|toggle|status|bar|update|doctor|setup`.
   - Screenshots: `grim` (full) / `grim -g "$(slurp)"` (region) /
     `swappy` (annotate) / `wf-recorder` (record) — or `debsway shot …`.
     Clipboard history: **cliphist** (`debsway clip pick/watch/clear`).
