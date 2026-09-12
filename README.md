@@ -118,8 +118,7 @@ the greetd login. If a niche package ever goes missing from trixie,
 | apps | `33-useful-apps.sh` — mpv (+ VLC fallback), zathura, TLP + battery cap, archives | Y |
 | apps | `34-opencode-agent.sh` — OpenCode AI agent + `$mod+a` hotkey | Y |
 | optional | `40-vscodium.sh` — VSCodium | N |
-| optional | `41-vscodium-dev.sh` — VSCodium dev config (C++/Python) | N |
-| optional | `42-dev-extras.sh` — TUI essentials (btop/eza/bat/zoxide/yazi) + pass/KeePassXC | Y |
+| optional | `41-dev-essentials.sh` — Fully-suited dev station: TUI tools + C/C++ + Python, no editor | Y |
 | optional | `43-photogimp.sh` — GIMP + PhotoGIMP layout | N |
 | optional | `44-gaming.sh` — Heroic/Steam/Wine | N |
 | optional | `45-chat.sh` — Vesktop (Discord) / Telegram | N |

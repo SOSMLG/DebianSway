@@ -158,8 +158,10 @@ declare -A RENAMED=(
     [catppuccinSway]=22-theme-default.sh [desktopEssentials]=30-desktop-essentials.sh
     [timeshiftSetup]=31-timeshift.sh [networkTimeSync]=32-time-sync.sh
     [usefulApps]=33-useful-apps.sh [aiOpencode]=34-opencode-agent.sh
-    [installVscodium]=40-vscodium.sh [vscodiumDevSetup]=41-vscodium-dev.sh
-    [devToolsExtras]=42-dev-extras.sh [installPhotogimp]=43-photogimp.sh
+    [installVscodium]=40-vscodium.sh [vscodiumDevSetup]=41-dev-essentials.sh
+    [41-vscodium-dev]=41-dev-essentials.sh [vscodium-dev]=41-dev-essentials.sh
+    [devToolsExtras]=41-dev-essentials.sh [42-dev-extras]=41-dev-essentials.sh
+    [dev-extras]=41-dev-essentials.sh [installPhotogimp]=43-photogimp.sh
     [gamingSetup]=44-gaming.sh [vesktopTelegram]=45-chat.sh
     [systemMaintenance]=50-maintenance.sh [configBackup]=51-backup.sh
     [exportToSkel]=52-skel-export.sh
