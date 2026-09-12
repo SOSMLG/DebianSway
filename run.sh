@@ -283,6 +283,39 @@ echo -e "${BLUE}=========================================================${RESET
 priv() {
     if command -v doas >/dev/null 2>&1; then doas "$@"; else sudo "$@"; fi
 }
+
+# --- One password prompt for the whole run -----------------------------------
+# doas `persist` caches auth only ~5 min after the last privileged call; a
+# full toolkit run takes far longer, so without this you'd re-type your
+# password every few steps. Prime the timestamp once (this is the one
+# prompt), then refresh it every minute in the background so it never
+# expires mid-run. Both escalators are refreshed: the box may start on
+# sudo and gain doas halfway through (10-sway-core.sh installs opendoas
+# and writes the persist rule), while priv() prefers doas whenever present.
+echo -e "${CYAN}[*] Caching privilege — one password prompt for the whole run...${RESET}"
+if ! priv true; then
+    if command -v sudo >/dev/null 2>&1 && sudo -v; then
+        echo -e "${YELLOW}[!] doas not usable yet — continuing on sudo; 12-user-groups.sh sets up doas persist mid-run.${RESET}"
+    else
+        echo -e "${RED}Privilege escalation failed — fix doas/sudo setup, then re-run.${RESET}"
+        exit 1
+    fi
+fi
+KEEPALIVE_PID=""
+_priv_keepalive() {
+    while true; do
+        sleep 60
+        if command -v sudo >/dev/null 2>&1; then sudo -n true >/dev/null 2>&1 || true; fi
+        if command -v doas >/dev/null 2>&1; then doas -n true >/dev/null 2>&1 || true; fi
+    done
+}
+_priv_keepalive &
+KEEPALIVE_PID=$!
+_stop_keepalive() {
+    if [ -n "${KEEPALIVE_PID:-}" ]; then kill "$KEEPALIVE_PID" 2>/dev/null || true; fi
+}
+trap _stop_keepalive EXIT INT TERM
+
 export DEBSWAY_SKIP_APT_UPDATE=1
 if [ "$SKIP_APT_UPDATE" -eq 0 ]; then
     echo -e "${CYAN}[*] Refreshing package lists once (scripts skip their own refreshes)...${RESET}"

@@ -93,7 +93,7 @@ the greetd login. If a niche package ever goes missing from trixie,
 | Battery | **TLP** + 80% charge cap via `charge_control_end_threshold` (thinkpad_acpi) |
 | Bluetooth | **Blueman** applet (A2DP), not bluedevil |
 | GPU | amdgpu + `mesa-vulkan-drivers` + `firmware-amd-graphics` |
-| Software | Flatpak/Flathub, CUPS, gufw/ufw, mpv (VLC fallback), codecs, GIMP, Timeshift, OpenCode, pass/KeePassXC, btop/eza/bat/zoxide/yazi/Neovim |
+| Software | Flatpak/Flathub, CUPS, gufw/ufw, mpv (VLC fallback), codecs, GIMP, Timeshift, OpenCode, pass/KeePassXC, btop/eza/bat/zoxide/yazi |
 
 ### Scripts — phases in run order (`./run.sh --list` is authoritative)
 
@@ -119,10 +119,11 @@ the greetd login. If a niche package ever goes missing from trixie,
 | apps | `34-opencode-agent.sh` — OpenCode AI agent + `$mod+a` hotkey | Y |
 | optional | `40-vscodium.sh` — VSCodium | N |
 | optional | `41-vscodium-dev.sh` — VSCodium dev config (C++/Python) | N |
-| optional | `42-dev-extras.sh` — TUI essentials (btop/eza/bat/zoxide/yazi) + Neovim + pass/KeePassXC | Y |
+| optional | `42-dev-extras.sh` — TUI essentials (btop/eza/bat/zoxide/yazi) + pass/KeePassXC | Y |
 | optional | `43-photogimp.sh` — GIMP + PhotoGIMP layout | N |
 | optional | `44-gaming.sh` — Heroic/Steam/Wine | N |
 | optional | `45-chat.sh` — Vesktop (Discord) / Telegram | N |
+| optional | `46-neovim.sh` — Neovim (Debian apt 0.10) + LazyVim v14 pinned config | N |
 | utils | `50-maintenance.sh` — apt cleanup | N |
 | utils | `51-backup.sh` — config backup (timestamped archive) | N |
 | utils | `52-skel-export.sh` — per-user defaults to `/etc/skel` | N |

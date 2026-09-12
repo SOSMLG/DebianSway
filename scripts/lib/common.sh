@@ -95,6 +95,48 @@ run_as_user() {
     fi
 }
 
+# ensure_doas_persist [user] — make sure /etc/doas.conf grants
+#   permit persist <user> as root
+# (root-owned, mode 600). Idempotent: no-op when such a rule already
+# exists. A persist-less rule for the same user is NOT edited in place —
+# doas.conf(5) is "last match wins", so the correct line is appended and
+# overrides any earlier one. Honors DOAS_CONF override (tests).
+# Needs one working escalator for the write; on failure prints the manual
+# fix instead of dying mid-run.
+ensure_doas_persist() {
+    local user="${1:-$ACTUAL_USER}"
+    local conf="${DOAS_CONF:-/etc/doas.conf}"
+    local want="permit persist $user as root"
+    if [ -z "$user" ] || [ "$user" = "root" ]; then
+        log_err "ensure_doas_persist: refusing bad user '$user'."
+        return 1
+    fi
+    if [ -f "$conf" ] \
+        && grep -Eq "^[[:space:]]*permit\b.*\bpersist\b.*\b$user\b" "$conf" 2>/dev/null; then
+        log_ok "doas persist rule already present for '$user' ($conf)."
+        if [ "$(stat -c%a "$conf" 2>/dev/null || echo '')" != "600" ]; then
+            priv chmod 600 "$conf" 2>/dev/null \
+                || log_warn "Could not chmod 600 $conf."
+        fi
+        return 0
+    fi
+    log_info "Ensuring doas persist rule: '$want' in $conf ..."
+    if [ -f "$conf" ]; then
+        priv cp -a "$conf" "$conf.bak.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
+    fi
+    if printf '%s\n' "$want" | priv tee -a "$conf" >/dev/null \
+        && priv chmod 600 "$conf" 2>/dev/null; then
+        if command_exists doas && ! priv doas -C "$conf" >/dev/null 2>&1; then
+            log_warn "doas -C rejects $conf — check its syntax."
+        fi
+        log_ok "doas persist rule added for '$user' (root-owned, mode 600)."
+        return 0
+    fi
+    log_err "Could not write $conf (no working escalator)."
+    log_warn "As root, run: printf '$want\n' >> $conf && chmod 600 $conf"
+    return 1
+}
+
 # ask() — "Y/n" (default Y) or "y/N" (default N) prompt. With
 # DEBSWAY_ASSUME_YES set (run.sh --yes, or install.sh), the default is
 # taken without prompting so the toolkit can run unattended.

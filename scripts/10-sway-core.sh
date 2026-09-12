@@ -139,6 +139,13 @@ log_ok "Installed DebSway greeter session (pick it instead of raw Sway)."
 if ! is_installed opendoas; then
     install_pkgs "opendoas (doas privilege escalation)" opendoas
 fi
+# Persist rule immediately (don't wait for 12-user-groups.sh): every later
+# priv() call in this run goes through doas, and `persist` caches the auth
+# so you type your password once instead of once per script. run.sh also
+# keeps the timestamp alive for the whole run.
+if command -v doas >/dev/null 2>&1; then
+    ensure_doas_persist "$ACTUAL_USER" || log_warn "Continuing without a doas persist rule (12-user-groups.sh will retry)."
+fi
 # tuigreet is the greeter: a TUI purpose-built for greetd session picking
 # (far less fragile than wlgreet's GTK layer-shell). wlgreet stays installed
 # as a fallback greeter.

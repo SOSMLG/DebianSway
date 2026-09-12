@@ -169,7 +169,6 @@ pkg btop
 pkg eza
 pkg bat
 pkg zoxide
-pkg neovim
 pkg tlp
 pkg firmware-iwlwifi optional
 pkg ffmpeg
@@ -193,6 +192,20 @@ pkg heroic optional
 pkg steam optional
 pkg gimp optional
 pkg keepassxc optional
+bin nvim optional
+# 46-neovim.sh blesses Debian 0.10 + a v14-pinned LazyVim config; anything
+# newer rides the current LazyVim line unpinned.
+if command -v nvim >/dev/null 2>&1; then
+    _nver="$(nvim --version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+    if [ -n "$_nver" ] && printf '%s\n' "0.11.2" "$_nver" | sort -V -C 2>/dev/null; then
+        report "nvim LazyVim-ready" ok "$_nver (>= 0.11.2, current line)"
+    elif [ -n "$_nver" ] && printf '%s\n' "0.9.0" "$_nver" | sort -V -C 2>/dev/null \
+        && grep -rq 'version = "14\.\*"' "$HOME/.config/nvim/lua/plugins/" 2>/dev/null; then
+        report "nvim LazyVim-ready" ok "$_nver (v14 pinned for 0.10)"
+    else
+        report "nvim LazyVim-ready" warn "${_nver:-unknown} — re-run 46-neovim.sh"
+    fi
+fi
 
 # --- 4. Fonts -------------------------------------------------------------
 # NOTE: string-test, not `| grep -q` — with `set -o pipefail`, grep -q

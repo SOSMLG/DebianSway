@@ -48,29 +48,19 @@ echo -e "${YELLOW}⚠ You need to log out and back in (or reboot) for new group 
 # doas rule (BSD-minimal privilege path). doas.conf semantics (doas.conf(5)):
 # last match wins, default deny — so one explicit line is the whole policy:
 #   permit persist <you> as root
-# `persist` caches one successful auth for a few minutes (no password
-# spam during a toolkit run); nothing is logged away (no nolog).
+# `persist` caches one successful auth for ~5 min (no password spam during
+# a toolkit run); run.sh additionally refreshes the timestamp in the
+# background so a long install asks only once, upfront.
+# priv() prefers doas whenever opendoas is installed, so the rule is
+# ensured unconditionally — even when a sudo/wheel group already exists.
 # ---------------------------------------------------------------------------
 DOAS_CONF="/etc/doas.conf"
-if [ -f "$DOAS_CONF" ] && grep -qw "$ACTUAL_USER" "$DOAS_CONF" 2>/dev/null; then
-    echo -e "${GREEN}  doas already names '$ACTUAL_USER' ($DOAS_CONF)${NC}"
-elif id -nG 2>/dev/null | grep -qwE "sudo|wheel|doas"; then
-    echo -e "${GREEN}  privilege path OK (group sudo/wheel/doas)${NC}"
-elif ask "No working privilege path detected — add 'permit persist $ACTUAL_USER as root' to $DOAS_CONF?"; then
-    if [ -f "$DOAS_CONF" ]; then
-        priv cp -a "$DOAS_CONF" "$DOAS_CONF.bak.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
-    fi
-    if printf 'permit persist %s as root\n' "$ACTUAL_USER" | priv tee -a "$DOAS_CONF" >/dev/null \
-        && priv chmod 600 "$DOAS_CONF" 2>/dev/null; then
-        echo -e "${GREEN}  ✓ doas rule added (root-owned, mode 600)${NC}"
-    else
-        echo -e "${RED}  ✗ Could not write $DOAS_CONF (no working escalator).${NC}"
-        echo -e "${YELLOW}  As root, run: printf 'permit persist $ACTUAL_USER as root\n' > $DOAS_CONF${NC}"
-        echo -e "${YELLOW}  then relogin and re-run this script.${NC}"
-        status=1
-    fi
+if grep -Eq "^[[:space:]]*permit\b.*\bpersist\b.*\b${ACTUAL_USER}\b" "$DOAS_CONF" 2>/dev/null; then
+    echo -e "${GREEN}  doas persist rule already present for '$ACTUAL_USER' ($DOAS_CONF)${NC}"
+elif ask "Ensure doas persist rule 'permit persist $ACTUAL_USER as root' in $DOAS_CONF? (one password prompt, then cached for the whole install)"; then
+    ensure_doas_persist "$ACTUAL_USER" || status=1
 else
-    echo -e "${YELLOW}  Skipped doas setup — later scripts will fail at their first priv step.${NC}"
+    echo -e "${YELLOW}  Skipped doas setup — later scripts fall back to sudo, or fail at their first priv step.${NC}"
 fi
 
 exit "$status"
