@@ -192,6 +192,17 @@ pkg heroic optional
 pkg steam optional
 pkg gimp optional
 pkg keepassxc optional
+# 41-dev-essentials.sh — C/C++ + Python toolchains (editor-free, optional)
+bin gcc optional
+bin g++ optional
+bin gdb optional
+bin clangd optional
+bin cmake optional
+pkg python3-numpy optional
+pkg python3-matplotlib optional
+pkg python3-scipy optional
+pkg python3-pandas optional
+pkg python3-pytest optional
 bin nvim optional
 # 46-neovim.sh blesses Debian 0.10 + a v14-pinned LazyVim config; anything
 # newer rides the current LazyVim line unpinned.

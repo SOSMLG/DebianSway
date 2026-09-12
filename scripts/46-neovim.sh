@@ -13,7 +13,7 @@
 #      fd-find + an `fd` shim, since Debian names it fdfind).
 #   2. Clones the LazyVim starter into ~/.config/nvim — but ONLY when
 #      that dir is absent. A stale toolkit stub (the pre-LazyVim
-#      42-dev-extras bootstrap) is recognized by signature and moved
+#      dev-essentials bootstrap) is recognized by signature and moved
 #      aside with a timestamped backup after asking; any other
 #      existing config is NEVER touched.
 #   3. Pins LazyVim to the v14 release line (last supporting 0.10)
@@ -48,7 +48,7 @@ current_nvim_ver() {
     nvim --version 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1
 }
 
-# The pre-LazyVim 42-dev-extras bootstrap is exactly this: a one-line
+# The pre-LazyVim dev-essentials bootstrap is exactly this: a one-line
 # init.lua plus a lazy.lua carrying our distinctive example comment.
 # (Matched narrowly on purpose — the real LazyVim starter also has an
 # init.lua reading `require("config.lazy")`, but it ships lua/plugins/
