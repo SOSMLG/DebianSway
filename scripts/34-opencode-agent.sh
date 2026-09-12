@@ -11,7 +11,7 @@
 # MIT licensed) rather than reimplemented — same tool, same idea (a
 # Super+A hotkey that installs-then-launches on first press), adapted
 # here to run under sway — a `bindsym $mod+a exec debsway agent` (debsway
-# CLI from scripts/21-debsway-cli.sh, running OpenCode in an alacritty terminal)
+# CLI from scripts/21-debsway-cli.sh, running OpenCode in a foot terminal)
 # instead of kglobalaccel.
 #
 # Also drops a small "skill" file describing this system, in the format

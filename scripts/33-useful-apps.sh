@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# DEBSWAY_DESC: VLC, TLP + 80% battery cap, archives
+# DEBSWAY_DESC: mpv, TLP + 80% battery cap, archives, docs
 # DEBSWAY_DEFAULT: Y
 # =======================================================
-# Useful apps — media, archives, battery management
+# Useful apps — media, archives, docs, battery management
 # -------------------------------------------------------
-# VLC as the default media player, archive format support,
-# and TLP for laptop battery/power management.
+# mpv as the default media player (TUI-first, keyboard, Wayland-native),
+# VLC kept as an optional fallback (DVD menus), archive format support,
+# zathura for PDFs (vim-keys, fills the $ws7 assign), and TLP for
+# laptop battery/power management.
 # =======================================================
 set -uo pipefail
 
@@ -20,18 +22,38 @@ echo -e "${CYAN}=========================================================${NC}"
 log_info "Refreshing package lists..."
 apt_update || { log_err "apt-get update failed, aborting."; exit 1; }
 
-if ask "Install VLC (media player)?"; then
-    install_pkgs "VLC" vlc
+if ask "Install mpv (TUI-first media player, default)?"; then
+    install_pkgs "mpv" mpv
 
-    if is_installed vlc && command -v xdg-mime >/dev/null 2>&1; then
-        log_info "Setting VLC as the default player for common video/audio types..."
-        if xdg-mime default vlc.desktop \
+    if is_installed mpv && command -v xdg-mime >/dev/null 2>&1; then
+        log_info "Setting mpv as the default player for common video/audio types..."
+        if xdg-mime default mpv.desktop \
             video/mp4 video/x-matroska video/webm video/x-msvideo video/quicktime video/mpeg \
             audio/mpeg audio/mp4 audio/flac audio/x-wav audio/ogg 2>/dev/null; then
-            log_ok "VLC set as default for common video/audio types."
+            log_ok "mpv set as default for common video/audio types."
         else
             log_warn "Could not set MIME defaults (non-fatal — set manually via right-click > Open With if needed)."
         fi
+    fi
+fi
+
+if ask "Install VLC as well (fallback for DVD menus)?" "N"; then
+    install_pkgs "VLC (fallback)" vlc
+fi
+
+if ask "Install zathura (vim-keys PDF viewer, sway workspace 7)?"; then
+    install_pkgs "zathura" zathura zathura-pdf-poppler
+
+    # Take PDFs back from whatever claimed them (PhotoGIMP/GIMP raster-imports
+    # PDFs — never a sane default). Discover the real desktop ID, no hardcode.
+    if is_installed zathura && command -v gio >/dev/null 2>&1; then
+        _zdesk="$(ls /usr/share/applications/ "$HOME/.local/share/applications/" 2>/dev/null | grep -i '^.*zathura.*\.desktop$' | head -1)"
+        if [ -n "$_zdesk" ] && gio mime application/pdf "$_zdesk" >/dev/null 2>&1; then
+            log_ok "zathura set as default for PDFs."
+        else
+            log_warn "Could not set PDF default (non-fatal — right-click > Open With once)."
+        fi
+        unset _zdesk
     fi
 fi
 

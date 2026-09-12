@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# DEBSWAY_DESC: Shell: OSD, clipboard, screenshots, media keys, night-light, Alacritty
+# DEBSWAY_DESC: Shell: OSD, clipboard, screenshots, media keys, night-light, Foot
 # DEBSWAY_DEFAULT: Y
 # =======================================================
 # Sway Shell Upgrade — the OSD / capture / media / clipboard /
 # night-light components that turn Sway from a bare WM into a
-# "gets out of your way" desktop shell, plus the Alacritty terminal.
+# "gets out of your way" desktop shell, plus the Foot terminal.
 # -------------------------------------------------------
 # Installs:
-#   alacritty   (default terminal, $term)
+#   foot        (default terminal, $term — Wayland-native, Sway-authored)
+#   fuzzel      (app launcher + dmenu for the debsway palette)
 #   swayosd     on-screen volume/brightness OSD (+libinput gestures)
-#   cliphist    clipboard history manager (+ wofi picker in debsway)
+#   cliphist    clipboard history manager (+ fuzzel picker in debsway)
 #   swappy      screenshot annotation (area + markup)
 #   wlogout     grid power menu ($mod+Escape)
 #   playerctl   media controls (waybar now-playing + keys)
@@ -37,7 +38,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 
 require_not_root
-log_head "Sway Shell Upgrade (OSD / capture / media / night-light / Alacritty)"
+log_head "Sway Shell Upgrade (OSD / capture / media / night-light / Foot)"
 
 log_info "Refreshing package lists..."
 apt_update || { log_err "apt-get update failed, aborting."; exit 1; }
@@ -46,19 +47,31 @@ apt_update || { log_err "apt-get update failed, aborting."; exit 1; }
 # 1. Packages
 # ---------------------------------------------------------------------------
 install_pkgs "Shell upgrade" \
-    alacritty swayosd cliphist swappy wlogout playerctl pamixer \
+    foot fuzzel swayosd cliphist swappy wlogout playerctl pamixer \
     kanshi wf-recorder wdisplays wlr-randr nwg-look gammastep \
     qalc jq pulseaudio-utils pipewire wireplumber pipewire-pulse
 
-# Foot is retired: Alacritty is the canonical $term (see configs/sway/config).
-# Purge it idempotently so stale foot.ini / binds can't shadow Alacritty.
-if is_installed foot; then
-    log_info "Removing retired terminal (foot) — Alacritty is now \$term."
-    priv apt-get purge -y foot 2>/dev/null || log_warn "Couldn't remove foot."
+# Alacritty is retired: Foot is the canonical $term (see configs/sway/config).
+# Purge it idempotently so stale configs / binds can't shadow Foot.
+if is_installed alacritty; then
+    log_info "Removing retired terminal (alacritty) — Foot is now \$term."
+    priv apt-get purge -y alacritty 2>/dev/null || log_warn "Couldn't remove alacritty."
 fi
-if [ -f "$HOME/.config/foot/foot.ini" ]; then
-    mv "$HOME/.config/foot/foot.ini" "$HOME/.config/foot/foot.ini.retired.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
-    log_info "Stale ~/.config/foot/foot.ini retired (theme engine no longer renders foot)."
+if [ -f "$HOME/.config/alacritty/alacritty.toml" ]; then
+    mv "$HOME/.config/alacritty/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml.retired.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
+    log_info "Stale ~/.config/alacritty/alacritty.toml retired (theme engine now renders foot)."
+fi
+
+# wofi is retired: fuzzel is the launcher + dmenu backend.
+if is_installed wofi; then
+    log_info "Removing retired launcher (wofi) — fuzzel is now the picker."
+    priv apt-get purge -y wofi 2>/dev/null || log_warn "Couldn't remove wofi."
+fi
+if [ -f "$HOME/.config/wofi/config" ] || [ -f "$HOME/.config/wofi/style.css" ]; then
+    stamp="$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$HOME/.config/wofi.retired.$stamp"
+    mv "$HOME/.config/wofi/"* "$HOME/.config/wofi.retired.$stamp/" 2>/dev/null || true
+    log_info "Stale ~/.config/wofi/* retired to ~/.config/wofi.retired.$stamp/."
 fi
 
 # ---------------------------------------------------------------------------
@@ -84,7 +97,7 @@ backup_before_overlay() {
 
 if [ -d "$CONFIGS_SRC" ]; then
     log_info "Applying configs from $CONFIGS_SRC (backup-first)..."
-    for d in sway waybar wofi alacritty mako swayosd wlogout kanshi gammastep environment.d; do
+    for d in sway waybar fuzzel foot mako swayosd wlogout kanshi gammastep environment.d mpv xfce4 fastfetch; do
         [ -d "$CONFIGS_SRC/$d" ] || continue
         backup_before_overlay "$CONFIGS_SRC/$d" "$HOME/.config/$d"
         cp -r "$CONFIGS_SRC/$d/." "$HOME/.config/$d/"
@@ -141,4 +154,4 @@ fi
 echo
 log_ok "Sway Shell Upgrade complete."
 log_warn "Next: scripts/21-debsway-cli.sh installs the debsway CLI + theme engine."
-log_warn "A re-login (or \$mod+Shift+C) picks up swayosd, gammastep, kanshi & Alacritty."
+log_warn "A re-login (or \$mod+Shift+C) picks up swayosd, gammastep, kanshi & Foot."

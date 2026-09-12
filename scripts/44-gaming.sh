@@ -73,6 +73,8 @@ install_steam() {
     log_info "Downloading Steam's official installer package..."
     local tmp_deb
     tmp_deb="$(mktemp --suffix=.deb)"
+    # shellcheck disable=SC2064
+    trap "rm -f '$tmp_deb'" RETURN
     if ! curl -fL -o "$tmp_deb" "https://repo.steampowered.com/steam/archive/stable/steam_latest.deb"; then
         log_err "Could not download steam_latest.deb from repo.steampowered.com."
         rm -f "$tmp_deb"
@@ -130,6 +132,8 @@ print((amd64 or candidates or [''])[0])
     log_info "Downloading: $deb_url"
     local tmp_deb
     tmp_deb="$(mktemp --suffix=.deb)"
+    # shellcheck disable=SC2064
+    trap "rm -f '$tmp_deb'" RETURN
     if ! curl -fL -o "$tmp_deb" "$deb_url"; then
         log_err "Download failed."
         rm -f "$tmp_deb"
@@ -166,7 +170,7 @@ install_wine() {
     ensure_i386 || return 1
 
     log_info "Installing wine + winetricks..."
-    if priv apt-get install -y wine ; then
+    if install_pkgs "Wine" wine wine32 winetricks; then
         log_ok "Wine installed. Run 'winecfg' once to set up your first Wine prefix."
     else
         log_err "Wine install failed."

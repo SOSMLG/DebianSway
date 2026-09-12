@@ -33,7 +33,7 @@ apt_update || { log_err "apt-get update failed, aborting."; exit 1; }
 if ask "Set up Flatpak + Flathub?"; then
     install_pkgs "Flatpak" flatpak
     if command -v flatpak >/dev/null 2>&1; then
-        if priv flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo; then
+        if priv flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo; then
             log_ok "Flathub remote added system-wide."
         else
             log_warn "Could not add the Flathub remote (may already exist)."

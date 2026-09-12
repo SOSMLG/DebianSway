@@ -65,6 +65,8 @@ print((amd64 or candidates or [''])[0])
     log_info "Downloading: $deb_url"
     local tmp_deb
     tmp_deb="$(mktemp --suffix=.deb)"
+    # shellcheck disable=SC2064
+    trap "rm -f '$tmp_deb'" RETURN
     if ! curl -fL -o "$tmp_deb" "$deb_url"; then
         log_err "Download failed."
         rm -f "$tmp_deb"

@@ -1,14 +1,16 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 28,
+  "height": 30,
   "spacing": 0,
   "margin-top": 4,
   "margin-left": 5,
   "margin-right": 5,
   "modules-left": [
     "custom/menu",
-    "sway/workspaces"
+    "sway/workspaces",
+    "sway/mode",
+    "sway/scratchpad"
   ],
   "modules-center": [
     "clock"
@@ -19,13 +21,27 @@
     "cpu",
     "custom/memory",
     "pulseaudio",
+    "backlight",
     "battery"
   ],
 
   "custom/menu": {
-    "format": "󰍜",
+    "format": "",
     "tooltip": "DebSway menu",
     "on-click": "debsway menu"
+  },
+
+  "sway/mode": {
+    "format": " {}",
+    "tooltip": "Sway binding mode ($mod+alt+r = resize)"
+  },
+
+  "sway/scratchpad": {
+    "format": "{icon} {count}",
+    "show-empty": false,
+    "format-icons": ["", ""],
+    "tooltip": true,
+    "tooltip-format": "{app}: {title}"
   },
 
   "sway/workspaces": {
@@ -55,19 +71,24 @@
 
   "clock": {
     "format": " \uf017 {:%a %d %b %H:%M}",
+    "format-alt": " \uf017 {:%Y-%m-%d %H:%M:%S}",
     "tooltip": true,
     "tooltip-format": "{:%Y-%m-%d  ISO week %V}",
-    "interval": 60
+    "interval": 60,
+    "actions": {
+      "on-click-right": "mode"
+    }
   },
 
   "pulseaudio": {
-    "scroll-step": 1,
+    "scroll-step": 5,
     "format": "{icon} {volume}%",
     "format-muted": " \uf131 {volume}%",
     "format-icons": {
       "default": ["\uf028", "\uf028", "\uf028"]
     },
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-click-right": "pavucontrol",
     "max-volume": 100
   },
 
@@ -76,12 +97,13 @@
     "format-wifi": " \uf1eb {signalStrength}%",
     "format-ethernet": " \uf1e6 {ifname}",
     "format-disconnected": " \uf059",
-    "on-click": "debsway wire panel"
+    "on-click": "debsway wire panel",
+    "on-click-right": "foot -e nmtui"
   },
 
   "cpu": {
     "format": " \uf2db {usage}%",
-    "tooltip": false,
+    "tooltip": true,
     "interval": 3
   },
 
@@ -90,6 +112,14 @@
     "interval": 3,
     "return-type": "json",
     "format": "{}"
+  },
+
+  "backlight": {
+    "format": " {icon} {percent}%",
+    "format-icons": [""],
+    "on-scroll-up": "brightnessctl set 5%+",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "tooltip": true
   },
 
   "battery": {
@@ -104,6 +134,7 @@
     "format-warning": " {icon} {capacity}%",
     "format-charging": " \uf0e7 {capacity}%",
     "format-plugged": " \uf0e7 {capacity}%",
-    "tooltip": false
+    "tooltip": true,
+    "tooltip-format": "{timeTo} ({capacity}%)"
   }
 }

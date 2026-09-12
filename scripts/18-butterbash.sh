@@ -24,6 +24,13 @@ fi
 
 log_info "Installing ButterBash from $BUTTERBASH_SRC ..."
 
+# Idempotent: ButterBash's installer is re-runnable, but don't churn a
+# working setup on every toolkit run — ask first when already installed.
+if [ -d "$HOME/.config/bash" ] && ! ask "ButterBash already installed — re-run its installer?"; then
+    log_ok "ButterBash kept as-is."
+    exit 0
+fi
+
 # ButterBash's own install.sh cd-relies on being run from inside its
 # directory (it references ./bash and ./bashrc.example as relative paths).
 if ( cd "$BUTTERBASH_SRC" && bash install.sh --yes ); then

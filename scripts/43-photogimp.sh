@@ -195,13 +195,8 @@ if ask "Install PhotoGIMP application launcher (Photoshop-style icon in the app 
                 log_warn "Desktop database refresh failed (non-fatal)."
             fi
         fi
-
-        for cache_cmd in kbuildsycoca6 kbuildsycoca5; do
-            if command -v "$cache_cmd" >/dev/null 2>&1; then
-                "$cache_cmd" >/dev/null 2>&1 || true
-                break
-            fi
-        done
+        # NOTE: no kbuildsycoca refresh — that's a KDE/Plasma cache, a no-op
+        # on Sway (fuzzel reads .desktop files directly).
     fi
 fi
 

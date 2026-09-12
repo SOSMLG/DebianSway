@@ -7,7 +7,7 @@
 # Legacy alias of the debsway theme engine (scripts/21-debsway-cli.sh installs
 # `debsway theme set`, which is the preferred way to switch palettes). This
 # script still ships the Catppuccin Mocha (Red accent) default palette into
-# the Sway/Waybar/Wofi/Alacritty/Mako/SwayOSD configs in configs/, installs the
+# the Sway/Waybar/Fuzzel/Foot/Mako/SwayOSD configs in configs/, installs the
 # Catppuccin cursor theme, and points GTK apps at a dark theme.
 #
 # Idempotent: re-run after adding apps to refresh the icon/cursor bits;
@@ -29,7 +29,7 @@ CONFIGS_SRC="$SCRIPT_DIR/../configs"
 # ---------------------------------------------------------------------------
 if [ -d "$CONFIGS_SRC" ]; then
     log_info "Applying Catppuccin default configs from $CONFIGS_SRC"
-    for d in sway waybar wofi alacritty mako swayosd wlogout kanshi gammastep; do
+    for d in sway waybar fuzzel foot mako swayosd wlogout kanshi gammastep mpv xfce4 fastfetch; do
         if [ -d "$CONFIGS_SRC/$d" ]; then
             mkdir -p "$HOME/.config/$d"
             cp -r "$CONFIGS_SRC/$d/." "$HOME/.config/$d/"
@@ -101,7 +101,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 4. Refresh icon caches so wofi/waybar show proper app icons
+# 4. Refresh icon caches so fuzzel/waybar show proper app icons
 # ---------------------------------------------------------------------------
 if command_exists gtk-update-icon-cache; then
     update_dirs=$(find "$HOME/.local/share/icons" "$XDG_DATA_HOME/icons" -maxdepth 1 -type d 2>/dev/null | sort -u)

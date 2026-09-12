@@ -111,21 +111,31 @@ term_bin() {
         printf '%s\n' "$TERMINAL"
         return 0
     fi
+    command -v foot >/dev/null 2>&1 && { printf '%s\n' "foot"; return 0; }
     command -v alacritty >/dev/null 2>&1 && { printf '%s\n' "alacritty"; return 0; }
     command -v x-terminal-emulator >/dev/null 2>&1 && { printf '%s\n' "x-terminal-emulator"; return 0; }
     return 1
 }
 
-# wofi_pick <prompt> — reads stdin lines, prints the selected one (or empty)
-# stderr is left visible so a broken wofi config/display fails loudly
+# fuzzel_pick <prompt> — reads stdin lines, prints the selected one (or empty).
+# stderr is left visible so a broken fuzzel config/display fails loudly
 # instead of `debsway menu` silently doing nothing.
-wofi_pick() {
-    if ! command -v wofi >/dev/null 2>&1; then
-        d_err "wofi is not installed (run scripts/10-sway-core.sh)."
-        return 1
+fuzzel_pick() {
+    if command -v fuzzel >/dev/null 2>&1; then
+        fuzzel --dmenu --prompt "$1: "
+        return $?
     fi
-    wofi --show dmenu --insensitive --prompt "$1"
+    if command -v wofi >/dev/null 2>&1; then
+        d_warn "fuzzel not installed, falling back to wofi (run scripts/20-shell-upgrade.sh)."
+        wofi --show dmenu --insensitive --prompt "$1"
+        return $?
+    fi
+    d_err "No picker installed (need fuzzel — run scripts/20-shell-upgrade.sh)."
+    return 1
 }
+
+# wofi_pick — deprecated alias kept for back-compat (callers should use fuzzel_pick).
+wofi_pick() { fuzzel_pick "$@"; }
 
 # set_marker <key> <value>
 set_marker() { printf '%s\n' "$2" > "$DS_STATE/$1"; }

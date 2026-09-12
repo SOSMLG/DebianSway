@@ -54,7 +54,7 @@ if ask "Install DVD playback support (libdvd-pkg)?"; then
         log_ok "libdvd-pkg already installed and libdvdcss already built."
     elif check_repo_package libdvd-pkg "contrib"; then
         log_info "Installing libdvd-pkg..."
-        if priv DEBIAN_FRONTEND=noninteractive apt-get install -y libdvd-pkg; then
+        if priv env DEBIAN_FRONTEND=noninteractive apt-get install -y libdvd-pkg; then
             log_info "Building libdvdcss (this runs non-interactively, capped at 5 minutes)..."
             if priv timeout 300 env DEBIAN_FRONTEND=noninteractive dpkg-reconfigure libdvd-pkg; then
                 log_ok "libdvd-pkg configured."

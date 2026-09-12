@@ -39,6 +39,10 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 install_ext() {
     local id="$1"
+    if codium --list-extensions 2>/dev/null | grep -qiFx "$id"; then
+        log_ok "  $id (already installed)"
+        return 0
+    fi
     log_info "Installing extension: $id"
     if codium --install-extension "$id" --force > /dev/null 2>&1; then
         log_ok "  $id"
@@ -56,8 +60,6 @@ fi
 echo -e "${CYAN}=========================================================${NC}"
 echo -e "${CYAN} VSCodium — C++ & Python dev setup${NC}"
 echo -e "${CYAN}=========================================================${NC}"
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ---------------------------------------------------------------------------
 # 0. Make sure VSCodium itself is installed

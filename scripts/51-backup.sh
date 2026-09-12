@@ -35,28 +35,40 @@ CANDIDATES=(
     "$HOME/.local/share/applications"
     "$HOME/.local/share/fonts"
     "$HOME/.local/share/icons"
+    "$HOME/.local/share/debsway"
+    "$HOME/.local/state/debsway"
     "$HOME/.local/bin"
     "$HOME/.bashrc"
     "$HOME/.bash_aliases"
     "$HOME/.profile"
-    "$HOME/.xprofile"
 )
 
 # Heavy, throwaway or not-safely-restorable state we never want in the archive.
+# Relative to $HOME (tar runs with -C $HOME, so excludes must match too).
 EXCLUDES=(
-    "$HOME/.config/google-chrome"
-    "$HOME/.config/chromium"
-    "$HOME/.config/BraveSoftware"
-    "$HOME/.config/microsoft-edge"
-    "$HOME/.cache"
+    ".config/google-chrome"
+    ".config/chromium"
+    ".config/BraveSoftware"
+    ".config/microsoft-edge"
+    ".cache"
     "*Cache*"
     "*/node_modules/*"
     "*/__pycache__/*"
 )
 
-latest_archive() {
-    ls -1t "$BACKUP_ROOT"/deb-sway-config-backup-*.tar.gz 2>/dev/null | head -1
+# newest_archive <glob...> — newest file by mtime, no ls-parsing (spaces safe).
+newest_archive() {
+    local best="" best_mtime=0 f m
+    shopt -s nullglob
+    for f in "$BACKUP_ROOT"/deb-sway-config-backup-*.tar.gz; do
+        m="$(stat -c %Y "$f" 2>/dev/null || echo 0)"
+        if [ "$m" -gt "$best_mtime" ]; then best_mtime="$m"; best="$f"; fi
+    done
+    shopt -u nullglob
+    [ -n "$best" ] && printf '%s\n' "$best"
 }
+
+latest_archive() { newest_archive; }
 
 do_backup() {
     local existing=()
@@ -80,9 +92,15 @@ do_backup() {
     for ex in "${EXCLUDES[@]}"; do
         tar_args+=(--exclude="$ex")
     done
-    tar_args+=("${include[@]}")
+    # Relative to $HOME so the archive extracts cleanly with -C $HOME
+    # (absolute paths would restore to $HOME/home/$USER/... instead).
+    local rel=()
+    local src
+    for src in "${include[@]}"; do
+        rel+=("${src#"$HOME"/}")
+    done
 
-    if ! tar "${tar_args[@]}" >/dev/null 2>&1; then
+    if ! tar -C "$HOME" "${tar_args[@]}" "${rel[@]}" >/dev/null 2>&1; then
         log_err "Backup failed — see message above."
         rm -f "$archive"
         return 1
@@ -95,12 +113,22 @@ do_backup() {
     log_ok "Backup created: $archive ($(du -h "$archive" | cut -f1))"
 
     # Rotation: keep only the KEEP newest archives (and their .log siblings).
-    local old
-    while IFS= read -r old; do
-        [ -z "$old" ] && continue
-        log_warn "Rotating out old backup: $old"
-        rm -f "$old" "$old.log"
-    done < <(ls -1t "$BACKUP_ROOT"/deb-sway-config-backup-*.tar.gz 2>/dev/null | tail -n +$((KEEP + 1)))
+    local all=() f
+    shopt -s nullglob
+    all=("$BACKUP_ROOT"/deb-sway-config-backup-*.tar.gz)
+    shopt -u nullglob
+    if [ "${#all[@]}" -gt "$KEEP" ]; then
+        local sorted old
+        sorted="$(for f in "${all[@]}"; do printf '%s\t%s\n' "$(stat -c %Y "$f" 2>/dev/null || echo 0)" "$f"; done | sort -rn | cut -f2-)"
+        local n=0
+        while IFS= read -r old; do
+            [ -z "$old" ] && continue
+            n=$((n + 1))
+            [ "$n" -le "$KEEP" ] && continue
+            log_warn "Rotating out old backup: $old"
+            rm -f "$old" "$old.log"
+        done <<< "$sorted"
+    fi
 
     return 0
 }
@@ -111,7 +139,7 @@ do_list() {
     [ -z "$archive" ] && { log_warn "No backups found in $BACKUP_ROOT."; return 1; }
     log_info "Newest backup: $archive"
     echo
-    tar -tzf "$archive" 2>/dev/null | sed 's![^/]*/!!' | sort -u | grep -v '^$' | head -80
+    tar -tzf "$archive" 2>/dev/null | sort -u | grep -v '^$' | head -80
     echo
     log_info "(first 80 unique paths shown — full list in the archive itself)"
 }

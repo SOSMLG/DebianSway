@@ -35,8 +35,8 @@ doctor_run() {
 
     # binaries
     for b in sway swaybg swaylock swayidle waybar mako swayosd-server cliphist \
-             swappy wlogout playerctl pamixer alacritty wofi grim slurp wf-recorder \
-             kanshi gammastep wdisplays nwg-look qalc jq nmcli pactl \
+             swappy wlogout playerctl pamixer foot fuzzel grim slurp wf-recorder \
+             kanshi gammastep wdisplays nwg-look qalc jq nmcli pactl thunar mpv \
              pipewire wireplumber pipewire-pulse; do
         doctor_bin "$b" "$b"
     done
@@ -46,8 +46,8 @@ doctor_run() {
     doctor_file "sway/colors.conf"  "$DS_CONFIG/sway/colors.conf"
     doctor_file "waybar/config"     "$DS_CONFIG/waybar/config"
     doctor_file "waybar/style.css"  "$DS_CONFIG/waybar/style.css"
-    doctor_file "wofi/style.css"    "$DS_CONFIG/wofi/style.css"
-    doctor_file "alacritty/alacritty.toml" "$DS_CONFIG/alacritty/alacritty.toml"
+    doctor_file "fuzzel/fuzzel.ini" "$DS_CONFIG/fuzzel/fuzzel.ini"
+    doctor_file "foot/foot.ini"     "$DS_CONFIG/foot/foot.ini"
     doctor_file "mako/config"       "$DS_CONFIG/mako/config"
     doctor_file "swayosd/style.css" "$DS_CONFIG/swayosd/style.css"
     doctor_file "wlogout/style.css" "$DS_CONFIG/wlogout/style.css"
@@ -58,7 +58,7 @@ doctor_run() {
     echo
     local leaked=0 f
     for f in "$DS_CONFIG"/sway/colors.conf "$DS_CONFIG"/waybar/style.css \
-             "$DS_CONFIG"/wofi/style.css "$DS_CONFIG"/alacritty/alacritty.toml \
+             "$DS_CONFIG"/fuzzel/fuzzel.ini "$DS_CONFIG"/foot/foot.ini \
              "$DS_CONFIG"/mako/config "$DS_CONFIG"/swayosd/style.css \
              "$DS_CONFIG"/wlogout/style.css; do
         [ -f "$f" ] || continue

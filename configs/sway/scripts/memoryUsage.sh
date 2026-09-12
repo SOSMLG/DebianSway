@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
-# memoryUsage.sh — Memory usage module for Waybar (returns JSON)
-# Reads /proc/meminfo directly (htop-style calculation).
+# memoryUsage.sh — Memory usage module for Waybar (always prints one JSON line).
+# Uses MemAvailable (the same honest figure `free` reports) instead of
+# hand-rolling Total-Free-Buffers-Cached, which double-counts reclaimable
+# slab. Never fails the bar: unreadable input prints a placeholder.
 
-read -r total _ < <(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
-read -r free _ < <(awk '/^MemFree:/ {print $2}' /proc/meminfo)
-read -r buffers _ < <(awk '/^Buffers:/ {print $2}' /proc/meminfo)
-read -r cached _ < <(awk '/^Cached:/ {print $2}' /proc/meminfo)
-read -r sreclaimable _ < <(awk '/^SReclaimable:/ {print $2}' /proc/meminfo)
+mem_kb() {
+    awk -v k="$1" '$1 == k":" {print $2; exit}' /proc/meminfo 2>/dev/null
+}
 
-used_kb=$((total - free - buffers - cached - sreclaimable))
-used_gb=$(awk "BEGIN {printf \"%.1f\", ${used_kb}/1048576}")
-total_gb=$(awk "BEGIN {printf \"%.1f\", ${total}/1048576}")
+total="$(mem_kb MemTotal)"
+avail="$(mem_kb MemAvailable)"
 
-echo "{\"text\":\" \uf1c0 ${used_gb}/${total_gb}G\",\"tooltip\":\"Memory: ${used_gb}G / ${total_gb}G used\"}"
+if [[ ! "$total" =~ ^[0-9]+$ ]] || [[ ! "$avail" =~ ^[0-9]+$ ]] || [ "$total" -eq 0 ]; then
+    printf '{"text":" \uf1c0 ?","tooltip":"Memory: unreadable"}'
+    exit 0
+fi
+
+used_gb="$(awk -v u="$((total - avail))" 'BEGIN {printf "%.1f", u/1048576}')"
+total_gb="$(awk -v t="$total" 'BEGIN {printf "%.1f", t/1048576}')"
+
+printf '{"text":" \uf1c0 %s/%sG","tooltip":"Memory: %sG / %sG used"}' \
+    "$used_gb" "$total_gb" "$used_gb" "$total_gb"

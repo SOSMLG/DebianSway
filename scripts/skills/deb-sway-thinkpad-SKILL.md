@@ -41,17 +41,22 @@ diagnosing issues on this system:
     `~/.config/sway/config` (with `colors.conf` included for theme palette).
     Reload with `$mod+Shift+C`; sway reads this file live, there is no daemon.
   - Status bar is **Waybar** (`~/.config/waybar/config` + `style.css`, themed).
-  - Launcher/menus are **wofi** (`debsway menu` palette, `debsway launcher`
-    for plain drun), terminal is **Alacritty** (`$term`), lockscreen
+  - Launcher/menus are **fuzzel** (`debsway menu` palette, `debsway launcher`
+    for apps, `debsway run` for plain commands), terminal is **foot**
+    (`$term`, Wayland-native, Sway-authored), lockscreen
     is **swaylock** + **swayidle**, notifications are **mako**,
     volume/brightness OSD is **swayosd-server + swayosd-client**.
+  - File manager is **Thunar** (+ `thunar-volman` automount, `gvfs-backends`
+    for MTP/phones); TUI complement is **yazi** (`$mod+Shift+t`).
+    Media is **mpv** (VLC optional fallback); docs are **zathura**.
+    GUI anchors are Thunar + Firefox — everything else TUI-first.
   - Login manager is **greetd** with **tuigreet** (`/etc/greetd/config.toml`),
     not SDDM/GDM. Logging out lands you back on the greeter, not a TTY.
   - Global hotkeys are `bindsym` lines in the sway config — there is **no**
     `gsettings`, `kglobalaccel`, or `kwriteconfig`. E.g.
-    `bindsym $mod+a exec $term -e debsway agent` (`$term` = Alacritty).
+    `bindsym $mod+a exec $term -e debsway agent` (`$term` = foot).
   - Most desktop actions go through the **`debsway`** CLI (see below):
-    `debsway menu|launcher|style|theme|bg|power|lock|agent|clip|shot|sound|
+    `debsway menu|launcher|run|style|theme|bg|power|lock|agent|clip|shot|sound|
     wire|toggle|status|bar|update|doctor|setup`.
   - Screenshots: `grim` (full) / `grim -g "$(slurp)"` (region) /
     `swappy` (annotate) / `wf-recorder` (record) — or `debsway shot …`.
@@ -73,7 +78,7 @@ diagnosing issues on this system:
   `exec debsway …`.
 - Theming: `debsway theme set <name>` renders `themes/<name>/palette.sh`
   (hex without `#`) through the `_base/tpl` templates into `~/.config/`
-  (sway, waybar, wofi, mako, swayosd, wlogout, alacritty) and
+  (sway, waybar, fuzzel, foot, mako, swayosd, wlogout) and
   soft-reloads waybar/mako/swayosd + `swaymsg reload`. Palettes:
   catppuccin-mocha-(red|blue), catppuccin-frappe, nord, dracula, tokyo-night,
   gruvbox-dark, solarized-dark.
@@ -109,5 +114,7 @@ diagnosing issues on this system:
   code — and never "fix" `doas` back to `sudo`. Detached contexts without
   the helper (`sh -c` menu commands, wlogout `layout`) must call `doas`
   directly (helpers don't survive `exec` into a fresh shell).
-- The default terminal is **Alacritty**; keep `$term` references to alacritty
-  in sway config and shell aliases consistent with that.
+- The default terminal is **foot**; keep `$term` references to foot
+  in sway config and shell aliases consistent with that. The default picker
+  is **fuzzel** (`fuzzel_pick` in `debsway/lib/common.sh` for text menus;
+  `debsway launcher` uses fuzzel's native app mode, icons included).

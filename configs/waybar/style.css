@@ -1,9 +1,10 @@
 /* Waybar — laptop-optimized (13-14" screens). RENDERED by debsway. */
 
 /* ===== GLOBAL ===== */
+/* 14" 1080p scale: px units (predictable), 12px base, pills radius 6px. */
 * {
-  font-family: "IosevkaTerm Nerd Font Propo", monospace;
-  font-size: 11pt;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 12px;
   font-weight: 700;
   color: #cdd6f4;
   padding: 0;
@@ -20,9 +21,11 @@ window#waybar {
   border-bottom: 2px solid #313244;
 }
 
-/* ===== LEFT: menu + workspaces ===== */
+/* ===== LEFT: menu + workspaces + mode + scratchpad ===== */
 #custom-menu,
-#workspaces button {
+#workspaces button,
+#mode,
+#scratchpad {
   padding: 0 6px;
   margin: 2px 1px;
 }
@@ -30,12 +33,15 @@ window#waybar {
 /* ===== LAUNCHER ===== */
 #custom-menu {
   color: #11111b;
-  background: #89b4fa;
-  font-size: 13pt;
+  background: #f38ba8;
+  font-size: 14px;
+  padding: 0 9px;
+  border-radius: 0;
 }
 
 #custom-menu:hover {
   background: #45475a;
+  color: #cdd6f4;
 }
 
 /* ===== WORKSPACES ===== */
@@ -44,6 +50,7 @@ window#waybar {
   background-color: #313244;
   min-width: 18px;
   font-weight: 900;
+  border-radius: 0;
 }
 
 #workspaces button:hover {
@@ -64,7 +71,39 @@ window#waybar {
 
 #workspaces button.urgent {
   color: #11111b;
-  background: #f38ba8;
+  background: #f9e2af;
+  font-weight: 900;
+  animation-name: blink;
+  animation-duration: 0.8s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+/* ===== SWAY MODE + SCRATCHPAD ===== */
+/* #mode only exists while in a non-default binding mode (e.g. resize). */
+#mode {
+  color: #11111b;
+  background: #fab387;
+  font-weight: 900;
+  border-radius: 0;
+}
+
+#scratchpad {
+  color: #a6adc8;
+  background-color: #313244;
+  border-radius: 0;
+}
+
+#scratchpad.empty {
+  background-color: transparent;
+}
+
+@keyframes blink {
+  to {
+    background-color: #fab387;
+    color: #11111b;
+  }
 }
 
 /* ===== CENTER: clock ===== */
@@ -76,14 +115,20 @@ window#waybar {
 }
 
 /* ===== RIGHT: system modules ===== */
+/* One calm voice: routine info in SUBTEXT, only clock/states go bright. */
 #tray,
 #network,
 #cpu,
 #custom-memory,
 #pulseaudio,
+#backlight,
 #battery {
   padding: 0 6px;
   margin: 2px 1px;
+  color: #a6adc8;
+}
+
+#battery {
   color: #cdd6f4;
 }
 
@@ -109,6 +154,7 @@ window#waybar {
 tooltip {
   background-color: #181825;
   border: 1px solid #313244;
+  border-radius: 0;
   color: #cdd6f4;
 }
 

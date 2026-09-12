@@ -1,4 +1,8 @@
 /* swayosd — on-screen-display theme. RENDERED by debsway (do not edit). */
+window {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+}
+
 .default {
   color: #@@TEXT@@;
 }
@@ -22,5 +26,6 @@
 }
 
 progress {
-  min-width: 6px;
+  min-width: 160px;
+  min-height: 14px;
 }

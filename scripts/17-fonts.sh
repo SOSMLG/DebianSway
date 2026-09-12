@@ -37,18 +37,15 @@ log_info "Updating package lists..."
 apt_update -qq
 
 log_info "Installing Noto + Font Awesome via apt..."
-if priv apt-get install -y \
+install_pkgs "APT fonts" \
     curl \
     fonts-font-awesome \
     fonts-noto-core \
     fonts-noto-unhinted \
     fonts-noto-color-emoji \
-    fonts-noto-mono; then
-    log_ok "APT fonts installed"
-else
-    log_err "APT install failed"
-    exit 1
-fi
+    fonts-noto-mono
+command -v curl >/dev/null 2>&1 || { log_err "curl is required for the Nerd Font download."; exit 1; }
+log_ok "APT fonts installed"
 
 # ---------------------------------------------------------------------------
 # 2. Nerd Fonts — JetBrainsMono + IosevkaTerm
@@ -58,7 +55,11 @@ mkdir -p "$NERD_FONT_DIR"
 
 install_nerd_font() {
     local name="$1"
-    if fc-list | grep -qi "$name"; then
+    # NOTE: string-test, not `| grep -q` — with `set -o pipefail`, grep -q
+    # quits on first match while fc-list is still writing, fc-list dies of
+    # SIGPIPE and the check spuriously reports "not installed" (re-download
+    # loop on every run).
+    if [ -n "$(fc-list 2>/dev/null | grep -i "$name")" ]; then
         log_warn "$name already installed — skipping download"
         return 0
     fi
@@ -118,7 +119,8 @@ FONTCONF="${FONTCONF_DIR}/fonts.conf"
 mkdir -p "$FONTCONF_DIR"
 
 log_info "Writing ${FONTCONF}..."
-cat > "$FONTCONF" << 'EOF'
+FONTCONF_TMP="$WORK_DIR/fonts.conf"
+cat > "$FONTCONF_TMP" << 'EOF'
 <?xml version='1.0'?>
 <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
 <fontconfig>
@@ -172,6 +174,12 @@ cat > "$FONTCONF" << 'EOF'
 
 </fontconfig>
 EOF
+# Backup-first: never silently clobber a hand-tuned fonts.conf.
+if [ -f "$FONTCONF" ] && ! cmp -s "$FONTCONF_TMP" "$FONTCONF"; then
+    cp -a "$FONTCONF" "$FONTCONF.bak.$(date +%Y%m%d_%H%M%S)"
+    log_info "  backed up existing fonts.conf → .bak.*"
+fi
+cp "$FONTCONF_TMP" "$FONTCONF"
 log_ok "fonts.conf written"
 
 # ---------------------------------------------------------------------------

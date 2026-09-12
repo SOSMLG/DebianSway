@@ -39,7 +39,7 @@ apt_update || { log_err "apt-get update failed, aborting."; exit 1; }
 install_pkgs "Sway core" \
     sway swaybg swaylock swayidle \
     waybar wlogout libwayland-dev grim slurp wl-clipboard \
-    wofi alacritty mako-notifier libnotify-bin \
+    fuzzel foot mako-notifier libnotify-bin \
     brightnessctl pavucontrol blueman xdg-desktop-portal-wlr \
     mate-polkit clipman swayimg
 
@@ -54,7 +54,41 @@ fi
 
 install_pkgs "Wayland/core libs" \
     wayland-protocols xwayland libinput-tools "$PAM_PROVIDER" \
-    xserver-xorg-core mesa-utils gvfs xdg-utils gnome-calendar htop nautilus
+    xserver-xorg-core mesa-utils gvfs gvfs-backends gvfs-fuse udisks2 \
+    xdg-utils gnome-calendar htop thunar thunar-volman \
+    thunar-archive-plugin thunar-media-tags-plugin tumbler \
+    tumbler-plugins-extra xarchiver
+
+# Thumb + archive + removable-media helpers (idempotent, tiny).
+# gvfs-backends already covers mtp:// gphoto2:// afc:// smb:// via
+# libmtp/libgphoto2/libimobiledevice/libsmbclient — no extra FUSE mounting
+# daemons needed for Thunar. Filesystem tools let udisks2 actually mount sticks.
+install_pkgs "Thunar helpers (mount + phones + net)" \
+    dosfstools exfatprogs ntfs-3g \
+    mtp-tools gphoto2 libimobiledevice-utils ifuse usbmuxd \
+    smbclient sshfs
+start_service usbmuxd 2>/dev/null || true
+
+# Migrate Nautilus -> Thunar on re-runs (keeps gvfs, drops Tracker/Nautilus).
+if is_installed nautilus || is_installed nautilus-data; then
+    log_info "Removing Nautilus (Thunar is now \$file)..."
+    priv apt-get purge -y nautilus nautilus-data 2>/dev/null || log_warn "Couldn't purge nautilus."
+    priv apt-get autoremove --purge -y 2>/dev/null || true
+fi
+# Prefer Thunar for folders (Firefox "Open Containing Folder", xdg-open, ...).
+if command -v gio >/dev/null 2>&1; then
+    run_as_user gio mime inode/directory thunar.desktop >/dev/null 2>&1 || true
+elif command -v xdg-mime >/dev/null 2>&1; then
+    run_as_user xdg-mime default thunar.desktop inode/directory >/dev/null 2>&1 || true
+fi
+# Images open in swayimg (Wayland-native, already installed above) — this also
+# overrides launchers like PhotoGIMP that claim image/* types.
+if command -v gio >/dev/null 2>&1 && is_installed swayimg; then
+    for _mt in image/png image/jpeg image/gif image/webp image/bmp image/svg+xml; do
+        run_as_user gio mime "$_mt" swayimg.desktop >/dev/null 2>&1 || true
+    done
+    unset _mt
+fi
 
 # AMD GPU multilib — Vega iGPU on the L14 G2 AMD. amdgpu is in-kernel;
 # this gives us Vulkan + media acceleration.
@@ -193,7 +227,7 @@ fi
 if ask "Set up Flatpak + Flathub?"; then
     install_pkgs "Flatpak" flatpak
     if command -v flatpak >/dev/null 2>&1; then
-        if priv flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo; then
+        if priv flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo; then
             log_ok "Flathub remote added system-wide."
         else
             log_warn "Could not add the Flathub remote (may already exist)."
@@ -207,7 +241,7 @@ fi
 CONFIGS_SRC="$SCRIPT_DIR/../configs"
 if [ -d "$CONFIGS_SRC" ]; then
     log_info "Copying configs/ into ~/.config/ ..."
-    for d in sway waybar wofi alacritty mako swayosd wlogout kanshi gammastep environment.d fastfetch; do
+    for d in sway waybar fuzzel foot mako swayosd wlogout kanshi gammastep environment.d fastfetch mpv xfce4; do
         if [ -d "$CONFIGS_SRC/$d" ]; then
             mkdir -p "$HOME/.config/$d"
             if cp -r "$CONFIGS_SRC/$d/." "$HOME/.config/$d/"; then

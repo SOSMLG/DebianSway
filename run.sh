@@ -278,6 +278,11 @@ echo -e "${BLUE}   deb-sway-thinkpad — Devuan 6 (Excalibur) + Sway${RESET}"
 echo -e "${BLUE}=========================================================${RESET}\n"
 
 # --- One apt refresh, then let the scripts skip their own ------------------
+# NOTE: run.sh never sources scripts/lib/common.sh, so it keeps a local
+# priv() instead of the shared helper (same contract: doas first, sudo fallback).
+priv() {
+    if command -v doas >/dev/null 2>&1; then doas "$@"; else sudo "$@"; fi
+}
 export DEBSWAY_SKIP_APT_UPDATE=1
 if [ "$SKIP_APT_UPDATE" -eq 0 ]; then
     echo -e "${CYAN}[*] Refreshing package lists once (scripts skip their own refreshes)...${RESET}"

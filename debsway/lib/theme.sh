@@ -4,7 +4,7 @@
 # -------------------------------------------------------
 # Mirrors Omarchy's "colors.toml compiler": one palette per
 # theme, rendered into every app that has colors (sway,
-# waybar, wofi, mako, alacritty, swayosd, wlogout).
+# waybar, fuzzel, foot, mako, swayosd, wlogout).
 # Templates live in themes/_base/tpl/ with @@TOKEN@@
 # placeholders; `debsway theme set` substitutes them from
 # the palette and soft-reloads the running session.
@@ -23,8 +23,8 @@ render_palette() {
     local sedexpr=()
     local tok var
     # Build the sed expression once: @@TOKEN@@ -> value.
-    # Hex values are stored WITHOUT '#'; templates add '#' or '0x' when the
-    # consumer wants CSS-style (waybar/wofi/mako) or alacritty-style colors.
+    # Hex values are stored WITHOUT '#'; templates add '#' or alpha where the
+    # consumer wants CSS-style (waybar/mako) or plain hex (foot/fuzzel).
     for tok in BG MANTLE CRUST SURFACE0 SURFACE1 SURFACE2 OVERLAY \
                TEXT SUBTEXT0 SUBTEXT1 ACCENT \
                RED GREEN YELLOW BLUE PURPLE PINK TEAL ORANGE \

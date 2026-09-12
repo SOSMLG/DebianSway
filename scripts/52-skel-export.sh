@@ -7,7 +7,7 @@
 # Copies a curated set of per-user config produced by this
 # toolkit into /etc/skel, so every FUTURE user account on
 # that machine (and any image built from this toolkit) starts
-# with the same defaults: fonts, sway/waybar/wofi themes,
+# with the same defaults: fonts, sway/waybar/fuzzel/foot themes,
 # app entries, fastfetch config, ButterBash.
 #
 # Existing files in /etc/skel are never clobbered unless
@@ -52,9 +52,11 @@ CANDIDATES=(
     "$SOURCE_HOME/.local/share/icons"
     "$SOURCE_HOME/.config/sway"
     "$SOURCE_HOME/.config/waybar"
-    "$SOURCE_HOME/.config/wofi"
-    "$SOURCE_HOME/.config/alacritty"
+    "$SOURCE_HOME/.config/fuzzel"
+    "$SOURCE_HOME/.config/foot"
     "$SOURCE_HOME/.config/mako"
+    "$SOURCE_HOME/.config/mpv"
+    "$SOURCE_HOME/.config/xfce4"
     "$SOURCE_HOME/.config/fastfetch"
     "$SOURCE_HOME/.config/butterbash"
     "$SOURCE_HOME/.butterbash"

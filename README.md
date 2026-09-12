@@ -82,16 +82,18 @@ the greetd login. If a niche package ever goes missing from trixie,
 |---|---|
 | Window manager | **Sway** (Wayland) via **greetd + tuigreet** login (SDDM stays installed only as a manual fallback, never auto-started) |
 | Shell layer | **swayosd** OSD, **cliphist** clipboard history, **swappy**/grim/wf-recorder capture, waybar now-playing via **playerctl**, **gammastep** night-light, **kanshi** auto display profiles |
-| Theme | **`debsway theme set`** engine (Omarchy-style): 8 one-shot palettes (Catppuccin Mocha/Red default, Mocha/Blue, Frappe, Nord, Dracula, Tokyo Night, Gruvbox, Solarized) compiled into sway/waybar/wofi/mako/swayosd/wlogout/alacritty. Catppuccin Mocha Red cursor pack + red gradient wallpaper |
-| Terminal | **Alacritty** (GPU-accelerated Wayland terminal — `set $term alacritty` in `configs/sway/config`; themed via `~/.config/alacritty/alacritty.toml`; `debsway agent` also opens here; `wofi` uses `term=alacritty`) |
-| Launcher/menu | **wofi** driving the `debsway` command palette (`$mod+d` → `debsway menu`, waybar ☰ → `debsway menu`) |
+| Theme | **`debsway theme set`** engine (Omarchy-style): 8 one-shot palettes (Catppuccin Mocha/Red default, Mocha/Blue, Frappe, Nord, Dracula, Tokyo Night, Gruvbox, Solarized) compiled into sway/waybar/fuzzel/foot/mako/swayosd/wlogout. Catppuccin Mocha Red cursor pack + red gradient wallpaper |
+| Terminal | **foot** (Wayland-native Sway-authored terminal — `set $term foot` in `configs/sway/config`; themed via `~/.config/foot/foot.ini`; `debsway agent` also opens here; `fuzzel` uses `terminal=foot -e`) |
+| Launcher/menu | **fuzzel** driving the `debsway` command palette (`$mod+d` → `debsway menu`, `$mod+Shift+d` → `fuzzel`, waybar ☰ → `debsway menu`) |
+| Files | **Thunar** (+ volman automount, `gvfs-backends` for MTP/phones) + **yazi** TUI (`$mod+Shift+t`) |
+| Media/docs | **mpv** (VLC fallback), **zathura** PDF, **swayimg** images |
 | Browser | **Firefox ESR** hardened with Betterfox-derived preferences + a locked `policies.json` |
 | Shell | **ButterBash**: saner bash (aliases, history, `eza`/`bat` where present) |
 | Input | libinput: tap-to-click on, natural scroll off (baked into `sway/config`) |
 | Battery | **TLP** + 80% charge cap via `charge_control_end_threshold` (thinkpad_acpi) |
 | Bluetooth | **Blueman** applet (A2DP), not bluedevil |
 | GPU | amdgpu + `mesa-vulkan-drivers` + `firmware-amd-graphics` |
-| Software | Flatpak/Flathub, CUPS, gufw/ufw, VLC, codecs, GIMP, Timeshift, OpenCode, KeePassXC, btop/eza/bat/zoxide/Neovim |
+| Software | Flatpak/Flathub, CUPS, gufw/ufw, mpv (VLC fallback), codecs, GIMP, Timeshift, OpenCode, pass/KeePassXC, btop/eza/bat/zoxide/yazi/Neovim |
 
 ### Scripts — phases in run order (`./run.sh --list` is authoritative)
 
@@ -99,7 +101,7 @@ the greetd login. If a niche package ever goes missing from trixie,
 |---|---|---|
 | core | `10-sway-core.sh` — Sway stack + greetd login + Flatpak + configs | Y |
 | core | `11-backports.sh` — backports + apt pinning | Y |
-| core | `12-user-groups.sh` — `input`/`video`/`render` groups | Y |
+| core | `12-user-groups.sh` — `input`/`video`/`render`/`plugdev` groups | Y |
 | core | `13-hardware.sh` — WiFi/BT/AMD firmware, microcode, fwupd | Y |
 | core | `14-bluetooth.sh` — Bluetooth stack + Blueman | Y |
 | core | `15-codecs.sh` — audio/video codecs + DVD | Y |
@@ -107,17 +109,17 @@ the greetd login. If a niche package ever goes missing from trixie,
 | core | `17-fonts.sh` — Noto, Font Awesome, JetBrainsMono Nerd Font | Y |
 | core | `18-butterbash.sh` — ButterBash | Y |
 | core | `19-fastfetch.sh` — fastfetch + config presets | Y |
-| desktop | `20-shell-upgrade.sh` — OSD, clipboard, screenshots, media keys, night-light, Alacritty | Y |
+| desktop | `20-shell-upgrade.sh` — OSD, clipboard, screenshots, media keys, night-light, foot + fuzzel | Y |
 | desktop | `21-debsway-cli.sh` — DebSway CLI + theme engine | Y |
 | desktop | `22-theme-default.sh` — Catppuccin Mocha/Red + cursor | Y |
 | apps | `30-desktop-essentials.sh` — Flatpak, CUPS, firewall, gparted | Y |
 | apps | `31-timeshift.sh` — Timeshift snapshots | Y |
 | apps | `32-time-sync.sh` — chrony NTP time sync | N |
-| apps | `33-useful-apps.sh` — VLC, TLP + battery cap, archives | Y |
+| apps | `33-useful-apps.sh` — mpv (+ VLC fallback), zathura, TLP + battery cap, archives | Y |
 | apps | `34-opencode-agent.sh` — OpenCode AI agent + `$mod+a` hotkey | Y |
 | optional | `40-vscodium.sh` — VSCodium | N |
 | optional | `41-vscodium-dev.sh` — VSCodium dev config (C++/Python) | N |
-| optional | `42-dev-extras.sh` — btop/eza/bat/zoxide/Neovim/KeePassXC | N |
+| optional | `42-dev-extras.sh` — TUI essentials (btop/eza/bat/zoxide/yazi) + Neovim + pass/KeePassXC | Y |
 | optional | `43-photogimp.sh` — GIMP + PhotoGIMP layout | N |
 | optional | `44-gaming.sh` — Heroic/Steam/Wine | N |
 | optional | `45-chat.sh` — Vesktop (Discord) / Telegram | N |
@@ -163,12 +165,12 @@ Always toggleable: edit `run.sh`'s list and answer N, or remove the file later.
 
 | Keys | Action |
 |---|---|
-| `$mod+Return` | Terminal (Alacritty via `$term` — `set $term alacritty`) |
-| `$mod+d` / `$mod+Shift+d` | DebSway command palette (`debsway menu`, `$menu`) / run dialog (`wofi --show run`) |
-| `$mod+a` | Coding agent (`$term -e debsway agent` → Alacritty + OpenCode) |
-| `$mod+t` / `$mod+z` | File manager (`nautilus`) / browser (`firefox`) |
+| `$mod+Return` | Terminal (foot via `$term` — `set $term foot`) |
+| `$mod+d` / `$mod+Shift+d` | DebSway command palette (`debsway menu`, `$menu`) / run dialog (`fuzzel`) |
+| `$mod+a` | Coding agent (`$term -e debsway agent` → foot + OpenCode) |
+| `$mod+t` / `$mod+Shift+t` / `$mod+z` | File manager (`thunar`) / TUI files (`foot -e yazi`) / browser (`firefox`) |
 | `$mod+Shift+q` | Kill focused window |
-| `$mod+v` | Clipboard history (`debsway clip pick` → cliphist + wofi) |
+| `$mod+v` | Clipboard history (`debsway clip pick` → cliphist + fuzzel) |
 | `$mod+slash` | Keybinding cheat-sheet (`debsway keys`, parsed live from sway config) |
 | `Print` / `$mod+Print` / `$mod+Ctrl+Print` | Screenshot full / area / screen-record toggle (`debsway shot …` — saves to `~/Pictures/screenshots`, copies to clipboard, notifies) |
 | `$mod+Escape` / `$mod+Ctrl+p` | Power menu (`debsway power` → wlogout grid) |
@@ -208,7 +210,7 @@ Every desktop-surface action lives behind one command (installed by
 binds resolve regardless of PATH). It mirrors Omarchy's `omarchy <group> <action>` UX:
 
 ```
-debsway menu | launcher | style | theme list|current|set <name>
+debsway menu | launcher | run | style | theme list|current|set <name>
 debsway bg panel|set|cycle|random|reset | power | lock
 debsway agent | clip pick|watch|clear | shot full|area|annotate|record|menu
 debsway sound panel|up|down|mute | wire panel|status
@@ -218,8 +220,8 @@ debsway update [--apply] | doctor | setup | help
 ```
 
 - **Themes** are `themes/<name>/palette.sh` files (hex without `#`); the engine
-  renders `themes/_base/tpl/*` across sway/waybar/wofi/mako/swayosd/
-  wlogout/alacritty and soft-reloads the session. Add a theme by copying
+  renders `themes/_base/tpl/*` across sway/waybar/fuzzel/foot/mako/swayosd/
+  wlogout and soft-reloads the session. Add a theme by copying
   `palette.sh` + renaming `C_*` values — no other file changes.
 - **Wallpapers** persist: `debsway bg set <file>` writes the
   `~/.local/state/debsway/bg` marker **and** rewrites the `output * bg` line in
@@ -263,26 +265,16 @@ tarball before major operations.
   so the login gets a D-Bus session bus for mako/portals/notify.
 * **`debsway menu` does nothing?** Update (`git pull` + re-run
   `scripts/21-debsway-cli.sh`), then `$mod+Shift+c` to reload binds. Test with
-  `debsway help` and `debsway menu` from Alacritty. This round fixed four
-  silent-failure causes: (1) `configs/wofi/config` contained invalid keys
-  (`keys=`, `fuzzy=`, `case=`, `show=`, `matching=enabled`) — now only valid
-  wofi options (`matching=fuzzy`, `insensitive=true`, `term=alacritty`);
-  (2) `wofi_pick`/`launcher` hid wofi's stderr, so a broken config/display
-  looked like "nothing happens" — errors are now visible; (3) menu entries
-  re-exec through the absolute `debsway` path instead of a bare `debsway`,
-  so picks work even when sway/waybar launch with a minimal PATH;
-  (4) from a terminal the pick now runs foreground so subcommand output
-  stays visible (from a keybind it still detaches). The older `$2`-under-
-  `set -u` crash on a bare `debsway menu` stays fixed (`"${2:-}"`).
+  `debsway help` and `debsway menu` from foot. Picker errors are visible
+  (fuzzel stderr is not hidden); menu entries re-exec through the absolute
+  `debsway` path instead of a bare `debsway`, so picks work even when
+  sway/waybar launch with a minimal PATH; from a terminal the pick runs
+  foreground so subcommand output stays visible (from a keybind it detaches).
 * **`debsway wire panel` (Wi-Fi) shows nothing?** Fixed: it used
   `nmcli --json`, which this NetworkManager rejects
   (`Option '--json' is unknown`). It now parses portable
   `nmcli -t -f IN-USE,SIGNAL,SSID dev wifi list` output — no JSON, no python
   dependency.
-* **`debsway calc` eats your expression?** Fixed: wofi needs
-  `--exec-search` to return free-form input on Enter, otherwise the typed
-  `1+1` never reaches `qalc`. The result is now printed, copied
-  (`wl-copy`), and notified.
 * **`debsway keys` shows `$left` / `$term`?** Fixed: the cheat-sheet now
   expands `set $var` from your sway config, so `$mod+h` (not `$mod+$left`)
   and the real `$term`/`$menu` commands show. `debsway keys --list` prints
@@ -293,7 +285,7 @@ tarball before major operations.
   sway autostart launches it, `debsway theme set` restarts it). If the server
   is down, `debsway sound up|down|mute` automatically falls back to `pactl`,
   so volume still moves without the popup. Media keys (`playerctl`) only do
-  something while a player (VLC/Firefox/…) is actually playing.
+  something while a player (mpv/Firefox/…) is actually playing.
 * **Power menu (`debsway power` / wlogout) exits instantly with
   `Invalid JSON Data`?** wlogout 1.2.2's parser only accepts top-level JSON
   **objects** — a pretty-printed `[{…}, {…}]` array is rejected even though it
@@ -313,7 +305,7 @@ tarball before major operations.
   `debsway theme set <name>` re-renders into `~/.config/` and reloads sway —
   hand-edits in `~/.config` survive until the next theme render (marker:
   `~/.local/state/debsway/theme`). To exempt a file you customized (e.g.
-  wofi's `style.css`) from re-rendering, add a `DEBSWAY_KEEP` comment line
+  fuzzel's `fuzzel.ini`) from re-rendering, add a `DEBSWAY_KEEP` comment line
   anywhere in it; remove the marker to re-join the theme.
 * **Backports**: to pull a newer X from backports, `apt install
   -t excalibur-backports <pkg>` on Devuan (`-t trixie-backports` on Debian) —
@@ -338,8 +330,8 @@ scripts/
   ??-*.sh        one step each, numbered = run order; runnable standalone
   verifySetup.sh end-state audit (run.sh --verify)
   skills/deb-sway-thinkpad-SKILL.md   system context for AI agents
-configs/         rendered default configs (sway/waybar/wofi/alacritty/mako,
-                 swayosd/wlogout/kanshi/gammastep, wallpapers/) — baked
+configs/         rendered default configs (sway/waybar/fuzzel/foot/mako,
+                 swayosd/wlogout/kanshi/gammastep/mpv/xfce4, wallpapers/) — baked
                  into each user's ~/.config
 debsway/         the `debsway` CLI: bin/ (router), lib/ (actions, theme
                  engine, doctor, setup), themes/<palette> + _base/tpl/

@@ -109,5 +109,5 @@ else
 fi
 
 echo -e "${GREEN}Bluetooth setup complete.${NC}"
-log_warn "If a headset paired but shows no audio device, a logout/login (or 'systemctl --user"
-log_warn "restart pipewire pipewire-pulse wireplumber') resolves it in almost every case."
+log_warn "If a headset paired but shows no audio device, log out and back in —"
+log_warn "that restarts the user PipeWire session on OpenRC (there is no systemctl --user here)."

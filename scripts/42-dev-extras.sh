@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# DEBSWAY_DESC: (optional) btop, eza, bat, zoxide, Neovim, KeePassXC
-# DEBSWAY_DEFAULT: N
+# DEBSWAY_DESC: TUI essentials (btop/eza/bat/zoxide/yazi) + Neovim + pass/KeePassXC
+# DEBSWAY_DEFAULT: Y
 # =======================================================
-# Dev Tools Extras — nicer terminal + editor tooling
+# Dev Tools Extras — TUI-first tooling for the nerd-terminal workflow
 # -------------------------------------------------------
 # btop (system monitor), eza (modern ls), bat (pimped cat),
-# zoxide (smart cd), Neovim + lazy.nvim (editor), KeePassXC
-# (password manager).
-# All optional. Idempotent — skips anything already installed.
+# zoxide (smart cd), yazi (terminal file manager, pairs with Thunar),
+# Neovim + lazy.nvim (editor — minimal bootstrap to learn on),
+# pass (+ pass-otp, GPG-native) and/or KeePassXC (GUI fallback).
+# Idempotent — skips anything already installed.
 # =======================================================
 set -uo pipefail
 
@@ -22,16 +23,18 @@ log_info "Refreshing package lists..."
 apt_update || { log_err "apt-get update failed, aborting."; exit 1; }
 
 # ---------------------------------------------------------------------------
-# 1. Terminal tooling — btop, eza, bat, zoxide (apt or cargo fallback)
+# 1. Terminal tooling — btop, eza, bat, zoxide, yazi (TUI essentials)
 # ---------------------------------------------------------------------------
-if ask "Install terminal tooling (btop, eza, bat, zoxide)?" "N"; then
-    install_pkgs "Terminal tooling" btop eza bat zoxide
+if ask "Install terminal tooling (btop, eza, bat, zoxide, yazi)?"; then
+    install_pkgs "Terminal tooling" btop eza bat zoxide yazi
 fi
 
 # ---------------------------------------------------------------------------
-# 2. Neovim + lazy.nvim bootstrap (minimal, plugin-managed)
+# 2. Neovim + lazy.nvim bootstrap (minimal, learn-friendly)
 # ---------------------------------------------------------------------------
-if ask "Install Neovim + lazy.nvim plugin manager?" "N"; then
+# Bare plugin manager + commented examples (catppuccin/treesitter/lsp) so
+# learning means uncommenting, not deleting a 500-line distro.
+if ask "Install Neovim + lazy.nvim plugin manager?"; then
     install_pkgs "Neovim" neovim
 
     if is_installed neovim && command -v nvim >/dev/null 2>&1; then
@@ -67,9 +70,13 @@ EOF
 fi
 
 # ---------------------------------------------------------------------------
-# 3. KeePassXC — password manager (native, works great on Wayland)
+# 3. Password managers — pass (TUI/GPG-native) and/or KeePassXC (GUI)
 # ---------------------------------------------------------------------------
-if ask "Install KeePassXC (password manager)?" "N"; then
+if ask "Install pass + pass-otp (terminal password manager)?" "N"; then
+    install_pkgs "pass" pass pass-otp
+fi
+
+if ask "Install KeePassXC (GUI password manager)?" "N"; then
     install_pkgs "KeePassXC" keepassxc
 fi
 

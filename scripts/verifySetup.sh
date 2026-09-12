@@ -79,7 +79,7 @@ pkg_glob() {
     local name="$1" level="${2:-critical}"
     local state detail
     if dpkg-query -W -f='${Status}' "$name" 2>/dev/null | grep -q "install ok installed" \
-        || dpkg-query -l "${name}*" 2>/dev/null | grep -q '^ii'; then
+    || [ -n "$(dpkg-query -l "${name}*" 2>/dev/null | grep '^ii')" ]; then
         state="ok"; detail="installed"
     elif [ "$level" = "optional" ]; then
         state="warn"; detail="not installed (optional — OK to skip)"
@@ -118,7 +118,7 @@ log_head "Setup verification"
 echo -e "  (user: ${CYAN}${ACTUAL_USER}${NC})\n"
 
 # --- 1. Group membership ------------------------------------------------
-for g in input video render lpadmin; do
+for g in input video render plugdev lpadmin; do
     if id -nG "$ACTUAL_USER" 2>/dev/null | tr ' ' '\n' | grep -qx "$g"; then
         report "group: $g" ok
     else
@@ -132,8 +132,8 @@ pkg swaybg
 pkg swaylock
 pkg swayidle
 pkg waybar
-pkg wofi
-pkg alacritty
+pkg fuzzel
+pkg foot
 pkg mako-notifier
 pkg libnotify-bin
 pkg swayosd
@@ -155,7 +155,21 @@ pkg greetd
 pkg tuigreet
 pkg wlgreet optional
 pkg blueman
-pkg vlc
+pkg thunar
+pkg thunar-volman
+pkg tumbler
+pkg gvfs-backends
+pkg udisks2
+pkg mpv
+pkg vlc optional
+pkg zathura
+pkg yazi
+pkg pass optional
+pkg btop
+pkg eza
+pkg bat
+pkg zoxide
+pkg neovim
 pkg tlp
 pkg firmware-iwlwifi optional
 pkg ffmpeg
@@ -178,14 +192,13 @@ pkg opencode optional
 pkg heroic optional
 pkg steam optional
 pkg gimp optional
-pkg btop optional
-pkg eza optional
-pkg bat optional
-pkg neovim optional
 pkg keepassxc optional
 
 # --- 4. Fonts -------------------------------------------------------------
-if fc-list 2>/dev/null | grep -qi "JetBrainsMono Nerd Font"; then
+# NOTE: string-test, not `| grep -q` — with `set -o pipefail`, grep -q
+# exits on first match while fc-list (~3000 lines) is still writing, so
+# fc-list dies of SIGPIPE (141) and the pipeline spuriously FAILs.
+if [ -n "$(fc-list 2>/dev/null | grep -i "JetBrainsMono Nerd Font")" ]; then
     report "JetBrainsMono Nerd Font" ok
 else
     report "JetBrainsMono Nerd Font" fail "not found — re-run 17-fonts.sh"
@@ -217,7 +230,9 @@ else
 fi
 cfg "sway/config" "$HOME/.config/sway/config"
 cfg "waybar/config" "$HOME/.config/waybar/config"
-cfg "alacritty/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
+cfg "fuzzel/fuzzel.ini" "$HOME/.config/fuzzel/fuzzel.ini"
+cfg "foot/foot.ini" "$HOME/.config/foot/foot.ini"
+cfg "mpv/mpv.conf" "$HOME/.config/mpv/mpv.conf" optional
 cfg "swayosd/style.css" "$HOME/.config/swayosd/style.css"
 cfg "wlogout/style.css" "$HOME/.config/wlogout/style.css"
 cfg "wlogout/layout" "$HOME/.config/wlogout/layout"

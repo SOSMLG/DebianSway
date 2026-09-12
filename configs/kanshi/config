@@ -6,7 +6,9 @@
 # On profile match the output layout/scale/mode is reconfigured live.
 
 profile laptop {
-  output eDP-1 enable adaptive_sync off
+  # ThinkPad L14 Gen 2 AMD panel: explicit mode/position/scale so a
+  # profile re-apply can never reset the scale behind sway's back.
+  output eDP-1 enable mode 1920x1080@60Hz position 0,0 scale 1 adaptive_sync off
 }
 
 # Example dock profile (adjust to your actual external outputs/positions):

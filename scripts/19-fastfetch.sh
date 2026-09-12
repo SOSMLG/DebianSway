@@ -52,6 +52,10 @@ mkdir -p "$FF_DIR"
 
 LOCAL_CFG="$SCRIPT_DIR/../configs/fastfetch/config.jsonc"
 if [ -f "$LOCAL_CFG" ]; then
+    if [ -f "$FF_DIR/config.jsonc" ] && ! cmp -s "$LOCAL_CFG" "$FF_DIR/config.jsonc"; then
+        cp -a "$FF_DIR/config.jsonc" "$FF_DIR/config.jsonc.bak.$(date +%Y%m%d_%H%M%S)"
+        log_info "  backed up existing config.jsonc → .bak.*"
+    fi
     if cp "$LOCAL_CFG" "$FF_DIR/config.jsonc"; then
         log_ok "Default config deployed to $FF_DIR/config.jsonc"
     else
@@ -65,6 +69,9 @@ fi
 # 3. Optional: pull extra presets from butterscripts
 # ---------------------------------------------------------------------------
 if ask "Also pull extra presets (minimal/fancy/neon/debian-red/justaguy/server)?"; then
+    if ! command -v wget >/dev/null 2>&1; then
+        install_pkgs "wget" wget
+    fi
     BASE_URL="https://codeberg.org/justaguylinux/butterscripts/raw/branch/main/fastfetch"
 
     for f in minimal.jsonc fancy.jsonc neon.jsonc debian-red.jsonc justaguy.jsonc server.jsonc; do

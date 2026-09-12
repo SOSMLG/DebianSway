@@ -8,16 +8,48 @@ _DEBSWAY_LIB_ACTIONS_LOADED=1
 # --- menu / launcher ---------------------------------------------------------
 
 cmd_launcher() {
-    if ! command -v wofi >/dev/null 2>&1; then
-        d_err "wofi is not installed (run scripts/10-sway-core.sh)."
-        return 1
+    # Native fuzzel app mode: lists XDG applications itself, with icons from
+    # the icon theme, correct Exec handling (field codes, D-Bus activation)
+    # and Terminal=true apps opened via `terminal=` in fuzzel.ini (foot).
+    # (An earlier revision hand-fed .desktop Names through --dmenu with
+    # Rofi-protocol icon markup, but fuzzel 1.12 truncates input lines at
+    # the NUL byte before column-splitting — `column.c: only 1 column(s)` —
+    # so --accept-nth could never see column 2 and every pick died silent.
+    # Native mode deletes all of that machinery.)
+    if command -v fuzzel >/dev/null 2>&1; then
+        fuzzel --prompt 'Apps: '
+        return $?
     fi
-    wofi --show drun --insensitive
+    if command -v wofi >/dev/null 2>&1; then
+        d_warn "fuzzel not installed, falling back to wofi (run scripts/20-shell-upgrade.sh)."
+        wofi --show drun --insensitive
+        return $?
+    fi
+    d_err "No launcher installed (need fuzzel — run scripts/20-shell-upgrade.sh)."
+    return 1
+}
+
+# cmd_run — plain command runner (ex-`wofi --show run`).
+cmd_run() {
+    if command -v fuzzel >/dev/null 2>&1; then
+        local cmd
+        cmd="$(printf '' | fuzzel --dmenu --prompt 'Run: ' --lines 1)" || return 1
+        [ -z "$cmd" ] && return 0
+        setsid --fork sh -c "$cmd" >/dev/null 2>&1 &
+        disown 2>/dev/null || true
+        return 0
+    fi
+    if command -v wofi >/dev/null 2>&1; then
+        wofi --show run
+        return $?
+    fi
+    d_err "No runner installed (need fuzzel)."
+    return 1
 }
 
 # --- keybinding cheat-sheet ----------------------------------------------------
 # Parsed live from sway/config, so it can never go stale the way a
-# hand-written list does. `debsway keys` opens the wofi picker,
+# hand-written list does. `debsway keys` opens the fuzzel picker,
 # `debsway keys --list` prints plain text (terminal / grep / README gen).
 
 _keys_config() {
@@ -79,12 +111,12 @@ _keys_table() {  # prints "KEYSPEC<TAB>command" lines
 cmd_keys() {
     local cfg
     cfg="$(_keys_config)" || { d_err "No sway config found (expected $DS_CONFIG/sway/config)."; return 1; }
-    if [ "${1:-}" = "--list" ] || ! command -v wofi >/dev/null 2>&1; then
+    if [ "${1:-}" = "--list" ] || { ! command -v fuzzel >/dev/null 2>&1 && ! command -v wofi >/dev/null 2>&1; }; then
         _keys_table "$cfg"
         return 0
     fi
     local sel
-    sel="$(_keys_table "$cfg" | awk -F'\t' '{printf "%-28s  %s\n", $1, $2}' | wofi_pick "Keys (Super = \$mod)")" || return 1
+    sel="$(_keys_table "$cfg" | awk -F'\t' '{printf "%-28s  %s\n", $1, $2}' | fuzzel_pick "Keys (Super = \$mod)")" || return 1
     [ -z "$sel" ] && return 0
     # Copy the keyspec so it can be pasted into chat/notes.
     command -v wl-copy >/dev/null 2>&1 && printf '%s' "${sel%%  *}" | wl-copy 2>/dev/null || true
@@ -105,7 +137,7 @@ cmd_menu() {
         labels+=($'\uf011  Shutdown');                    cmds+=("command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ] && systemctl poweroff || { command -v loginctl >/dev/null 2>&1 && loginctl poweroff || doas -n /sbin/shutdown -h now; }")
     else
         labels+=($'\uf0ae  Apps');                        cmds+=("$_ds launcher")
-        labels+=($'\uf52e  Run command');                 cmds+=("wofi --show run")
+        labels+=($'\uf52e  Run command');                 cmds+=("$_ds run")
         labels+=($'\uf108  Display settings');            cmds+=("wdisplays")
         labels+=($'\uf1fb  GTK look & feel');             cmds+=("nwg-look")
         labels+=($'\uf042  Switch theme');                cmds+=("$_ds style")
@@ -126,7 +158,7 @@ cmd_menu() {
     fi
 
     local sel
-    sel="$(printf '%s\n' "${labels[@]}" | wofi_pick "DebSway")" || return 1
+    sel="$(printf '%s\n' "${labels[@]}" | fuzzel_pick "DebSway")" || return 1
     [ -z "$sel" ] && return 0
     local i=0
     for l in "${labels[@]}"; do
@@ -163,7 +195,7 @@ cmd_menu() {
 
 cmd_style() {
     local choice
-    choice="$(printf '%s\n' "Switch theme" "Switch background" | wofi_pick "Style")" || return 1
+    choice="$(printf '%s\n' "Switch theme" "Switch background" | fuzzel_pick "Style")" || return 1
     case "$choice" in
         *theme*)        cmd_theme_menu ;;
         *background*)   cmd_bg panel ;;
@@ -184,7 +216,7 @@ cmd_theme_menu() {
         fi
     done
     local sel
-    sel="$(printf '%s\n' "${items[@]}" | wofi_pick "Theme (current: $cur1)")" || return 1
+    sel="$(printf '%s\n' "${items[@]}" | fuzzel_pick "Theme (current: $cur1)")" || return 1
     [ -z "$sel" ] && return 0
     name="${sel#*  }"
     theme_set "$name"
@@ -261,7 +293,7 @@ cmd_bg() {
     [ "${#imgs[@]}" -eq 0 ] && { d_warn "No wallpapers found in ${bg_dirs[*]}"; return 0; }
     local sel names=() f
     for f in "${imgs[@]}"; do names+=("$(basename "$f")"); done
-    sel="$(printf '%s\n' "${names[@]}" | wofi_pick "Background")" || return 1
+    sel="$(printf '%s\n' "${names[@]}" | fuzzel_pick "Background")" || return 1
     [ -z "$sel" ] && return 0
     for f in "${imgs[@]}"; do
         [ "$(basename "$f")" = "$sel" ] && { _bg_apply "$f"; return; }
@@ -288,6 +320,9 @@ _bg_apply() {
     local file="$1"
     set_marker bg "$file"
     _bg_persist "$file"
+    # Pre-render the blurred lock background now (in the background) so the
+    # next `debsway lock` is instant; cmd_lock rebuilds synchronously if needed.
+    _lock_blur_for "$file" >/dev/null 2>&1 &
     if is_under_sway; then
         swaymsg "output * bg \"$file\" fill" >/dev/null 2>&1
         d_ok "Background set: $(basename "$file") (persisted across reload)"
@@ -296,32 +331,93 @@ _bg_apply() {
     fi
 }
 
+# _lock_blur_for <image> — (re)build the blurred lock background for <image>.
+# Stock swaylock has no --blur (that's the -effects fork), so pre-render with
+# ImageMagick: halve size, blur, scale back (fast + silky), dim 25% so the
+# indicator ring pops. Cached with a .src marker; no-op when up to date.
+# Prints the blurred path on success, nothing on failure.
+_lock_blur_for() {
+    local src="$1"
+    [ -n "$src" ] && [ -f "$src" ] || return 1
+    command -v convert >/dev/null 2>&1 || return 1
+    local cache="${XDG_CACHE_HOME:-$HOME/.cache}/debsway"
+    local out="$cache/lock-blur.png" marker="$cache/lock-blur.src"
+    mkdir -p "$cache" 2>/dev/null || return 1
+    if [ -f "$out" ] && [ -f "$marker" ] && [ "$(cat "$marker" 2>/dev/null)" = "$src" ]; then
+        printf '%s' "$out"
+        return 0
+    fi
+    if convert "$src" -resize 50% -blur 0x8 -resize 200% -fill black -colorize 25% "$out" 2>/dev/null; then
+        printf '%s' "$src" > "$marker"
+        printf '%s' "$out"
+        return 0
+    fi
+    return 1
+}
+
 # --- power / lock ---------------------------------------------------------------
 
 cmd_lock() {
     local paldir
     paldir="$(theme_dir "$(current_theme)")"
     load_palette "$paldir" 2>/dev/null || true
-    local bg="${C_BG:-#11111b}" accent="${C_ACCENT:-#f38ba8}" crust="${C_CRUST:-#11111b}"
+    # Palette hex carries no '#'; strip one defensively (all flags take #RRGGBB[AA]).
+    local bg="${C_BG:-11111b}" accent="${C_ACCENT:-f38ba8}" crust="${C_CRUST:-11111b}"
+    local text="${C_TEXT:-cdd6f4}" green="${C_GREEN:-a6e3a1}" blue="${C_BLUE:-89b4fa}"
+    local red="${C_RED:-f38ba8}" yellow="${C_YELLOW:-f9e2af}" mantle="${C_MANTLE:-181825}"
+    bg="${bg###}"; accent="${accent###}"; crust="${crust###}"; text="${text###}"
+    green="${green###}"; blue="${blue###}"; red="${red###}"
+    yellow="${yellow###}"; mantle="${mantle###}"
     command -v swaylock >/dev/null 2>&1 || { d_err "swaylock not installed."; return 1; }
-    swaylock -f \
-        -c "$bg" \
+
+    # Background follows the desktop: active wallpaper marker first (so the
+    # lock matches what you were looking at), bundled wallpaper next,
+    # flat theme color as the last resort. Never an empty/black screen.
+    # swaylock colors are bare <rrggbb[aa]> (no '#', see swaylock --help).
+    local bg_args=(-c "$bg") bg_img="" lock_img=""
+    [ -f "$DS_STATE/bg" ] && bg_img="$(cat "$DS_STATE/bg" 2>/dev/null)"
+    [ -n "$bg_img" ] && [ -f "$bg_img" ] || bg_img="$DS_CONFIG/sway/wallpapers/catppuccin-mocha.png"
+    if [ -f "$bg_img" ]; then
+        # Prefer the pre-blurred render (built eagerly by `bg set`, rebuilt
+        # here only if the wallpaper changed behind our back). Sharp image
+        # if ImageMagick is missing, flat color if everything failed.
+        lock_img="$(_lock_blur_for "$bg_img")" || lock_img=""
+        if [ -n "$lock_img" ] && [ -f "$lock_img" ]; then
+            bg_args=(-i "$lock_img" -s fill)
+        else
+            bg_args=(-i "$bg_img" -s fill)
+        fi
+    fi
+
+    swaylock -f "${bg_args[@]}" \
+        --indicator-idle-visible \
+        --indicator-radius 120 \
+        --indicator-thickness 10 \
+        --font "JetBrainsMono Nerd Font" \
+        --font-size 20 \
+        --show-failed-attempts \
+        --show-keyboard-layout \
+        --indicator-caps-lock \
         --ring-color "$accent" \
-        --inside-color "$crust" \
-        --ring-clear-color "${C_GREEN:-#a6e3a1}" \
-        --inside-clear-color "$crust" \
-        --ring-ver-color "${C_BLUE:-#89b4fa}" \
-        --inside-ver-color "$crust" \
-        --ring-wrong-color "${C_RED:-#f38ba8}" \
-        --inside-wrong-color "$crust" \
-        --key-hl-color "$accent" \
-        --bs-hl-color "$crust" \
-        --line-color "$crust" \
-        --separator-color "$crust" \
-        --text-color "${C_TEXT:-#cdd6f4}" \
-        --layout-text-color "${C_TEXT:-#cdd6f4}" \
-        --indicator-radius 100 \
-        --indicator-thickness 6
+        --inside-color "${crust}E6" \
+        --line-color "$accent" \
+        --separator-color "$accent" \
+        --text-color "$text" \
+        --layout-text-color "$text" \
+        --layout-bg-color "$mantle" \
+        --layout-border-color "$accent" \
+        --key-hl-color "$text" \
+        --bs-hl-color "$yellow" \
+        --caps-lock-key-hl-color "$text" \
+        --caps-lock-bs-hl-color "$yellow" \
+        --ring-clear-color "$green" \
+        --inside-clear-color "${crust}E6" \
+        --ring-ver-color "$blue" \
+        --inside-ver-color "${crust}E6" \
+        --ring-wrong-color "$red" \
+        --inside-wrong-color "${crust}E6" \
+        --ring-caps-lock-color "$yellow" \
+        --inside-caps-lock-color "${crust}E6"
 }
 
 # --- agent ------------------------------------------------------------------------
@@ -342,10 +438,11 @@ cmd_agent() {
                     # Already inside a terminal — run directly (no nesting).
                     exec opencode "$@"
                 elif [ -z "${DISPLAY:-}" ] && [ -n "${WAYLAND_DISPLAY:-}" ]; then
-                    # No tty + Wayland: open in a new alacritty window
-                    # (Alacritty is the canonical $term; it renders
-                    # opencode's TUI correctly).
-                    if command -v alacritty >/dev/null 2>&1; then
+                    # No tty + Wayland: open in Foot (canonical $term; renders
+                    # opencode's TUI correctly — verified with foot -e).
+                    if command -v foot >/dev/null 2>&1; then
+                        exec foot -e opencode "$@"
+                    elif command -v alacritty >/dev/null 2>&1; then
                         exec alacritty -e opencode "$@"
                     else
                         exec opencode "$@"
@@ -381,7 +478,7 @@ cmd_clip() {
             ;;
         pick|*)
             local sel
-            sel="$(cliphist list 2>/dev/null | wofi_pick "Clipboard")" || return 1
+            sel="$(cliphist list 2>/dev/null | fuzzel_pick "Clipboard")" || return 1
             [ -z "$sel" ] && return 0
             printf '%s\n' "$sel" | cliphist decode | wl-copy
             ;;
@@ -438,7 +535,7 @@ cmd_shot() {
                         $'\uf030  Full screen' \
                         $'\uf0b2  Screen region' \
                         $'\uf304  Region + annotate' \
-                        $'\uf03d  Record area (toggle)' | wofi_pick "Screenshot")" || return 1
+                        $'\uf03d  Record area (toggle)' | fuzzel_pick "Screenshot")" || return 1
             case "$sel" in
                 *Full*)    cmd_shot full ;;
                 *region*)  cmd_shot area ;;
@@ -482,7 +579,7 @@ cmd_sound() {
             done
             [ "${#choices[@]}" -eq 0 ] && { d_warn "No audio sinks found."; return 1; }
             local picked i=0
-            picked="$(printf '%s\n' "${choices[@]}" | wofi_pick "Audio output")" || return 1
+            picked="$(printf '%s\n' "${choices[@]}" | fuzzel_pick "Audio output")" || return 1
             for name in "${choices[@]}"; do
                 [ "$name" = "$picked" ] && { sh -c "${cmds[$i]}"; return 0; }
                 i=$((i + 1))
@@ -514,7 +611,7 @@ cmd_wire() {
                     printf "%s %s\t%s\n", inuse, bar, $3
                 }')"
             [ -n "$rows" ] || { d_warn "No Wi-Fi networks found."; return 0; }
-            pick="$(printf '%s\n' "$rows" | wofi_pick "Wi-Fi")" || return 1
+            pick="$(printf '%s\n' "$rows" | fuzzel_pick "Wi-Fi")" || return 1
             [ -z "$pick" ] && return 0
             ssid="$(printf '%s\n' "$pick" | cut -f2)"
             notify "Connecting to" "$ssid"

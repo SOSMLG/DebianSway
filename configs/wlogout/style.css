@@ -1,7 +1,8 @@
 /* wlogout — power menu. RENDERED by debsway (do not edit). */
 window {
   font-family: "JetBrainsMono Nerd Font", monospace;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: bold;
   background-color: #1e1e2e;
   color: #cdd6f4;
 }
@@ -13,14 +14,15 @@ button {
   margin: 8px;
   padding: 0;
   min-width: 90px;
-  min-height: 90px;
+  min-height: 110px;
   color: #cdd6f4;
   background-size: 64px;
-  background-position: center 48px;
+  background-position: center 20px;
   background-repeat: no-repeat;
 }
 
-button:hover {
+button:hover,
+button:focus {
   background-color: #45475a;
   border-color: #f38ba8;
   color: #f38ba8;

@@ -5,7 +5,7 @@
 # One command for every desktop-surface action on this Sway
 # setup. Mirror of the `omarchy <group> <action>` UX:
 #
-#   debsway menu|launcher|style|theme|bg|power|lock
+#   debsway menu|launcher|run|style|theme|bg|power|lock
 #   debsway agent|clip|shot|sound|wire|toggle
 #   debsway status|bar|update|doctor|setup
 #
@@ -48,15 +48,16 @@ usage() {
     cat <<'EOF'
 debsway — unified Sway desktop CLI
 
-  launcher            open the app launcher (wofi drun)
+  launcher            open the app launcher (fuzzel)
+  run                 run a command (fuzzel dmenu)
   menu [power]        command palette (apps + commands + power)
   style               theme & background switcher menu
   theme list|current|set <name>
   bg panel|set|cycle|random|reset|apply
   power               grid power menu (wlogout)
   lock                themed lockscreen
-  agent [status]      coding agent (OpenCode)
-  clip [pick|watch|clear]      clipboard history (cliphist + wofi)
+  agent [status]      coding agent (OpenCode, in foot)
+  clip [pick|watch|clear]      clipboard history (cliphist + fuzzel)
   shot [full|area|annotate|record|menu]
   sound [panel|up|down|mute]
   wire [panel|status]
@@ -111,6 +112,7 @@ cmd_status() {
 case "${1:-}" in
     help|-h|--help)           usage ;;
     launcher)                 cmd_launcher ;;
+    run)                      cmd_run ;;
     menu)                     cmd_menu "${2:-}" ;;
     style)                    cmd_style ;;
     theme)
