@@ -30,37 +30,37 @@ vi_mode_style = { shape = "Block" }
 [colors]
 draw_bold_text_with_bright_colors = true
 [colors.primary]
-background = "0x1e1e2e"
-foreground = "0xcdd6f4"
-dim_foreground = "0xa6adc8"
-bright_foreground = "0xcdd6f4"
+background = "0x16181d"
+foreground = "0xd8d3c8"
+dim_foreground = "0x9a9aa2"
+bright_foreground = "0xd8d3c8"
 [colors.cursor]
-text = "0x1e1e2e"
-cursor = "0xf38ba8"
+text = "0x16181d"
+cursor = "0xe8a33d"
 [colors.vi_mode_cursor]
-text = "0x1e1e2e"
-cursor = "0x89b4fa"
+text = "0x16181d"
+cursor = "0x7e9db5"
 [colors.normal]
-black = "0x45475a"
-red = "0xf38ba8"
-green = "0xa6e3a1"
-yellow = "0xf9e2af"
-blue = "0x89b4fa"
-magenta = "0xf5c2e7"
-cyan = "0x94e2d5"
-white = "0xbac2de"
+black = "0x30343b"
+red = "0xc97064"
+green = "0x8fb57a"
+yellow = "0xd2992f"
+blue = "0x7e9db5"
+magenta = "0xa78bb5"
+cyan = "0x79a9a6"
+white = "0xd8d3c8"
 [colors.bright]
-black = "0x585b70"
-red = "0xf38ba8"
-green = "0xa6e3a1"
-yellow = "0xf9e2af"
-blue = "0x89b4fa"
-magenta = "0xf5c2e7"
-cyan = "0x94e2d5"
-white = "0xa6adc8"
+black = "0x9a9aa2"
+red = "0xc97064"
+green = "0x8fb57a"
+yellow = "0xd2992f"
+blue = "0x7e9db5"
+magenta = "0xa78bb5"
+cyan = "0x79a9a6"
+white = "0xd8d3c8"
 [colors.selection]
-text = "0x1e1e2e"
-background = "0x585b70"
+text = "0x16181d"
+background = "0x30343b"
 
 # Scrolling — 20k lines for dev workflows
 [scrolling]

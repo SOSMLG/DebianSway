@@ -243,7 +243,7 @@ if ask "Set up Flatpak + Flathub?"; then
 fi
 
 # ---------------------------------------------------------------------------
-# 7. Bake configs into ~/.config (catppuccinThemed, from 22-theme-default.sh)
+# 7. Bake configs into ~/.config (graphiteAmberThemed, from 22-theme-default.sh)
 # ---------------------------------------------------------------------------
 CONFIGS_SRC="$SCRIPT_DIR/../configs"
 if [ -d "$CONFIGS_SRC" ]; then

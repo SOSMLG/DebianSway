@@ -80,8 +80,8 @@ diagnosing issues on this system:
   (hex without `#`) through the `_base/tpl` templates into `~/.config/`
   (sway, waybar, fuzzel, foot, mako, swayosd, wlogout) and
   soft-reloads waybar/mako/swayosd + `swaymsg reload`. Palettes:
-  catppuccin-mocha-(red|blue), catppuccin-frappe, nord, dracula, tokyo-night,
-  gruvbox-dark, solarized-dark.
+  graphite-amber, graphite-amber-blue, graphite-amber-soft, nord, dracula,
+  tokyo-night, gruvbox-dark, solarized-dark.
 - Persistent state (active theme, background, night-light) lives in
   `~/.local/state/debsway/` — **that's the marker to check**, not configs.
 - `debsway doctor` is the one-command health check; `debsway setup` is the

@@ -6,7 +6,7 @@
   font-family: "JetBrainsMono Nerd Font", monospace;
   font-size: 12px;
   font-weight: 700;
-  color: #cdd6f4;
+  color: #d8d3c8;
   padding: 0;
   min-height: 0;
   margin: 0;
@@ -17,8 +17,8 @@
 }
 
 window#waybar {
-  background: #1e1e2e;
-  border-bottom: 2px solid #313244;
+  background: #16181d;
+  border-bottom: 2px solid #30343b;
 }
 
 /* ===== LEFT: menu + workspaces + mode + scratchpad ===== */
@@ -32,46 +32,46 @@ window#waybar {
 
 /* ===== LAUNCHER ===== */
 #custom-menu {
-  color: #11111b;
-  background: #f38ba8;
+  color: #16181d;
+  background: #e8a33d;
   font-size: 14px;
   padding: 0 9px;
   border-radius: 0;
 }
 
 #custom-menu:hover {
-  background: #45475a;
-  color: #cdd6f4;
+  background: #202329;
+  color: #d8d3c8;
 }
 
 /* ===== WORKSPACES ===== */
 #workspaces button {
-  color: #cdd6f4;
-  background-color: #313244;
+  color: #d8d3c8;
+  background-color: #30343b;
   min-width: 18px;
   font-weight: 900;
   border-radius: 0;
 }
 
 #workspaces button:hover {
-  color: #11111b;
-  background: #f5c2e7;
+  color: #16181d;
+  background: #d2992f;
 }
 
 #workspaces button.visible,
 #workspaces button.visible:hover {
-  color: #11111b;
-  background: #a6e3a1;
+  color: #16181d;
+  background: #8fb57a;
 }
 
 #workspaces button.focused {
-  color: #11111b;
-  background: #f38ba8;
+  color: #16181d;
+  background: #e8a33d;
 }
 
 #workspaces button.urgent {
-  color: #11111b;
-  background: #f9e2af;
+  color: #16181d;
+  background: #d2992f;
   font-weight: 900;
   animation-name: blink;
   animation-duration: 0.8s;
@@ -83,15 +83,15 @@ window#waybar {
 /* ===== SWAY MODE + SCRATCHPAD ===== */
 /* #mode only exists while in a non-default binding mode (e.g. resize). */
 #mode {
-  color: #11111b;
-  background: #fab387;
+  color: #16181d;
+  background: #e8a33d;
   font-weight: 900;
   border-radius: 0;
 }
 
 #scratchpad {
-  color: #a6adc8;
-  background-color: #313244;
+  color: #9a9aa2;
+  background-color: #30343b;
   border-radius: 0;
 }
 
@@ -101,8 +101,8 @@ window#waybar {
 
 @keyframes blink {
   to {
-    background-color: #fab387;
-    color: #11111b;
+    background-color: #e8a33d;
+    color: #16181d;
   }
 }
 
@@ -110,7 +110,7 @@ window#waybar {
 #clock {
   padding: 0 10px;
   margin: 2px 1px;
-  color: #a6e3a1;
+  color: #8fb57a;
   font-weight: 900;
 }
 
@@ -125,24 +125,24 @@ window#waybar {
 #battery {
   padding: 0 6px;
   margin: 2px 1px;
-  color: #a6adc8;
+  color: #9a9aa2;
 }
 
 #battery {
-  color: #cdd6f4;
+  color: #d8d3c8;
 }
 
 /* ===== SPECIAL STATES ===== */
 #pulseaudio.muted {
-  color: #f38ba8;
+  color: #c97064;
 }
 
 #battery.critical {
-  color: #f38ba8;
+  color: #c97064;
 }
 
 #battery.warning {
-  color: #fab387;
+  color: #e8a33d;
 }
 
 /* ===== TRAY ===== */
@@ -152,12 +152,12 @@ window#waybar {
 
 /* ===== TOOLTIP ===== */
 tooltip {
-  background-color: #181825;
-  border: 1px solid #313244;
+  background-color: #202329;
+  border: 1px solid #30343b;
   border-radius: 0;
-  color: #cdd6f4;
+  color: #d8d3c8;
 }
 
 tooltip label {
-  color: #cdd6f4;
+  color: #d8d3c8;
 }

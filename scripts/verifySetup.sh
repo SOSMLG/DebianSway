@@ -4,7 +4,7 @@
 # -------------------------------------------------------
 # One-pass check of the toolkit's expected end state:
 # group membership, key packages, fonts, Firefox user.js,
-# catppuccin config markers, and enabled services.
+# Graphite Amber config markers, and enabled services.
 # Designed to be run from run.sh --verify after a run, or
 # standalone at any time.
 #
@@ -264,11 +264,11 @@ cfg "kanshi/config" "$HOME/.config/kanshi/config"
 cfg "gammastep/config.ini" "$HOME/.config/gammastep/config.ini"
 cfg "waybar/style.css" "$HOME/.config/waybar/style.css"
 
-# --- 7. Catppuccin wallpaper -------------------------------------------------
-if [ -f "$HOME/.config/sway/wallpapers/catppuccin-mocha.png" ]; then
-    report "Catppuccin wallpaper" ok
+# --- 7. Graphite Amber wallpaper ----------------------------------------------
+if [ -f "$HOME/.config/sway/wallpapers/graphite-amber.png" ]; then
+    report "Graphite Amber wallpaper" ok
 else
-    report "Catppuccin wallpaper" warn "wallpaper missing — re-run 22-theme-default.sh"
+    report "Graphite Amber wallpaper" warn "wallpaper missing - re-run 22-theme-default.sh"
 fi
 
 # --- 8. Services -----------------------------------------------------------

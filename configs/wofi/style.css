@@ -1,10 +1,10 @@
 /* wofi — RENDERED by the debsway theme engine. Do not edit; use `debsway theme`.
    Square corners are intentional (flat DebSway look). */
 window {
-  background-color: #1e1e2e;
-  border: 2px solid #313244;
+  background-color: #16181d;
+  border: 2px solid #30343b;
   border-radius: 0;
-  color: #cdd6f4;
+  color: #d8d3c8;
   font-family: "JetBrainsMono Nerd Font", monospace;
   font-size: 14px;
 }
@@ -14,16 +14,16 @@ window {
 }
 
 #input {
-  background-color: #181825;
-  border: 1px solid #313244;
+  background-color: #202329;
+  border: 1px solid #30343b;
   border-radius: 0;
-  color: #cdd6f4;
+  color: #d8d3c8;
   padding: 6px 10px;
   margin-bottom: 8px;
 }
 
 #input:focus {
-  border-color: #f38ba8;
+  border-color: #e8a33d;
 }
 
 #entry {
@@ -32,16 +32,16 @@ window {
 }
 
 #entry:selected {
-  background-color: #45475a;
-  color: #cdd6f4;
+  background-color: #202329;
+  color: #d8d3c8;
 }
 
 #text {
-  color: #cdd6f4;
+  color: #d8d3c8;
 }
 
 #text:selected {
-  color: #f5c2e7;
+  color: #d2992f;
 }
 
 #img {

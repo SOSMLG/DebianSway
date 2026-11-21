@@ -1,8 +1,8 @@
 # mako notification daemon — RENDERED by the debsway theme engine. Do not edit.
 font=JetBrainsMono Nerd Font 12
-background-color=#1e1e2e
-text-color=#cdd6f4
-border-color=#f38ba8
+background-color=#16181d
+text-color=#d8d3c8
+border-color=#e8a33d
 border-size=2
 border-radius=8
 padding=12,14
@@ -18,15 +18,15 @@ on-button-left=invoke-default-action
 on-button-right=dismiss-all
 
 [urgency=low]
-background-color=#181825
-text-color=#a6adc8
-border-color=#585b70
+background-color=#202329
+text-color=#9a9aa2
+border-color=#30343b
 default-timeout=4000
 
 [urgency=critical]
-background-color=#f38ba8
-text-color=#11111b
-border-color=#f9e2af
+background-color=#e8a33d
+text-color=#16181d
+border-color=#d2992f
 default-timeout=0
 
 # Do-not-disturb toggle target: `debsway toggle dnd` switches to this mode.

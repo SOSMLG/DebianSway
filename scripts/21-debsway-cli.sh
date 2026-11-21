@@ -17,7 +17,7 @@
 #   /usr/local/bin/debsway            system symlink (so sway's `exec debsway …`
 #                                     binds resolve regardless of login PATH)
 #
-# Then applies the default theme (catppuccin-mocha-red) so the live session
+# Then applies the default theme (graphite-amber) so the live session
 # picks up the palette, and soft-reloads sway/waybar/mako/swayosd.
 #
 # Idempotent: safe to re-run; re-applies the tree + default theme each time.
@@ -70,8 +70,8 @@ fi
 # ---------------------------------------------------------------------------
 # 3. Render + apply the default theme (renders templates into ~/.config)
 # ---------------------------------------------------------------------------
-log_info "Applying default theme (catppuccin-mocha-red)..."
-if DEBSWAY_HOME="$INSTALL_DIR" "$INSTALL_DIR/bin/debsway" theme set catppuccin-mocha-red; then
+log_info "Applying default theme (graphite-amber)..."
+if DEBSWAY_HOME="$INSTALL_DIR" "$INSTALL_DIR/bin/debsway" theme set graphite-amber; then
     log_ok "Theme applied and persisted (marker: $(cat "$STATE_DIR/theme" 2>/dev/null))."
 else
     log_warn "Theme apply reported issues — check ~/.local/state/debsway/ and re-run."

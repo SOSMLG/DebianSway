@@ -4,25 +4,25 @@ window {
 }
 
 .default {
-  color: #cdd6f4;
+  color: #d8d3c8;
 }
 
 .background {
   border-radius: 12px;
-  border: 2px solid #313244;
-  background-color: #181825;
+  border: 2px solid #30343b;
+  background-color: #202329;
 }
 
 .trough {
-  background-color: #313244;
+  background-color: #30343b;
 }
 
 .highlight {
-  background-color: #f38ba8;
+  background-color: #e8a33d;
 }
 
 .volume popup .default {
-  color: #cdd6f4;
+  color: #d8d3c8;
 }
 
 progress {

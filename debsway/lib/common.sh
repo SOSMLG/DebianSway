@@ -47,7 +47,7 @@ current_theme() {
     elif [ -f "$DS_STATE/theme" ]; then
         cat "$DS_STATE/theme"
     else
-        printf '%s\n' "catppuccin-mocha-red"
+        printf '%s\n' "graphite-amber"
     fi
 }
 

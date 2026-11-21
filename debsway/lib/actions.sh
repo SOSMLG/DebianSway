@@ -263,7 +263,7 @@ cmd_bg() {
 
     if [ "$action" = "reset" ]; then
         rm -f "$DS_STATE/bg"
-        _bg_apply "$DS_CONFIG/sway/wallpapers/catppuccin-mocha.png"
+        _bg_apply "$DS_CONFIG/sway/wallpapers/graphite-amber.png"
         return
     fi
 
@@ -362,9 +362,9 @@ cmd_lock() {
     paldir="$(theme_dir "$(current_theme)")"
     load_palette "$paldir" 2>/dev/null || true
     # Palette hex carries no '#'; strip one defensively (all flags take #RRGGBB[AA]).
-    local bg="${C_BG:-11111b}" accent="${C_ACCENT:-f38ba8}" crust="${C_CRUST:-11111b}"
-    local text="${C_TEXT:-cdd6f4}" green="${C_GREEN:-a6e3a1}" blue="${C_BLUE:-89b4fa}"
-    local red="${C_RED:-f38ba8}" yellow="${C_YELLOW:-f9e2af}" mantle="${C_MANTLE:-181825}"
+    local bg="${C_BG:-16181d}" accent="${C_ACCENT:-e8a33d}" crust="${C_CRUST:-16181d}"
+    local text="${C_TEXT:-d8d3c8}" green="${C_GREEN:-8fb57a}" blue="${C_BLUE:-7e9db5}"
+    local red="${C_RED:-c97064}" yellow="${C_YELLOW:-d2992f}" mantle="${C_MANTLE:-202329}"
     bg="${bg###}"; accent="${accent###}"; crust="${crust###}"; text="${text###}"
     green="${green###}"; blue="${blue###}"; red="${red###}"
     yellow="${yellow###}"; mantle="${mantle###}"
@@ -376,7 +376,7 @@ cmd_lock() {
     # swaylock colors are bare <rrggbb[aa]> (no '#', see swaylock --help).
     local bg_args=(-c "$bg") bg_img="" lock_img=""
     [ -f "$DS_STATE/bg" ] && bg_img="$(cat "$DS_STATE/bg" 2>/dev/null)"
-    [ -n "$bg_img" ] && [ -f "$bg_img" ] || bg_img="$DS_CONFIG/sway/wallpapers/catppuccin-mocha.png"
+    [ -n "$bg_img" ] && [ -f "$bg_img" ] || bg_img="$DS_CONFIG/sway/wallpapers/graphite-amber.png"
     if [ -f "$bg_img" ]; then
         # Prefer the pre-blurred render (built eagerly by `bg set`, rebuilt
         # here only if the wallpaper changed behind our back). Sharp image

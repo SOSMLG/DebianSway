@@ -1,14 +1,14 @@
 # deb-sway-thinkpad
 
-![Devuan 6](https://img.shields.io/badge/Devuan-6-9B183E?logo=devuan&logoColor=white)
-![Debian 13](https://img.shields.io/badge/Debian-13-A81D33?logo=debian&logoColor=white)
-![Sway](https://img.shields.io/badge/Sway-Wayland-6B8E23?logo=sway&logoColor=white)
-![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Devuan 6](https://img.shields.io/badge/Devuan-6-202329?logo=devuan&logoColor=E8A33D)
+![Debian 13](https://img.shields.io/badge/Debian-13-202329?logo=debian&logoColor=E8A33D)
+![Sway](https://img.shields.io/badge/Sway-Wayland-202329?logo=sway&logoColor=E8A33D)
+![License: MIT](https://img.shields.io/badge/License-MIT-8FB57A.svg)
 
 A post-install toolkit that turns a fresh **Devuan 6 (Excalibur)** install
 (binary-compatible with **Debian 13 (Trixie)**) into a
-**Sway (Wayland)** desktop for a **ThinkPad L14 Gen 2 AMD** — Catppuccin
-**Mocha/Red** themed, Firefox ESR hardened, TLP battery-capped, and installable
+**Sway (Wayland)** desktop for a **ThinkPad L14 Gen 2 AMD** — Graphite
+**Amber** themed, Firefox ESR hardened, TLP battery-capped, and installable
 with **one command, fully unattended**.
 
 Built from two sources: the configs/notes of `debian_sway-main` (a T14 Gen 2
@@ -87,7 +87,7 @@ the greetd login. If a niche package ever goes missing from trixie,
 |---|---|
 | Window manager | **Sway** (Wayland) via **greetd + tuigreet** login (SDDM stays installed only as a manual fallback, never auto-started) |
 | Shell layer | **swayosd** OSD, **cliphist** clipboard history, **swappy**/grim/wf-recorder capture, waybar now-playing via **playerctl**, **gammastep** night-light, **kanshi** auto display profiles |
-| Theme | **`debsway theme set`** engine (Omarchy-style): 8 one-shot palettes (Catppuccin Mocha/Red default, Mocha/Blue, Frappe, Nord, Dracula, Tokyo Night, Gruvbox, Solarized) compiled into sway/waybar/fuzzel/foot/mako/swayosd/wlogout. Catppuccin Mocha Red cursor pack + red gradient wallpaper |
+| Theme | **`debsway theme set`** engine (Omarchy-style): 8 one-shot palettes (Graphite Amber default, Graphite Amber Blue, Graphite Amber Soft; optional legacy: Nord, Dracula, Tokyo Night, Gruvbox, Solarized) compiled into sway/waybar/fuzzel/foot/mako/swayosd/wlogout. Stock Adwaita cursor + graphite/amber wallpaper |
 | Terminal | **foot** (Wayland-native Sway-authored terminal — `set $term foot` in `configs/sway/config`; themed via `~/.config/foot/foot.ini`; `debsway agent` also opens here; `fuzzel` uses `terminal=foot -e`) |
 | Launcher/menu | **fuzzel** driving the `debsway` command palette (`$mod+d` → `debsway menu`, `$mod+Shift+d` → `fuzzel`, waybar ☰ → `debsway menu`) |
 | Files | **Thunar** (+ volman automount, `gvfs-backends` for MTP/phones) + **yazi** TUI (`$mod+Shift+t`) |
@@ -116,7 +116,7 @@ the greetd login. If a niche package ever goes missing from trixie,
 | core | `19-fastfetch.sh` — fastfetch + config presets | Y |
 | desktop | `20-shell-upgrade.sh` — OSD, clipboard, screenshots, media keys, night-light, foot + fuzzel | Y |
 | desktop | `21-debsway-cli.sh` — DebSway CLI + theme engine | Y |
-| desktop | `22-theme-default.sh` — Catppuccin Mocha/Red + cursor | Y |
+| desktop | `22-theme-default.sh` — Graphite Amber + stock cursor | Y |
 | apps | `30-desktop-essentials.sh` — Flatpak, CUPS, firewall, gparted | Y |
 | apps | `31-timeshift.sh` — Timeshift snapshots | Y |
 | apps | `32-time-sync.sh` — chrony NTP time sync | N |
@@ -380,4 +380,4 @@ MIT. See [LICENSE](LICENSE). Vendored components keep their own license files.
 - [XfceMlg](https://github.com/SOSMLG/XfceMlg): XFCE desktop toolkit.
 ## Repository standard
 
-This repo follows the SOSMLG standard: [contributing](CONTRIBUTING.md), [security](SECURITY.md), [changelog](CHANGELOG.md). Local workflow: [English guide](https://github.com/SOSMLG/.github/blob/main/docs/GIT_GUIDE.md) / [Arabic guide](https://github.com/SOSMLG/.github/blob/main/docs/GIT_GUIDE.ar.md).
+This repo follows the SOSMLG standard: [contributing](CONTRIBUTING.md), [security](SECURITY.md), [changelog](CHANGELOG.md). Local workflow: [English guide](https://github.com/SOSMLG/.github/blob/main/docs/GIT_GUIDE.md) / [Arabic guide](https://github.com/SOSMLG/.github/blob/main/docs/GIT_GUIDE.ar.md). Visual standard: [theme](https://github.com/SOSMLG/.github/blob/main/docs/THEME.md) / [الطابع البصري](https://github.com/SOSMLG/.github/blob/main/docs/THEME.ar.md).

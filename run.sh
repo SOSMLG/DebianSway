@@ -155,7 +155,7 @@ declare -A RENAMED=(
     [firefoxHarden]=16-firefox.sh [installFonts]=17-fonts.sh
     [terminalButterbash]=18-butterbash.sh [fastfetchConfig]=19-fastfetch.sh
     [25-swayShellUpgrade]=20-shell-upgrade.sh [26-debswayCli]=21-debsway-cli.sh
-    [catppuccinSway]=22-theme-default.sh [desktopEssentials]=30-desktop-essentials.sh
+    [graphiteAmberSway]=22-theme-default.sh [desktopEssentials]=30-desktop-essentials.sh
     [timeshiftSetup]=31-timeshift.sh [networkTimeSync]=32-time-sync.sh
     [usefulApps]=33-useful-apps.sh [aiOpencode]=34-opencode-agent.sh
     [installVscodium]=40-vscodium.sh [vscodiumDevSetup]=41-dev-essentials.sh

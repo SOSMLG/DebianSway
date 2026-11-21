@@ -21,6 +21,8 @@ OpenRC or sysvinit.
 - Use `install_pkgs` for apt work and check installed state before acting.
   Never write systemd units or service calls.
 - Keep configs in `configs/` portable; no hard-coded usernames.
+- The default desktop identity is Graphite Amber; keep theme values aligned
+  with `debsway/themes/graphite-amber/palette.sh`.
 - Back up before destructive writes. Re-running any step must be safe.
 - The live ISO overlay in `iso/` is derived from `scripts/`, `configs/` and
   `debsway/`. Run `iso/sync-overlay.sh` after changing those trees.
