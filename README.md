@@ -1,30 +1,17 @@
+![banner](assets/banner.svg)
+
 # deb-sway-thinkpad
 
-![Devuan 6](https://img.shields.io/badge/Devuan-6-202329?logo=devuan&logoColor=E8A33D)
-![Debian 13](https://img.shields.io/badge/Debian-13-202329?logo=debian&logoColor=E8A33D)
-![Sway](https://img.shields.io/badge/Sway-Wayland-202329?logo=sway&logoColor=E8A33D)
-![License: MIT](https://img.shields.io/badge/License-MIT-8FB57A.svg)
+turns a fresh devuan 6 or debian 13 install on a thinkpad l14 gen 2 amd into a sway wayland desktop with graphite amber theming, hardened firefox esr and tlp battery limits.
 
-A post-install toolkit that turns a fresh **Devuan 6 (Excalibur)** install
-(binary-compatible with **Debian 13 (Trixie)**) into a
-**Sway (Wayland)** desktop for a **ThinkPad L14 Gen 2 AMD** — Graphite
-**Amber** themed, Firefox ESR hardened, TLP battery-capped, and installable
-with **one command, fully unattended**.
+[read the quick start](#quick-start)
 
-Built from two sources: the configs/notes of `debian_sway-main` (a T14 Gen 2
-Intel Sway guide) and the script runner + post-install toolkit of
-`Devuan-Kde-main` (KDE/Plasma), adapted for Sway and the AMD hardware.
-
-```
-./install.sh        # everything, unattended, verified — that's it
-./run.sh --list     # see every step in order, defaults and all
-./run.sh            # pick-and-choose interactively
-```
-
-You run it as your **normal user** (never `doas bash install.sh`); each script
-escalates itself (`doas`, `sudo` fallback) for the parts that need it.
-
----
+| | |
+| --- | --- |
+| **target** | written for a thinkpad l14 gen 2 amd. devuan 6 and debian 13 are supported. |
+| **install** | `./install.sh` runs unattended. `./run.sh --list` shows every step first. |
+| **theme** | graphite amber across sway, terminals and login. colors are fixed in the palette. |
+| **verify** | the installer prints a verification report at the end of the run. |
 
 ## Quick start
 
@@ -89,7 +76,7 @@ the greetd login. If a niche package ever goes missing from trixie,
 | Shell layer | **swayosd** OSD, **cliphist** clipboard history, **swappy**/grim/wf-recorder capture, waybar now-playing via **playerctl**, **gammastep** night-light, **kanshi** auto display profiles |
 | Theme | **`debsway theme set`** engine (Omarchy-style): 8 one-shot palettes (Graphite Amber default, Graphite Amber Blue, Graphite Amber Soft; optional legacy: Nord, Dracula, Tokyo Night, Gruvbox, Solarized) compiled into sway/waybar/fuzzel/foot/mako/swayosd/wlogout. Stock Adwaita cursor + graphite/amber wallpaper |
 | Terminal | **foot** (Wayland-native Sway-authored terminal — `set $term foot` in `configs/sway/config`; themed via `~/.config/foot/foot.ini`; `debsway agent` also opens here; `fuzzel` uses `terminal=foot -e`) |
-| Launcher/menu | **fuzzel** driving the `debsway` command palette (`$mod+d` → `debsway menu`, `$mod+Shift+d` → `fuzzel`, waybar ☰ → `debsway menu`) |
+| Launcher/menu | **fuzzel** driving the `debsway` command palette (`$mod+d` → `debsway menu`, `$mod+Shift+d` → `fuzzel`, waybar  → `debsway menu`) |
 | Files | **Thunar** (+ volman automount, `gvfs-backends` for MTP/phones) + **yazi** TUI (`$mod+Shift+t`) |
 | Media/docs | **mpv** (VLC fallback), **zathura** PDF, **swayimg** images |
 | Browser | **Firefox ESR** hardened with Betterfox-derived preferences + a locked `policies.json` |
