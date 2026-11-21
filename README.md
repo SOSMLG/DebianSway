@@ -1,5 +1,10 @@
 # deb-sway-thinkpad
 
+![Devuan 6](https://img.shields.io/badge/Devuan-6-9B183E?logo=devuan&logoColor=white)
+![Debian 13](https://img.shields.io/badge/Debian-13-A81D33?logo=debian&logoColor=white)
+![Sway](https://img.shields.io/badge/Sway-Wayland-6B8E23?logo=sway&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
 A post-install toolkit that turns a fresh **Devuan 6 (Excalibur)** install
 (binary-compatible with **Debian 13 (Trixie)**) into a
 **Sway (Wayland)** desktop for a **ThinkPad L14 Gen 2 AMD** — Catppuccin
@@ -355,7 +360,21 @@ sudo dd if=iso/dist/*live.iso of=/dev/sdX bs=4M status=progress && sync
 
 - `iso/sync-overlay.sh` stages `scripts/`, `configs/`, `debsway/` and the
   skeleton configs into the blend's `rootfs-overlay` — run it after any
-  source change and commit the result (CI enforces this via `--check`).
+  source change and commit the result.
 - The live session ships the toolkit at `/opt/deb-sway-thinkpad` and the
   `debsway` CLI on PATH; `debsway doctor` is the in-session health check.
 - Installer: `sudo refractainstaller-gui` (or `-base`) from the live session.
+
+---
+
+## License
+
+MIT. See [LICENSE](LICENSE). Vendored components keep their own license files.
+
+## Related repos
+
+- [DevuanSway](https://github.com/SOSMLG/DevuanSway): Sway on Devuan with OpenRC.
+- [DevuanDwm](https://github.com/SOSMLG/DevuanDwm): minimal dwm desktop for Devuan.
+- [Devuan-Kde](https://github.com/SOSMLG/Devuan-Kde): KDE Plasma on Devuan.
+- [devuan-cinnamon-setup](https://github.com/SOSMLG/devuan-cinnamon-setup): Cinnamon on Devuan.
+- [XfceMlg](https://github.com/SOSMLG/XfceMlg): XFCE desktop toolkit.
