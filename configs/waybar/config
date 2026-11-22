@@ -48,9 +48,8 @@
     "format": "{name}",
     "all-outputs": false,
     "disable-scroll": false,
-    "sort-by-number": true,
     "warp-on-scroll": false,
-    "persistent_workspaces": {
+    "persistent-workspaces": {
       "1": [],
       "2": [],
       "3": [],

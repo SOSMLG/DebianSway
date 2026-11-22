@@ -79,9 +79,9 @@ diagnosing issues on this system:
 - Theming: `debsway theme set <name>` renders `themes/<name>/palette.sh`
   (hex without `#`) through the `_base/tpl` templates into `~/.config/`
   (sway, waybar, fuzzel, foot, mako, swayosd, wlogout) and
-  soft-reloads waybar/mako/swayosd + `swaymsg reload`. Palettes:
-  graphite-amber, graphite-amber-blue, graphite-amber-soft, nord, dracula,
-  tokyo-night, gruvbox-dark, solarized-dark.
+  soft-reloads waybar/mako/swayosd + `swaymsg reload`. Graphite Amber is the
+  default; use `debsway theme list` in the running session to see the bundled
+  palettes.
 - Persistent state (active theme, background, night-light) lives in
   `~/.local/state/debsway/` — **that's the marker to check**, not configs.
 - `debsway doctor` is the one-command health check; `debsway setup` is the

@@ -3,7 +3,8 @@ window {
   font-family: "JetBrainsMono Nerd Font", monospace;
 }
 
-.default {
+window#osd label,
+window#osd image {
   color: #@@TEXT@@;
 }
 
@@ -13,16 +14,12 @@ window {
   background-color: #@@MANTLE@@;
 }
 
-.trough {
+progressbar trough {
   background-color: #@@SURFACE0@@;
 }
 
-.highlight {
+progressbar progress {
   background-color: #@@ACCENT@@;
-}
-
-.volume popup .default {
-  color: #@@TEXT@@;
 }
 
 progress {
