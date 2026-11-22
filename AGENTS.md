@@ -11,7 +11,7 @@ OpenRC or sysvinit.
 - `install.sh` is the unattended wrapper.
 - `scripts/verifySetup.sh` is the read-only end-state audit. `run.sh --verify`
   runs it after a setup pass.
-- `debsway/` holds the CLI and palette engine. `iso/` builds the live image.
+- `debsway/` holds the CLI and palette engine.
 
 ## Conventions
 
@@ -24,9 +24,6 @@ OpenRC or sysvinit.
 - The default desktop identity is Graphite Amber; keep theme values aligned
   with `debsway/themes/graphite-amber/palette.sh`.
 - Back up before destructive writes. Re-running any step must be safe.
-- The live ISO overlay in `iso/` is derived from `scripts/`, `configs/` and
-  `debsway/`. Run `iso/sync-overlay.sh` after changing those trees.
-
 ## Verification
 
 - `bash -n` on changed shell files.

@@ -74,7 +74,7 @@ the greetd login. If a niche package ever goes missing from trixie,
 |---|---|
 | Window manager | **Sway** (Wayland) via **greetd + tuigreet** login (SDDM stays installed only as a manual fallback, never auto-started) |
 | Shell layer | **swayosd** OSD, **cliphist** clipboard history, **swappy**/grim/wf-recorder capture, waybar now-playing via **playerctl**, **gammastep** night-light, **kanshi** auto display profiles |
-| Theme | **`debsway theme set`** engine (Omarchy-style): 8 one-shot palettes (Graphite Amber default, Graphite Amber Blue, Graphite Amber Soft; optional legacy: Nord, Dracula, Tokyo Night, Gruvbox, Solarized) compiled into sway/waybar/fuzzel/foot/mako/swayosd/wlogout. Stock Adwaita cursor + graphite/amber wallpaper |
+| Theme | **`debsway theme set`** engine: Graphite Amber is the default; use `debsway theme list` in the running session to see the bundled palettes. Colors compile into sway/waybar/fuzzel/foot/mako/swayosd/wlogout. Stock Adwaita cursor + graphite/amber wallpaper |
 | Terminal | **foot** (Wayland-native Sway-authored terminal — `set $term foot` in `configs/sway/config`; themed via `~/.config/foot/foot.ini`; `debsway agent` also opens here; `fuzzel` uses `terminal=foot -e`) |
 | Launcher/menu | **fuzzel** driving the `debsway` command palette (`$mod+d` → `debsway menu`, `$mod+Shift+d` → `fuzzel`, waybar  → `debsway menu`) |
 | Files | **Thunar** (+ volman automount, `gvfs-backends` for MTP/phones) + **yazi** TUI (`$mod+Shift+t`) |
@@ -307,7 +307,7 @@ tarball before major operations.
 * **Sway is a WM with a DE shell now** — waybar (menu/workspaces/clock/system
   stats/power), clipboard picker, and themed lockscreen are all wired through
   `debsway`.
-* `scripts/assets/xorg-touchpad-fix.sh` is Xorg-only; on Sway/Wayland the libinput
+* `assets/xorg-touchpad-fix.sh` is Xorg-only; on Sway/Wayland the libinput
   options already live in `configs/sway/config` — skip it.
 
 ---
@@ -327,30 +327,9 @@ configs/         rendered default configs (sway/waybar/fuzzel/foot/mako,
                  into each user's ~/.config
 debsway/         the `debsway` CLI: bin/ (router), lib/ (actions, theme
                  engine, doctor, setup), themes/<palette> + _base/tpl/
-iso/             live-ISO builder (Devuan live-sdk blend + overlay sync + qemu test)
 butterbash/      bundled ButterBash tarball for script 18
 assets/          archived material from the source projects
 ```
-
----
-
-## Live ISO
-
-Build a bootable Devuan live ISO with the full Sway desktop (autologin as
-`live`/`live`) and the **refractainstaller** system installer:
-
-```bash
-cd iso && sudo bash build.sh     # needs ~15G free, network, a while
-./iso/test-qemu.sh               # smoke-test the result in a VM
-sudo dd if=iso/dist/*live.iso of=/dev/sdX bs=4M status=progress && sync
-```
-
-- `iso/sync-overlay.sh` stages `scripts/`, `configs/`, `debsway/` and the
-  skeleton configs into the blend's `rootfs-overlay` — run it after any
-  source change and commit the result.
-- The live session ships the toolkit at `/opt/deb-sway-thinkpad` and the
-  `debsway` CLI on PATH; `debsway doctor` is the in-session health check.
-- Installer: `sudo refractainstaller-gui` (or `-base`) from the live session.
 
 ---
 
