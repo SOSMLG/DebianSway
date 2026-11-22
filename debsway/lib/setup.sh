@@ -69,7 +69,8 @@ cmd_setup() {
     local gc="$DS_CONFIG/gammastep/config.ini"
     if [ -f "$gc" ]; then
         read -rp "Edit night-light lat/lon now (gammastep ships Bangkok defaults)? (y/N): " reply || true
-        # shellcheck disable=SC2086: $EDITOR may carry flags (e.g. `code --wait`).
+        # shellcheck disable=SC2086
+        # $EDITOR may carry flags (e.g. `code --wait`).
         case "$reply" in y|Y) ${EDITOR:-nano} "$gc" ;; esac
     fi
 
