@@ -6,7 +6,7 @@
 _DEBSWAY_LIB_SETUP_LOADED=1
 
 cmd_setup() {
-    # Unattended mode (install.sh / run.sh --yes): the wizard is inherently
+    # Unattended mode (install.sh / install.sh --yes): the wizard is inherently
     # interactive, so keep every current setting instead of half-prompting.
     if [ -n "${DEBSWAY_ASSUME_YES:-}" ]; then
         d_ok "Setup skipped (DEBSWAY_ASSUME_YES=1) — theme, background, touchpad and night-light kept as-is."

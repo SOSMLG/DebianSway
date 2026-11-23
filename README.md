@@ -9,7 +9,7 @@ turns a fresh devuan 6 or debian 13 install on a thinkpad l14 gen 2 amd into a s
 | | |
 | --- | --- |
 | **target** | written for a thinkpad l14 gen 2 amd. devuan 6 and debian 13 are supported. |
-| **install** | `./install.sh` runs unattended. `./run.sh --list` shows every step first. |
+| **install** | `./install.sh` runs unattended. `./install.sh --list` shows every step first. |
 | **theme** | graphite amber across sway, terminals and login. colors are fixed in the palette. |
 | **verify** | the installer prints a verification report at the end of the run. |
 
@@ -27,17 +27,17 @@ git clone <this-repo> && cd deb-sway-thinkpad
 #    (systemd: `systemctl reboot`; Devuan/OpenRC: `doas reboot`)
 ```
 
-`install.sh` = `run.sh --full --verify`: every step answers **yes**, including
+`install.sh` = `install.sh --full --verify`: every step answers **yes**, including
 the optional groups (VSCodium, gaming, Vesktop/Telegram, PhotoGIMP, dev tools).
 Variants:
 
 | Command | What it does |
 |---|---|
 | `./install.sh --core` | Core Sway desktop only, skips optional groups |
-| `./run.sh --yes` | Everything, but only the default-Y steps (no optional groups) |
-| `./run.sh --phase core,desktop` | Only the core + desktop phases |
-| `./run.sh --only firefox,useful-apps` | Just those steps (short names work) |
-| `./run.sh --no-update` | Skip the runner's single `apt-get update` |
+| `./install.sh --yes` | Everything, but only the default-Y steps (no optional groups) |
+| `./install.sh --phase core,desktop` | Only the core + desktop phases |
+| `./install.sh --only firefox,useful-apps` | Just those steps (short names work) |
+| `./install.sh --no-update` | Skip the runner's single `apt-get update` |
 
 Install with `bash -x ./install.sh` to watch every step, if you're curious or
 something looks off.
@@ -87,7 +87,7 @@ the greetd login. If a niche package ever goes missing from trixie,
 | GPU | amdgpu + `mesa-vulkan-drivers` + `firmware-amd-graphics` |
 | Software | Flatpak/Flathub, CUPS, gufw/ufw, mpv (VLC fallback), codecs, GIMP, Timeshift, OpenCode, pass/KeePassXC, btop/eza/bat/zoxide/yazi |
 
-### Scripts — phases in run order (`./run.sh --list` is authoritative)
+### Scripts — phases in run order (`./install.sh --list` is authoritative)
 
 | Phase | Script | Default |
 |---|---|---|
@@ -132,7 +132,7 @@ already in Trixie, but the toolkit still:
 * writes `/etc/apt/preferences.d/backports` with priority **100**, so nothing is
   upgraded automatically and only explicitly requested backports packages land.
 
-Always toggleable: edit `run.sh`'s list and answer N, or remove the file later.
+Always toggleable: edit `install.sh`'s list and answer N, or remove the file later.
 
 ---
 
@@ -229,7 +229,7 @@ debsway update [--apply] | doctor | setup | help
 ## Verification
 
 ```bash
-./run.sh --verify        # after an install.sh run
+./install.sh --verify        # after an install.sh run
 bash scripts/verifySetup.sh   # anytime
 ```
 
@@ -315,12 +315,12 @@ tarball before major operations.
 ## Layout
 
 ```
-run.sh           ordered runner (phases: core/desktop/apps/optional/utils)
+install.sh           ordered runner (phases: core/desktop/apps/optional/utils)
 install.sh       one-command unattended wrapper
 scripts/
   lib/common.sh  shared helpers (DEBSWAY_* envs, ask, pkgs, priv helper)
   ??-*.sh        one step each, numbered = run order; runnable standalone
-  verifySetup.sh end-state audit (run.sh --verify)
+  verifySetup.sh end-state audit (install.sh --verify)
   skills/deb-sway-thinkpad-SKILL.md   system context for AI agents
 configs/         rendered default configs (sway/waybar/fuzzel/foot/mako,
                  swayosd/wlogout/kanshi/gammastep/mpv/xfce4, wallpapers/) — baked

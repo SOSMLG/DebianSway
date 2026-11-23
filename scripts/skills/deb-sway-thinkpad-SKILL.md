@@ -102,8 +102,8 @@ diagnosing issues on this system:
 - Scripts live in `scripts/`, each independently runnable
   (`bash scripts/<name>.sh`), all sourcing `scripts/lib/common.sh` for
   shared `ask()`/`log_*`/`install_pkgs` helpers.
-- `run.sh` runs them in order; `install.sh` is the fully-unattended
-  one-command wrapper (`run.sh --yes`). Env vars honored:
+- `install.sh` runs them in order; `install.sh` is the fully-unattended
+  one-command wrapper (`install.sh --yes`). Env vars honored:
   `DEBSWAY_ASSUME_YES=1` (every prompt takes its default),
   `DEBSWAY_SKIP_APT_UPDATE=1` (skip per-script `apt-get update`).
 - Every apt action checks what's actually installed first — nothing is

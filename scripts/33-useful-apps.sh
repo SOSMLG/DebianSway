@@ -47,7 +47,14 @@ if ask "Install zathura (vim-keys PDF viewer, sway workspace 7)?"; then
     # Take PDFs back from whatever claimed them (PhotoGIMP/GIMP raster-imports
     # PDFs — never a sane default). Discover the real desktop ID, no hardcode.
     if is_installed zathura && command -v gio >/dev/null 2>&1; then
-        _zdesk="$(ls /usr/share/applications/ "$HOME/.local/share/applications/" 2>/dev/null | grep -i '^.*zathura.*\.desktop$' | head -1)"
+        _zdesk=""
+        for _zdir in /usr/share/applications "$HOME/.local/share/applications"; do
+            for _zfile in "$_zdir"/*zathura*.desktop; do
+                [ -e "$_zfile" ] || continue
+                _zdesk="$(basename "$_zfile")"
+                break 2
+            done
+        done
         if [ -n "$_zdesk" ] && gio mime application/pdf "$_zdesk" >/dev/null 2>&1; then
             log_ok "zathura set as default for PDFs."
         else
