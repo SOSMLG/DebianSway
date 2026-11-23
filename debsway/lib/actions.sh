@@ -494,11 +494,13 @@ cmd_shot() {
     mkdir -p "$SHOT_DIR"
     case "$action" in
         full)
-            local f="$SHOT_DIR/shot-full-$(date +%Y%m%d-%H%M%S).png"
+            local f
+            f="$SHOT_DIR/shot-full-$(date +%Y%m%d-%H%M%S).png"
             grim "$f" && wl-copy < "$f" && notify "Screenshot saved" "$f"
             ;;
         area)
-            local f="$SHOT_DIR/shot-area-$(date +%Y%m%d-%H%M%S).png"
+            local f
+            f="$SHOT_DIR/shot-area-$(date +%Y%m%d-%H%M%S).png"
             local g
             command -v slurp >/dev/null 2>&1 || { d_err "slurp not installed."; return 1; }
             g="$(slurp)" || return 0
@@ -514,7 +516,8 @@ cmd_shot() {
             if pgrep -x wf-recorder >/dev/null 2>&1; then
                 pkill -x wf-recorder; notify "Recording stopped"
             else
-                local f="$SHOT_DIR/rec-$(date +%Y%m%d-%H%M%S).mp4"
+                local f
+                f="$SHOT_DIR/rec-$(date +%Y%m%d-%H%M%S).mp4"
                 local g
                 notify "Recording" "Drag a region to record (Esc = full output)…"
                 g="$(slurp)" || g=""

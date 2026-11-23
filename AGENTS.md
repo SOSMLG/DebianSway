@@ -6,10 +6,10 @@ OpenRC or sysvinit.
 
 ## Entry points
 
-- `run.sh` discovers `scripts/??-*.sh`, groups them by phase, and reads
+- `install.sh` discovers `scripts/??-*.sh`, groups them by phase, and reads
   `# DEBSWAY_DESC:` and `# DEBSWAY_DEFAULT:` headers.
 - `install.sh` is the unattended wrapper.
-- `scripts/verifySetup.sh` is the read-only end-state audit. `run.sh --verify`
+- `scripts/verifySetup.sh` is the read-only end-state audit. `install.sh --verify`
   runs it after a setup pass.
 - `debsway/` holds the CLI and palette engine.
 
@@ -28,4 +28,4 @@ OpenRC or sysvinit.
 
 - `bash -n` on changed shell files.
 - `bash scripts/verifySetup.sh` on a target system.
-- `bash run.sh --list` after adding or renaming a step.
+- `bash install.sh --list` after adding or renaming a step.

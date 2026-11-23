@@ -128,9 +128,9 @@ done
 unset _dsf _l
 export PATH="\$HOME/.local/bin:\$HOME/bin:\$PATH"
 EOF
-        log_ok "~/.profile reads $PROFILE_ADD and adds ~/.local/bin to PATH."
+        log_ok "$HOME/.profile reads $PROFILE_ADD and adds $HOME/.local/bin to PATH."
     else
-        log_ok "~/.profile already configured."
+        log_ok "$HOME/.profile already configured."
     fi
 else
     log_warn "environment.d/debsway.conf not found — skipping ~/.profile tweak."

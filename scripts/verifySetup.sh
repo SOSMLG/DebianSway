@@ -5,7 +5,7 @@
 # One-pass check of the toolkit's expected end state:
 # group membership, key packages, fonts, Firefox user.js,
 # Graphite Amber config markers, and enabled services.
-# Designed to be run from run.sh --verify after a run, or
+# Designed to be run from install.sh --verify after a run, or
 # standalone at any time.
 #
 # Prints PASS/FAIL/WARN lines and exits non-zero if any

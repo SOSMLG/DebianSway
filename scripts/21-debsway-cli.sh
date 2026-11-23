@@ -99,8 +99,7 @@ log_info "     debsway setup    — first-run wizard (wallpaper, night-light…)
 # ensure ~/.local/bin is on PATH for interactive shells (25 does this too;
 # safe to repeat — grep-guard keeps ~/.profile tidy)
 # ---------------------------------------------------------------------------
-if ! grep -qF '~/.local/bin' "$HOME/.profile" 2>/dev/null \
-    && ! grep -qF '.local/bin' "$HOME/.profile" 2>/dev/null; then
+if ! grep -qF '.local/bin' "$HOME/.profile" 2>/dev/null; then
     printf '\nexport PATH="$HOME/.local/bin:$PATH"\n' >> "$HOME/.profile"
     log_ok "Added ~/.local/bin to PATH in ~/.profile."
 fi
